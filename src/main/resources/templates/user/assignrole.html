@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Role</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Heroicons for icons -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Only show the content if the user has the ADMIN role -->
+    <div sec:authorize="hasRole('ROLE_ADMIN')" id="content" class="flex justify-center items-center min-h-screen">
+        <div class="assign-container w-full max-w-2xl p-8 bg-white rounded-xl">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Assign Role</h2>
+                <p class="mt-2 text-gray-600">Assign roles to users in the system</p>
+            </div>
+
+            <!-- Form Section -->
+            <form action="/assign/role" method="POST" class="space-y-6">
+                <!-- CSRF Token -->
+                <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
+                <!-- User Dropdown -->
+                <div>
+                    <label for="user" class="block text-sm font-medium text-gray-700 mb-2">Select User</label>
+                    <div class="relative">
+                        <select id="user" name="userId" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" required>
+                            <option value="">-- Select User --</option>
+                            <th:block th:each="user : ${users}">
+                                <option th:value="${user.userId}" th:text="${user.name + ' (' + user.email + ')'}"></option>
+                            </th:block>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Dropdown -->
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Select Role</label>
+                    <div class="relative">
+                        <select id="role" name="roleId" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" required>
+                            <option value="">-- Select Role --</option>
+                            <th:block th:each="role : ${roles}">
+                                <option th:value="${role.id}" th:text="${role.roleName}"></option>
+                            </th:block>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm3 6a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="w-full flex justify-center items-center px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                        </svg>
+                        Assign Role
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success/Error Messages -->
+            <div class="mt-6 text-center">
+                <div th:if="${message}" class="p-3 bg-green-50 rounded-lg border border-green-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-green-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm text-green-700" th:text="${message}"></p>
+                </div>
+                <div th:if="${error}" class="p-3 bg-red-50 rounded-lg border border-red-200 flex items-center justify-center">
+                    <svg class="h-5 w-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm text-red-700" th:text="${error}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optionally, show a message to non-admin users -->
+    <div sec:authorize="!hasRole('ROLE_ADMIN')" class="text-center py-12">
+        <h2 class="text-2xl font-bold text-gray-900">Access Denied</h2>
+        <p class="text-gray-600 mt-2">You do not have permission to view this page.</p>
+    </div>
+
+    <script>
+        console.log("Assign Role page loaded");
+    </script>
+</body>
+</html>

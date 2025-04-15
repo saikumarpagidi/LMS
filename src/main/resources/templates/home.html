@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Welcome to e-Adhyan Platform</title>
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div id="content" class="h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-800 text-white px-6">
+        <div class="text-center max-w-2xl">
+            <h2 class="text-5xl font-extrabold leading-tight whitespace-nowrap">
+                <span class="text-yellow-300">Welcome to e-Adhyan Platform</span>
+            </h2>
+            <p class="text-lg mt-4 opacity-90 black-text-block">
+                Explore, Learn, and Grow with interactive courses.
+            </p>
+            
+            <!-- Call-to-Action Button -->
+            <div class="mt-6">
+                <a href="/home/register" class="px-6 py-3 text-lg font-medium bg-yellow-400 text-gray-900 rounded-lg shadow-lg hover:bg-yellow-500 transition-all">
+                    Get Started for Free
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("Home page loaded");
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+
+<!-- <nav data-th-fragment="navbar" class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+  <div class="flex items-center justify-between w-full px-8 py-4">
+    <!-- Logo and Text 
+    <div class="flex items-center space-x-2">
+      <a th:href="@{'/'}" class="flex items-center">
+        <img th:src="@{'/images/cdac-logo-sm.png'}" class="h-12 w-auto" alt="C-DAC Logo"
+             style="filter: brightness(0) saturate(100%) invert(25%) sepia(90%) saturate(2000%) hue-rotate(220deg) brightness(90%) contrast(90%);">
+        
+        <!-- Text Wrapper for Alignment 
+        <div class="ml-2 text-left w-full">
+            <span class="block text-blue-800 font-bold text-lg">e-Adhyan</span>
+            <span class="block text-blue-800 text-sm font-semibold">AI-based Training Platform</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Right Side Menu 
+    <div class="hidden md:flex items-center space-x-6">
+      <a th:href="@{'/home/test'}" class="nav-link text-gray-800 hover:text-blue-600 transition-colors">Home</a>
+      <a th:href="@{'/home/about'}" class="nav-link text-gray-800 hover:text-blue-600 transition-colors">About</a>
+      <a th:href="@{'/home/services'}" class="nav-link text-gray-800 hover:text-blue-600 transition-colors">Services</a>
+      <a th:href="@{'/home/contact'}" class="nav-link text-gray-800 hover:text-blue-600 transition-colors">Contact</a>
+      <a th:href="@{'/home/login'}" class="nav-link text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">Login</a>
+      <a th:href="@{'/home/register'}" class="nav-link text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition">Signup</a>
+    </div>
+
+    <!-- Mobile Menu Button 
+    <button id="menu-toggle" class="md:hidden text-gray-800 hover:text-blue-600 focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu 
+  <div class="hidden md:hidden" id="mobile-menu">
+    <ul class="flex flex-col space-y-2 px-6 pb-4 border-b border-gray-200">
+      <li><a th:href="@{'/home/test'}" class="nav-link block text-gray-800 hover:text-blue-600 transition-colors">Home</a></li>
+      <li><a th:href="@{'/home/about'}" class="nav-link block text-gray-800 hover:text-blue-600 transition-colors">About</a></li>
+      <li><a th:href="@{'/home/services'}" class="nav-link block text-gray-800 hover:text-blue-600 transition-colors">Services</a></li>
+      <li><a th:href="@{'/home/contact'}" class="nav-link block text-gray-800 hover:text-blue-600 transition-colors">Contact</a></li>
+      <li class="pt-2"><a th:href="@{'/home/login'}" class="nav-link block text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-center">Login</a></li>
+      <li><a th:href="@{'/home/register'}" class="nav-link block text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-center">Signup</a></li>
+    </ul>
+  </div>
+</nav> -->
+<nav data-th-fragment="navbar" class="fixed top-0 left-0 right-0 z-50 bg-blue-700 border-b border-blue-700 shadow-sm">
+  <div class="flex items-center justify-between w-full px-8 py-4">
+    <!-- Logo and Text -->
+    <div class="flex items-center space-x-2">
+      <a th:href="@{'/'}" class="flex items-center">
+        <img th:src="@{'/images/cdac-logo-sm.png'}" class="h-12 w-auto" alt="C-DAC Logo">
+        
+        <!-- Text Wrapper for Alignment -->
+        <div class="ml-2 text-left w-full">
+            <span class="block text-white font-bold text-lg">e-Adhyan</span>
+            <span class="block text-white text-sm font-semibold">AI-based Training Platform</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Right Side Menu -->
+    <div class="hidden md:flex items-center space-x-6">
+      <a th:href="@{'/home/test'}" class="nav-link text-white hover:text-blue-200 transition-colors">Home</a>
+      <a th:href="@{'/home/about'}" class="nav-link text-white hover:text-blue-200 transition-colors">About</a>
+      <a th:href="@{'/home/login'}" class="nav-link text-white hover:text-blue-200 transition-colors">Services</a>
+      <a th:href="@{'/home/contact'}" class="nav-link text-white hover:text-blue-200 transition-colors">Contact</a>
+      <a th:href="@{'/home/login'}" class="nav-link login-button text-blue-600 bg-white hover:bg-green-600 hover:text-white px-4 py-2 rounded transition">Login</a>
+      <a th:href="@{'/home/register'}" class="nav-link signup-button text-blue-600 bg-white hover:bg-green-600 hover:text-white px-4 py-2 rounded transition">Signup</a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-toggle" class="md:hidden text-white hover:text-blue-200 focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="hidden md:hidden" id="mobile-menu">
+    <ul class="flex flex-col space-y-2 px-6 pb-4 border-b border-blue-700">
+      <li><a th:href="@{'/home/test'}" class="nav-link block text-white hover:text-blue-200 transition-colors">Home</a></li>
+      <li><a th:href="@{'/home/about'}" class="nav-link block text-white hover:text-blue-200 transition-colors">About</a></li>
+      <li><a th:href="@{'/home/services'}" class="nav-link block text-white hover:text-blue-200 transition-colors">Services</a></li>
+      <li><a th:href="@{'/home/contact'}" class="nav-link block text-white hover:text-blue-200 transition-colors">Contact</a></li>
+      <li class="pt-2"><a th:href="@{'/home/login'}" class="nav-link login-button block text-blue-600 bg-white hover:bg-green-600 hover:text-white px-4 py-2 rounded text-center">Login</a></li>
+      <li><a th:href="@{'/home/register'}" class="nav-link signup-button block text-blue-600 bg-white hover:bg-green-600 hover:text-white px-4 py-2 rounded text-center">Signup</a></li>
+    </ul>
+  </div>
+</nav>

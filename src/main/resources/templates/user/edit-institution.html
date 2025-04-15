@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Institution</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for a polished look */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-input {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-button {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .form-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="form-container">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Edit Institution</h1>
+            
+            <form action="/pmu/edit" method="POST" class="space-y-6">
+                <input type="hidden" name="id" th:value="${institution.id}">
+                
+                <!-- Resource Center Field -->
+                <div>
+                    <label for="resourceCenter" class="block text-sm font-medium text-gray-700 mb-2">Resource Center</label>
+                    <input type="text" id="resourceCenter" name="resourceCenter" th:value="${institution.resourceCenter}" 
+                           class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none" required>
+                </div>
+                
+                <!-- Location Field -->
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <select id="location" name="location" 
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none" required>
+                        <option value="PMU Noida" th:selected="${institution.location == 'PMU Noida'}">PMU Noida</option>
+                        <option value="PMU Mohali" th:selected="${institution.location == 'PMU Mohali'}">PMU Mohali</option>
+                    </select>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" 
+                            class="form-button bg-blue-500 text-white px-6 py-2 rounded-lg hover:shadow-md">
+                        Update Institution
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

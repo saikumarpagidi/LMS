@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- AlpineJS for interactivity -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dropdown-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* New professional button styles (matching course details) */
+        .syllabus-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+            border: none;
+            outline: none;
+        }
+        .syllabus-btn:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+        .syllabus-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+  <div id="content" class="min-h-screen pt-20">
+   <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
+      <!-- Dashboard Header -->
+      <header class="mb-8 fade-in">
+        <div class="bg-white text-black shadow-2xl rounded-xl p-8 text-center">
+          <h1 class="text-4xl font-bold mb-2">
+            Welcome Back, <span th:text="${#authentication.principal.name}">Student Name</span>!
+          </h1>
+          <p class="text-lg text-gray-700">
+            Your learning journey continues. Explore your assigned courses and resources below.
+          </p>
+        </div>
+      </header>
+      
+      <!-- Message if no assignments exist -->
+      <div th:if="${#lists.isEmpty(assignments)}" class="bg-white p-8 rounded-xl shadow-lg text-center fade-in">
+          <p class="text-xl text-gray-600">No courses have been assigned to you yet.</p>
+          <p class="text-gray-500 mt-2">Check back later or contact your resource center for updates.</p>
+      </div>
+      
+      <!-- Assigned Courses Cards -->
+      <div th:if="${!#lists.isEmpty(assignments)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div th:each="assignment : ${assignments}" class="bg-white rounded-xl shadow-md card-hover overflow-hidden fade-in">
+          <!-- Card Header: Course Name -->
+          <div class="px-6 py-5 bg-blue-600">
+            <h2 class="text-2xl font-bold text-white"
+                th:text="${assignment.course.courseName}">Course Name</h2>
+          </div>
+          <!-- Card Body: Schedule Details & Resources -->
+          <div class="p-6">
+            <div class="space-y-4">
+              <div class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                <span>Duration: </span>
+                <span th:text="${scheduleMap[assignment.course.id] != null ? scheduleMap[assignment.course.id].duration : assignment.course.duration}">
+                  0
+                </span> days
+              </div>
+              <div class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-play-circle mr-2 text-blue-500"></i>
+                <span>Start Date: </span>
+                <span th:text="${scheduleMap[assignment.course.id] != null ? scheduleMap[assignment.course.id].startDate : 'N/A'}">
+                  N/A
+                </span>
+              </div>
+              <div class="flex items-center text-sm text-gray-600">
+                <i class="fas fa-flag-checkered mr-2 text-blue-500"></i>
+                <span>End Date: </span>
+                <span th:text="${scheduleMap[assignment.course.id] != null ? scheduleMap[assignment.course.id].endDate : 'N/A'}">
+                  N/A
+                </span>
+              </div>
+            </div>
+            
+            <!-- NEW: Syllabus Button -->
+            <div class="mt-6">
+				<a th:href="@{/student/course-syllabus/{courseId}(courseId=${assignment.course.id})}"
+				   class="syllabus-btn">
+				    View Syllabus
+				</a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript for Toggling Dropdown -->
+  <script>
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      const icon = document.getElementById(`icon-${id.split('-')[1]}`);
+      dropdown.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    }
+    console.log("Student Dashboard loaded");
+  </script>
+</body>
+</html>

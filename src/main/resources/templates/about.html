@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>About Page</title>
+    <!-- Include Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+</head>
+<body class="bg-gray-100">
+    <div id="content" class="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">About US</h1>
+        <div class="space-y-6 text-gray-700">
+            <p>
+                <span class="font-bold text-red-600">Centre for Development of Advanced Computing (C-DAC)</span> is the premier R&D organization of the Ministry of Electronics and Information Technology (MeitY) for carrying out R&D in IT, Electronics, and associated areas. Different areas of C-DAC had originated at different times, many of which came out as a result of the identification of opportunities.
+            </p>
+            <p>
+                The setting up of C-DAC in 1988 itself was to build Supercomputers in the context of the denial of the import of Supercomputers by the USA. Since then, C-DAC has been undertaking the building of multiple generations of Supercomputers starting from PARAM with 1 GF in 1988.
+            </p>
+            <p>
+                Almost at the same time, C-DAC started building Indian Language Computing Solutions with the setting up of the GIST group (Graphics and Intelligence-based Script Technology). The National Centre for Software Technology (NCST), set up in 1985, had also initiated work in Indian Language Computing around the same period.
+            </p>
+            <p>
+                The Electronic Research and Development Centre of India (ER&DCI) with various constituents, starting as adjunct entities of various State Electronic Corporations, had been brought under the hold of the Department of Electronics and Telecommunications (now MeitY) in around 1988. They were focusing on various aspects of applied electronics, technology, and applications.
+            </p>
+            <p>
+                With the passage of time, as a result of the creative ecosystem that got set up in C-DAC, more areas such as Health Informatics, etc., got created. While right from the beginning, the focus of NCST was on Software Technologies, C-DAC started its education & training activities in 1994 as a spin-off. With the passage of time, it grew into a large effort to meet the growing needs of the Indian Industry for finishing schools.
+            </p>
+        </div>
+    </div>
+    <script>
+        console.log("about page");
+    </script>
+</body>
+</html>

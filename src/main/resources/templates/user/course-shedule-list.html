@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Schedule List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-blue-800 min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-6xl bg-white shadow-2xl rounded-2xl p-8 border border-gray-300">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">📅 Course Schedule List</h1>
+
+        <table class="min-w-full bg-white text-blue-800 border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+            <thead class="bg-blue-600 text-white">
+                <tr>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Course Name</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Duration (days)</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Start Date</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">End Date</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Location</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Resource Center</th>
+                    <th class="py-3 px-4 border-b border-gray-300 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="courseSchedule : ${courseSchedules}" class="even:bg-gray-100 hover:bg-gray-200">
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.course != null ? courseSchedule.course.courseName : 'N/A'}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.duration}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.startDate}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.endDate}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.location}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300" th:text="${courseSchedule.resourceCenterName}"></td>
+                    <td class="py-3 px-4 border-b border-gray-300 flex space-x-4">
+                        <a th:href="@{/course-schedules/edit/{id}(id=${courseSchedule.id})}"
+                            class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200">✏️ Edit</a>
+                        <a th:href="@{/course-schedules/delete/{id}(id=${courseSchedule.id})}"
+                            class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200">🗑️ Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="text-center mt-6">
+            <a href="/user/dashboard" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 text-lg">Back</a>
+        </div>
+    </div>
+
+</body>
+</html>

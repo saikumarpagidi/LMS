@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course Design</title>
+    <script>
+        // Original JavaScript functionality
+        function openTopicModal(element) {
+            var moduleId = element.getAttribute("data-id");
+            var moduleName = element.getAttribute("data-name");
+            document.getElementById("moduleId").value = moduleId;
+            document.getElementById("moduleNameTitle").innerText = "Add Topic for: " + moduleName;
+            document.getElementById("addTopicModal").classList.remove("hidden");
+        }
+
+        function openResourceModal(element) {
+            var topicId = element.getAttribute("data-id");
+            var topicName = element.getAttribute("data-name");
+            document.getElementById("topicId").value = topicId;
+            document.getElementById("topicNameTitle").innerText = "Upload Resources for: " + topicName;
+            document.getElementById("topicResourceModal").classList.remove("hidden");
+        }
+
+        function openModuleModal() {
+            document.getElementById("addModuleModal").classList.remove("hidden");
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add("hidden");
+        }
+
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach(function(element) {
+                    element.style.display = 'none';
+                });
+            }, 5000);
+        });
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-gray-50 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Course Design Manager</h1>
+            <p class="text-gray-600">Organize your course structure with modules and topics</p>
+        </div>
+
+        <!-- Back to Dashboard Button -->
+        <div class="mb-6">
+            <a href="/user/dashboard" 
+               class="inline-flex items-center px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Course Selection -->
+        <form id="courseForm" action="/course-design" method="get" class="mb-8">
+            <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700">Select Course</label>
+                <select id="courseSelect" name="courseId" onchange="this.form.submit()" 
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">-- Select Course --</option>
+                    <option th:each="c : ${allCourses}" 
+                            th:value="${c.id}" 
+                            th:text="${c.courseName}" 
+                            th:selected="${course != null and c.id == course.id}">
+                    </option>
+                </select>
+            </div>
+        </form>
+
+        <!-- Modules Section -->
+        <div th:if="${course != null}" class="space-y-6">
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-semibold text-gray-900" th:text="'Curriculum: ' + ${course.courseName}"></h3>
+                <button onclick="openModuleModal()" 
+                        class="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    + Add Module
+                </button>
+            </div>
+
+            <!-- Modules List -->
+            <ul class="space-y-4">
+                <li th:each="module : ${modules}" 
+                    class="border border-gray-200 rounded-lg"
+                    x-data="{ isOpen: false }">
+                    <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex items-center space-x-4">
+                            <!-- Expand/Collapse Button with Plus/Minus Icon -->
+                            <button @click="isOpen = !isOpen" 
+                                    class="text-gray-500 hover:text-blue-600 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     x-show="!isOpen">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     x-show="isOpen">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                </svg>
+                            </button>
+                            <span class="text-base font-semibold text-gray-900" 
+                                  th:text="${module.moduleName}"></span>
+                        </div>
+                        <!-- Add Topic Button -->
+                        <button onclick="openTopicModal(this)"
+                                class="text-sm text-blue-600 hover:text-blue-700 flex items-center"
+                                th:data-id="${module.id}"
+                                th:data-name="${module.moduleName}">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Add Topic
+                        </button>
+                    </div>
+
+                    <!-- Topics List -->
+                    <div x-show="isOpen" x-collapse class="border-t border-gray-100">
+                        <ul class="space-y-2 p-4">
+                            <li th:each="topic : ${module.topics}" 
+                                class="bg-gray-50 rounded-lg p-4"
+                                x-data="{ isOpen: false }">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Expand/Collapse Button with Plus/Minus Icon -->
+                                        <button @click="isOpen = !isOpen" 
+                                                class="text-gray-500 hover:text-blue-600 transition-transform">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                 x-show="!isOpen">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                 x-show="isOpen">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                            </svg>
+                                        </button>
+                                        <span class="text-gray-700" th:text="${topic.topicName}"></span>
+                                    </div>
+                                    <!-- Add Resource Button -->
+                                    <button onclick="openResourceModal(this)"
+                                            class="text-sm text-blue-600 hover:text-blue-700 flex items-center"
+                                            th:data-id="${topic.id}"
+                                            th:data-name="${topic.topicName}">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Add Resource
+                                    </button>
+                                </div>
+
+                                <!-- Resources List -->
+                                <div x-show="isOpen" x-collapse class="mt-3 space-y-2 pl-12">
+                                    <div th:each="resource : ${topic.resources}" 
+                                         class="flex items-center justify-between bg-white rounded-md p-3 border border-gray-200">
+                                        <a th:href="${resource.fileUrl}" 
+                                           target="_blank"
+                                           class="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 truncate">
+                                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                            <span th:text="${resource.fileName}"></span>
+                                        </a>
+                                        <span th:if="${resource.fileType}" 
+                                              class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                                            <span th:text="${resource.fileType}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modals (unchanged functionality, improved styling) -->
+    <!-- Add Module Modal -->
+    <div id="addModuleModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative">
+            <button onclick="closeModal('addModuleModal')" 
+                    class="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700">
+                ✕
+            </button>
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4">Create New Module</h3>
+                <form action="/course-design/add-module" method="post">
+                    <input type="hidden" name="courseId" th:value="${course != null ? course.id : ''}">
+                    <div class="space-y-4">
+                        <input type="text" name="moduleName" placeholder="Module Name"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               required>
+                        <button type="submit" 
+                                class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Create Module
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Topic Modal -->
+    <div id="addTopicModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative">
+            <button onclick="closeModal('addTopicModal')" 
+                    class="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700">
+                ✕
+            </button>
+            <div class="p-6">
+                <h3 id="moduleNameTitle" class="text-lg font-semibold mb-4">Add New Topic</h3>
+                <form action="/course-design/add-topic" method="post">
+                    <input type="hidden" id="moduleId" name="moduleId">
+                    <div class="space-y-4">
+                        <input type="text" name="topicName" placeholder="Topic Name"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                               required>
+                        <button type="submit" 
+                                class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Add Topic
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Upload Modal -->
+    <div id="topicResourceModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative">
+            <button onclick="closeModal('topicResourceModal')" 
+                    class="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700">
+                ✕
+            </button>
+            <div class="p-6">
+                <h3 id="topicNameTitle" class="text-lg font-semibold mb-4">Upload Resources</h3>
+                <form action="/course-design/upload-resource" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="topicId" name="topicId">
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Select File</label>
+                        <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                            <input type="file" name="file" 
+                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                   required>
+                            <div class="pointer-events-none">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-600">Drag files here or click to upload</p>
+                            </div>
+                        </div>
+                        <button type="submit" 
+                                class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Upload File
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

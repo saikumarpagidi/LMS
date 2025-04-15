@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::#script})}">
+<head>
+    <title>Faculty Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .shadow-custom { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
+        .hover-transition { transition: all 0.2s ease-in-out; }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* Professional button styles (matching student dashboard) */
+        .syllabus-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+            border: none;
+            outline: none;
+        }
+        .syllabus-btn:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+        .syllabus-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="content" class="min-h-screen">
+        <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
+           
+            <!-- Dashboard Header -->
+            <header class="mb-8 fade-in">
+                <div class="bg-white text-black shadow-2xl rounded-xl p-8 text-center">
+                    <h1 class="text-4xl font-bold mb-2">
+                        Welcome Back, <span th:text="${#authentication.principal.name}">Faculty Name</span>!
+                    </h1>
+                    <p class="text-lg text-gray-700">
+                        Your teaching dashboard. Manage your assigned courses and resources below.
+                    </p>
+                </div>
+            </header>
+            
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg shadow-custom">
+                <p th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg shadow-custom">
+                <p th:text="${error}"></p>
+            </div>
+            
+            <!-- Assigned Courses Section -->
+            <div class="bg-white shadow-custom rounded-xl overflow-hidden border border-gray-100">
+                <div class="px-6 py-5 bg-gray-50 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900">Your Assigned Courses</h3>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Courses that have been assigned to you by your resource center
+                    </p>
+                </div>
+                
+                <!-- Course Cards Grid -->
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Course Card -->
+                        <div th:each="assignment : ${assignments}" class="bg-white rounded-xl shadow-md card-hover overflow-hidden fade-in">
+                            <!-- Card Header: Course Name -->
+                            <div class="px-6 py-5 bg-blue-600">
+                                <h3 class="text-2xl font-bold text-white" th:text="${assignment.course.courseName}">Course Name</h3>
+                            </div>
+                            <!-- Card Body: Schedule Details & Resources -->
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                                        <span>Duration: </span>
+                                        <span th:text="${assignment.course.duration + ' days'}">0 days</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-play-circle mr-2 text-blue-500"></i>
+                                        <span>Start Date: </span>
+                                        <span th:text="${scheduleMap.containsKey(assignment.course.id) ? scheduleMap.get(assignment.course.id).startDate : 'N/A'}">N/A</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-flag-checkered mr-2 text-blue-500"></i>
+                                        <span>End Date: </span>
+                                        <span th:text="${scheduleMap.containsKey(assignment.course.id) ? scheduleMap.get(assignment.course.id).endDate : 'N/A'}">N/A</span>
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-book mr-2 text-blue-500"></i>
+                                        <span>Resources: </span>
+                                        <span th:text="${assignment.course.resources != null ? assignment.course.resources.size() : 0} + ' available'">0 available</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Syllabus Button -->
+                                <div class="mt-6">
+                                    <a th:href="@{'/faculty/course-syllabus/' + ${assignment.course.id}}" 
+                                       class="syllabus-btn">
+                                        View Syllabus
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div th:if="${#lists.isEmpty(assignments)}" class="col-span-full text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No courses assigned</h3>
+                            <p class="mt-1 text-sm text-gray-500">You don't have any courses assigned to you yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add script tag with id="script" to fix the fragment error -->
+    <script id="script">
+        // Any JavaScript for the faculty dashboard can go here
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Faculty dashboard loaded');
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Institution</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Add New Resource Center</h1>
+        
+        <form action="/pmu/add" method="POST" class="space-y-4">
+            <!-- College Name Dropdown (Commented) -->
+            <!-- <div class="mb-4">
+                <label for="collegeName" class="block text-gray-700 font-semibold">College Name</label>
+                <select id="collegeName" name="collegeName" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
+                    <option value="">Select College/Institution</option>
+                    <option value="PMCH Patna">PMCH Patna</option>
+                    <option value="Assam Medical College">Assam Medical College</option>
+                    <option value="Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi">Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi</option>
+                    <option value="Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi">Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi</option>
+                    <option value="North Delhi Municipal Corporation Medical College, Delhi">North Delhi Municipal Corporation Medical College, Delhi</option>
+                    <option value="Indira Gandhi Institute of Medical Sciences, Patna">Indira Gandhi Institute of Medical Sciences, Patna</option>
+                    <option value="AIIMS Noida">AIIMS Noida</option>
+                    <option value="Shivaji Medical College, Delhi">Shivaji Medical College, Delhi</option>
+                    <option value="Lady Hardinge Medical College, Delhi">Lady Hardinge Medical College, Delhi</option>
+                    <option value="Nalanda Medical College, Patna">Nalanda Medical College, Patna</option>
+                </select>
+            </div> -->
+            
+            <div>
+                <label for="resourceCenter" class="block text-gray-700 font-semibold">Resource Center</label>
+                <select id="resourceCenter" name="resourceCenter" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
+                    <option value="">Select Resource Center</option>
+                    <option value="AIIMS New Delhi">AIIMS New Delhi</option>
+                    <option value="AIIMS Guwahati">AIIMS Guwahati</option>
+                    <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
+                    <option value="AIIMS Patna">AIIMS Patna</option>
+                    <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
+                    <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
+                    <option value="AIIMS Madurai">AIIMS Madurai</option>
+                    <option value="JIPMER Puducherry">JIPMER Puducherry</option>
+                    <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
+                    <option value="SGPGI Lucknow">SGPGI Lucknow</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="location" class="block text-gray-700 font-semibold">Location</label>
+                <select id="location" name="location" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
+                    <option value="PMU Noida">PMU Noida</option>
+                    <option value="PMU Mohali">PMU Mohali</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Add Institution</button>
+        </form>
+    </div>
+</body>
+</html>
+   

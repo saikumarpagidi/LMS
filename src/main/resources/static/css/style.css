@@ -1,0 +1,373 @@
+.login-with-google-btn {
+  transition: background-color .3s, box-shadow .3s;
+    
+  padding: 12px 16px 12px 42px;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 1px 1px rgba(0, 0, 0, .25);
+  
+  color: #757575;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=);
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: 12px 11px;
+  
+  &:hover {
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
+  }
+  
+  &:active {
+    background-color: #eeeeee;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 
+      0 -1px 0 rgba(0, 0, 0, .04),
+      0 2px 4px rgba(0, 0, 0, .25),
+      0 0 0 3px #c8dafc;
+  }
+  
+  &:disabled {
+    filter: grayscale(100%);
+    background-color: #ebebeb;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 1px 1px rgba(0, 0, 0, .25);
+    cursor: not-allowed;
+  }
+}
+
+
+body {
+  text-align: center;
+  padding-top: 2rem;
+}
+
+
+.black-text-block {
+    color: black; /* Set text color to black */
+    display: block; /* Ensure it appears as a block */
+}
+
+.custom-footer {
+    width: 100%;      /* Full width */
+    margin: 0 auto;   /* Center the footer */
+    padding: 2px 0;   /* Reduce vertical padding */
+    min-height: 0px;  /* Reduce height to the minimum */
+    font-size: 11px;  /* Decrease text size */
+    line-height: 1.4; /* Reduce line height */
+}
+
+
+.footer-container {
+    display: flex;
+    justify-content: space-between; /* Align items side by side */
+    align-items: center; /* Align vertically */
+    flex-wrap: wrap; /* Responsive behavior */
+    gap: 20px; /* Space between items */
+    padding: 10px 0;
+}
+
+.footer-section {
+    flex: 1; /* Equal width distribution */
+    min-width: 250px; /* Prevent content from shrinking too much */
+}
+
+.footer-logo {
+    height: 50px; /* Adjust logo size */
+    margin-bottom: 10px;
+    margin-left:200px;
+    
+}
+
+
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+
+
+
+/* Smooth transitions */
+nav * {
+  transition: all 0.2s ease;
+}
+
+
+
+/* Dropdown animations */
+.group:hover .group-hover\:block {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+/* Navbar Fixes */
+nav img { margin: 0; padding: 0; }
+nav div { margin: 0; padding: 0; }
+.footer-rights{
+	 margin-left: -100px; 
+}
+
+/* Ensure alignment of text */
+nav div.text-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 250px; /* Adjust as needed */
+}
+
+.nav-dropdown a:hover {
+  background-color: #2563eb !important; /* Blue (Tailwind blue-600) */
+  color: #ffffff !important;
+   border-radius: 0.375rem;
+}
+
+/* styles.css */
+.assign-container {
+    /* A refined, professional shadow */
+    box-shadow: 0 6px 20px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-ad {
+	box-shadow: 0 6px 20px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* External CSS for hover effect on login and signup buttons */
+.nav-link.login-button,
+.nav-link.signup-button {
+  color: #2563eb; /* Blue text color */
+  background-color: white; /* White background */
+  transition: all 0.3s ease; /* Smooth transition */
+}
+
+.nav-link.login-button:hover,
+.nav-link.signup-button:hover {
+  background-color: #16a34a; /* Green background on hover */
+  color: white; /* White text on hover */
+}
+
+ /* When hovering over the profile group, change the text and icon to yellow */
+  .profile-group:hover .profile-name,
+  .profile-group:hover .profile-icon {
+    color: rgb(255, 255, 0); 
+  
+}
+
+/* Course Details Page Css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+       body { 
+           font-family: 'Inter', sans-serif;
+           background-color: #f9fafb;
+       }
+       .page-container {
+           max-width: 1280px;
+           margin: 0 auto;
+           padding: 2rem 1rem;
+       }
+       .content-wrapper {
+           width: 100%;
+       }
+       .card-shadow { 
+           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+       }
+       .section-tab {
+           padding: 0.75rem 1.25rem;
+           border-radius: 0.75rem;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           gap: 0.5rem;
+           font-weight: 500;
+           transition: all 0.15s ease-in-out;
+       }
+       .section-tab.active {
+           background-color: white;
+           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+           color: #3b82f6;
+       }
+       .section-tab.active span:last-child {
+           background-color: #dbeafe;
+           color: #3b82f6;
+       }
+       .section-tab span:last-child {
+           background-color: #f3f4f6;
+           padding: 0.15rem 0.5rem;
+           border-radius: 0.5rem;
+           font-size: 0.8rem;
+           font-weight: 600;
+       }
+       .divider {
+           height: 1px;
+           background-color: #e5e7eb;
+           margin: 1.5rem 0;
+       }
+       .course-card {
+           background-color: white;
+           border-radius: 1rem;
+           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+           border: 1px solid #f3f4f6;
+           transition: transform 0.2s ease, box-shadow 0.2s ease;
+       }
+       .course-card:hover {
+           transform: translateY(-4px);
+           box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+       }
+       .status-badge {
+           font-size: 0.75rem;
+           font-weight: 600;
+           padding: 0.25rem 0.75rem;
+           border-radius: 9999px;
+       }
+       .status-upcoming {
+           background-color: #dbeafe;
+           color: #1e40af;
+       }
+       .status-inprogress {
+           background-color: #dcfce7;
+           color: #166534;
+       }
+       .status-completed {
+           background-color: #f3f4f6;
+           color: #4b5563;
+       }
+       /* New professional button styles */
+       .syllabus-btn {
+           display: block;
+           width: 100%;
+           text-align: center;
+           background: linear-gradient(to right, #2563eb, #3b82f6);
+           color: white;
+           padding: 0.75rem 1.5rem;
+           border-radius: 0.5rem;
+           font-weight: 600;
+           font-size: 0.875rem;
+           letter-spacing: 0.025em;
+           transition: all 0.2s ease;
+           box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+           border: none;
+           outline: none;
+       }
+       .syllabus-btn:hover {
+           background: linear-gradient(to right, #1d4ed8, #2563eb);
+           box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+           transform: translateY(-1px);
+       }
+       .syllabus-btn:active {
+           transform: translateY(0);
+           box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+       }
+       /* Fixed welcome message size */
+       .welcome-message {
+           min-height: 68px;
+           display: flex;
+           align-items: center;
+       }
+	   
+	   
+	   
+	   
+	   /*PMU Dashboard Styles */
+	   
+	   .dashboard-greeting {
+	        background: #ffffff;
+	        border-radius: 2rem;
+	        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+	        position: relative;
+	        margin: 0 auto;
+	        max-width: 1600px;
+			padding-left: 40px;
+			padding-right: 40px;
+	      }
+	      
+	      .dashboard-greeting::before {
+	        content: '';
+	        position: absolute;
+	        top: -2px;
+	        left: -2px;
+	        right: -2px;
+	        bottom: -2px;
+	        background: linear-gradient(45deg, #3b82f6, #60a5fa);
+	        z-index: -1;
+	        border-radius: 2rem;
+	      }
+
+	      .dashboard-greeting::after {
+	        content: '';
+	        position: absolute;
+	        bottom: -40px;
+	        left: 50%;
+	        transform: translateX(-50%);
+	        width: 120px;
+	        height: 4px;
+	        background: #3b82f6;
+	        border-radius: 2px;
+	        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+	      }
+		 .text-transparent{
+			color: #1d4ed8;
+		  }
+
+		  /* Faculty Dashboard Styles */
+
+      
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .shadow-custom { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
+        .hover-transition { transition: all 0.2s ease-in-out; }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* Professional button styles (matching student dashboard) */
+        .syllabus-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+            border: none;
+            outline: none;
+        }
+        .syllabus-btn:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+        .syllabus-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+        }
+    
+        

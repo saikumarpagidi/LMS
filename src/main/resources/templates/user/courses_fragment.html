@@ -1,0 +1,44 @@
+<div id="coursesContainer" class="bg-gray-800 p-4 rounded-lg shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">📚 Available Courses</h2>
+    
+    <ul>
+        <li th:each="courseSchedule : ${courses}" class="p-4 bg-gray-700 rounded-lg shadow-md mb-4">
+            <h3 class="text-xl font-bold text-yellow-400">
+                <a href="#" th:text="${courseSchedule.course.courseName}" 
+                   th:attr="onclick='loadCourseResources(' + ${courseSchedule.course.id} + ')'"
+                   class="cursor-pointer hover:underline"></a>
+            </h3>
+            
+            <p class="text-gray-300">📅 Start Date: 
+                <span th:text="${#temporals.format(courseSchedule.startDate, 'dd MMM yyyy')}"></span>
+            </p>
+
+            <p class="text-gray-300">⏳ Duration: 
+                <span th:text="${courseSchedule.course.duration} + ' days'"></span>
+            </p>
+
+            <p class="text-gray-300">🏢 Resource Center: 
+                <span th:text="${courseSchedule.resourceCenterName}"></span>
+            </p>
+        </li>
+    </ul>
+
+    <p th:if="${#lists.isEmpty(courses)}" class="text-gray-400">
+        No courses available for this resource center.
+    </p>
+</div>
+
+<!-- JavaScript for Dynamic Loading -->
+<script>
+    function loadCourseResources(courseId) {
+        fetch('/course/' + courseId + '/resources')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('resourceContainer').innerHTML = html;
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<!-- Placeholder for Course Resources -->
+<div id="resourceContainer" class="mt-6"></div>

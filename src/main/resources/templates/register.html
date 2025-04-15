@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-12">
+    <div id="content" class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-6rem)]">
+        <div class="w-full max-w-lg bg-white p-10 shadow-2xl rounded-2xl border border-gray-200">
+            <h2 class="text-3xl font-bold text-center text-gray-900">Create Your Account</h2>
+            <p class="text-center text-gray-500 mb-6">Join our community today!</p>
+            
+            <form th:action="@{/home/do-register}" method="post" th:object="${userForm}" novalidate>
+
+                <!-- Name -->
+                <div class="mb-4">
+                    <label for="name" class="block text-md font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" th:field="*{name}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                        placeholder="John Doe" required />
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500 text-sm"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="block text-md font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" th:field="*{email}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                        placeholder="example@domain.com" required />
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-sm"></div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="password" class="block text-md font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" th:field="*{password}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                        placeholder="••••••••" required />
+                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-sm"></div>
+                </div>
+
+                <!-- Phone -->
+                <div class="mb-4">
+                    <label for="phoneNumber" class="block text-md font-medium text-gray-700">Phone Number</label>
+                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+                        placeholder="123-456-7890" required />
+                    <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-red-500 text-sm"></div>
+                </div>
+
+                <!-- College -->
+                <div class="mb-4">
+                    <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
+                    <select id="college" th:field="*{college}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="">Select College</option>
+                        <option value="PMCH Patna">PMCH Patna</option>
+                        <option value="Assam Medical College">Assam Medical College</option>
+                        <option value="Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi">Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi</option>
+                        <option value="Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi">Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi</option>
+                        <option value="North Delhi Municipal Corporation Medical College, Delhi">North Delhi Municipal Corporation Medical College, Delhi</option>
+                        <option value="Indira Gandhi Institute of Medical Sciences, Patna">Indira Gandhi Institute of Medical Sciences, Patna</option>
+                    </select>
+                </div>
+
+                <!-- Resource Center -->
+                <div class="mb-4">
+                    <label for="resourceCenter" class="block text-md font-medium text-gray-700">Resource Center</label>
+                    <select id="resourceCenter" th:field="*{resourceCenter}" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="">Select Resource Center</option>
+                        <option value="AIIMS New Delhi">AIIMS New Delhi</option>
+                        <option value="AIIMS Guwahati">AIIMS Guwahati</option>
+                        <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
+                        <option value="AIIMS Patna">AIIMS Patna</option>
+                        <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
+                        <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
+                        <option value="AIIMS Madurai">AIIMS Madurai</option>
+                        <option value="JIPMER Puducherry">JIPMER Puducherry</option>
+                        <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
+                        <option value="SGPGI Lucknow">SGPGI Lucknow</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-6 flex flex-col space-y-3">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+                        Sign Up
+                    </button>
+                    <button type="reset" class="w-full bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition">
+                        Reset
+                    </button>
+                </div>
+
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? <a href="#" class="text-blue-600 font-semibold hover:underline">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

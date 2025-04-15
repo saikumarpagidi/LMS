@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Login Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-12">
+
+    <div id="content" class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-6rem)]">
+        <div class="w-full max-w-md bg-white p-10 shadow-2xl rounded-xl border border-gray-200">
+            <h2 class="text-3xl font-bold text-center text-gray-900">Login to Your Account</h2>
+            <p class="text-center text-gray-500 mb-6">Welcome back! Please enter your credentials.</p>
+            
+            <div data-th-replace="message::messagebox"></div>
+            
+            <!-- Error Messages -->
+            <div class="text-red-600 text-center my-3" th:if="${param.error}">
+                Invalid username and password.
+            </div>
+            <div class="text-green-600 text-center my-3" th:if="${param.logout}">
+                You have been logged out.
+            </div>
+
+            <!-- Login Form -->
+            <form method="post" data-th-action="@{'/home/authenticate'}">
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="block text-md font-medium text-gray-700">Email</label>
+                    <input name="email" type="email" id="email" 
+                           class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                           placeholder="Enter your email" required />
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="password" class="block text-md font-medium text-gray-700">Password</label>
+                    <input name="password" type="password" id="password" 
+                           class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                           placeholder="••••••••" required />
+                </div>
+                
+                <!-- Forgot Password Link -->
+                <div class="mb-3 text-center">
+                    <a href="/auth/forgot-password" class="text-blue-600 hover:underline">Forgot Password?</a>
+                </div>
+
+                <!-- Buttons -->
+                <div class="mt-6 flex flex-col space-y-3">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+                        Login
+                    </button>
+                    <button type="reset" class="w-full bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition">
+                        Reset
+                    </button>
+                </div>
+            </form>
+
+            <!-- Professional Google Sign-In Button with Hover Effect -->
+            <div class="mt-6 text-center">
+                <a class="flex items-center justify-center w-full py-3 bg-white border border-gray-300 rounded-lg shadow-md 
+                          transition duration-300 ease-in-out hover:bg-gray-100 hover:shadow-lg"
+                   data-th-href="@{'/oauth2/authorization/google'}">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" 
+                         alt="Google Logo" class="w-6 h-6 mr-2 transition duration-300 ease-in-out transform hover:scale-110">
+                    <span class="text-gray-700 font-medium">Sign in with Google</span>
+                </a>
+            </div>
+            
+            <!-- Redirect to Register -->
+            <p class="text-center text-sm text-gray-600 mt-4">
+                Don't have an account? <a href="/home/register" class="text-blue-600 font-semibold hover:underline">Sign Up here</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        console.log("Login page loaded");
+    </script>
+</body>
+</html>

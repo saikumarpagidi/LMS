@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Assign Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto py-8">
+        <div class="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Assign Quiz</h1>
+                <div class="flex space-x-4">
+                    <a th:href="@{/center/quiz/assigned}" class="text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-list mr-1"></i> View Assigned Quizzes
+                    </a>
+                    <a th:href="@{/center/dashboard}" class="text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Resource Center Info -->
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <div class="flex items-center">
+                    <i class="fas fa-building text-blue-500 mr-2"></i>
+                    <span class="font-medium">Resource Center:</span>
+                    <span class="ml-2 text-blue-700" th:text="${resourceCenter}">Resource Center Name</span>
+                </div>
+            </div>
+            
+            <!-- Success/Error Messages -->
+            <div th:if="${message}" class="p-4 mb-4 rounded-lg bg-green-100 text-green-700 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${message}">Success message</span>
+            </div>
+            <div th:if="${error}" class="p-4 mb-4 rounded-lg bg-red-100 text-red-700 flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${error}">Error message</span>
+            </div>
+            
+            <form th:action="@{/center/quiz/assign}" method="post" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Course Selection -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Select Course:</label>
+                        <select name="courseId" id="courseDropdown" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">-- Select Course --</option>
+                            <option th:each="course : ${courses}" 
+                                    th:value="${course.id}" 
+                                    th:text="${course.courseName}">
+                            </option>
+                        </select>
+                        <p class="text-sm text-gray-500 mt-1">Only courses available for your resource center are shown</p>
+                    </div>
+                    
+                    <!-- Quiz Selection -->
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Select Quiz:</label>
+                        <select name="quizId" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">-- Select Quiz --</option>
+                            <option th:each="quiz : ${quizzes}" 
+                                    th:value="${quiz.id}" 
+                                    th:text="${quiz.title}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Module Selection (will be populated via AJAX) -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Select Module (Optional):</label>
+                    <select name="moduleId" id="moduleDropdown" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Select Module (Optional) --</option>
+                        <!-- Options will be dynamically loaded based on the selected course -->
+                    </select>
+                </div>
+                
+                <!-- Topic Selection (will be populated via AJAX) -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Select Topic (Optional):</label>
+                    <select name="topicId" id="topicDropdown" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">-- Select Topic (Optional) --</option>
+                        <!-- Options will be dynamically loaded based on the selected module -->
+                    </select>
+                    <p class="text-sm text-gray-500 mt-1">Select a module first to see available topics</p>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <i class="fas fa-check mr-2"></i> Assign Quiz
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- JavaScript to load modules when a course is selected and topics when a module is selected -->
+    <script>
+        document.getElementById("courseDropdown").addEventListener("change", function(){
+            var courseId = this.value;
+            var moduleDropdown = document.getElementById("moduleDropdown");
+            var topicDropdown = document.getElementById("topicDropdown");
+            
+            // Clear current options
+            moduleDropdown.innerHTML = '<option value="">-- Select Module (Optional) --</option>';
+            topicDropdown.innerHTML = '<option value="">-- Select Topic (Optional) --</option>';
+            
+            if(courseId) {
+                fetch('/center/quiz/modules?courseId=' + courseId)
+                 .then(response => response.json())
+                 .then(data => {
+                     data.forEach(function(module) {
+                         var option = document.createElement("option");
+                         option.value = module.id;
+                         option.text = module.moduleName;
+                         moduleDropdown.appendChild(option);
+                     });
+                 })
+                 .catch(err => console.error(err));
+            }
+        });
+        
+        document.getElementById("moduleDropdown").addEventListener("change", function(){
+            var moduleId = this.value;
+            var topicDropdown = document.getElementById("topicDropdown");
+            
+            // Clear current options
+            topicDropdown.innerHTML = '<option value="">-- Select Topic (Optional) --</option>';
+            
+            if(moduleId) {
+                fetch('/center/quiz/topics?moduleId=' + moduleId)
+                 .then(response => response.json())
+                 .then(data => {
+                     data.forEach(function(topic) {
+                         var option = document.createElement("option");
+                         option.value = topic.id;
+                         option.text = topic.topicName;
+                         topicDropdown.appendChild(option);
+                     });
+                 })
+                 .catch(err => console.error(err));
+            }
+        });
+    </script>
+</body>
+</html>
