@@ -2,6 +2,7 @@ package com.lms.cdac.services.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -64,5 +65,24 @@ public class CourseAssignmentServiceImpl implements CourseAssignmentService {
     @Override
     public List<CourseAssignment> getAssignmentsForFaculty(User faculty) {
         return repository.findByFaculty(faculty);
+    }
+
+    @Override
+    public List<Course> getCoursesByFaculty(User faculty) {
+        List<CourseAssignment> assignments = repository.findByFaculty(faculty);
+        return assignments.stream()
+                .map(CourseAssignment::getCourse)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getStudentsByCourse(Course course) {
+        List<CourseAssignment> assignments = repository.findByCourse(course);
+        return assignments.stream()
+                .map(CourseAssignment::getStudent)
+                .filter(Objects::nonNull) // Filter out null students (faculty assignments)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

@@ -48,6 +48,8 @@ public class SecurityConfig {
 				// Attendance endpoints
 				.requestMatchers("/attendance/upload", "/attendance/faculty/view").hasRole("FACULTY")
 				.requestMatchers("/attendance/student/course/**").hasRole("STUDENT")
+				// Class Attendance endpoints
+				.requestMatchers("/class-attendance/**").hasRole("FACULTY")
 				// Other endpoints
 				.requestMatchers("/user/**").authenticated()
 				.requestMatchers("/admin/**", "/assign", "/course/create/**").hasRole("ADMIN")

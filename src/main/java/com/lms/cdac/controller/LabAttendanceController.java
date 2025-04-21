@@ -2,9 +2,11 @@ package com.lms.cdac.controller;
 
 import com.lms.cdac.entities.Course;
 import com.lms.cdac.entities.LabAttendance;
+import com.lms.cdac.entities.ClassAttendance;
 import com.lms.cdac.entities.User;
 import com.lms.cdac.services.CourseService;
 import com.lms.cdac.services.LabAttendanceService;
+import com.lms.cdac.services.ClassAttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,9 @@ public class LabAttendanceController {
 
     @Autowired
     private LabAttendanceService labAttendanceService;
+    
+    @Autowired
+    private ClassAttendanceService classAttendanceService;
     
     @Autowired
     private CourseService courseService;
@@ -96,13 +101,18 @@ public class LabAttendanceController {
             return "redirect:/access-denied";
         }
         
-        List<LabAttendance> attendances = labAttendanceService.getAttendanceByCourseIdAndStudentId(courseId, student.getUserId());
-        model.addAttribute("attendances", attendances);
+        // Get lab attendance records
+        List<LabAttendance> labAttendances = labAttendanceService.getAttendanceByCourseIdAndStudentId(courseId, student.getUserId());
+        model.addAttribute("labAttendances", labAttendances);
+        
+        // Get class attendance records
+        List<ClassAttendance> classAttendances = classAttendanceService.getAttendanceByCourseIdAndStudentId(courseId, student.getUserId());
+        model.addAttribute("classAttendances", classAttendances);
         
         // Get course and add it to the model
         Course course = courseService.getCourseById(courseId);
         model.addAttribute("course", course);
         
-        return "student/view-attendance";
+        return "Student/view-attendance";
     }
 } 

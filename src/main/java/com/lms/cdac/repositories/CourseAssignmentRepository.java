@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.lms.cdac.entities.CourseAssignment;
 import com.lms.cdac.entities.Quiz;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.entities.Course;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +18,9 @@ public interface CourseAssignmentRepository extends JpaRepository<CourseAssignme
 	
 	// Faculty assignment methods
 	List<CourseAssignment> findByFaculty(User faculty);
+	
+	// Course assignment methods
+	List<CourseAssignment> findByCourse(Course course);
 
 	 @Modifying
 	    @Transactional

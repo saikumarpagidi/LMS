@@ -16,4 +16,8 @@ public interface CourseAssignmentService {
     // Faculty assignment methods
     CourseAssignment assignCourseToFaculty(User faculty, Course course);
     List<CourseAssignment> getAssignmentsForFaculty(User faculty);
+    
+    // New methods for ClassAttendanceController
+    List<Course> getCoursesByFaculty(User faculty);
+    List<User> getStudentsByCourse(Course course);
 }
