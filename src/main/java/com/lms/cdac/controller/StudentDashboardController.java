@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lms.cdac.entities.Course;
 import com.lms.cdac.entities.CourseAssignment;
 import com.lms.cdac.entities.CourseModule;
+import com.lms.cdac.entities.CourseProgress;
 import com.lms.cdac.entities.CourseResource;
 import com.lms.cdac.entities.CourseSchedule;
 import com.lms.cdac.entities.CourseTopic;
@@ -21,6 +29,7 @@ import com.lms.cdac.entities.QuizAssignment;
 import com.lms.cdac.entities.User;
 import com.lms.cdac.services.CourseAssignmentService;
 import com.lms.cdac.services.CourseModuleService;
+import com.lms.cdac.services.CourseProgressService;
 import com.lms.cdac.services.CourseResourceService;
 import com.lms.cdac.services.CourseScheduleService;
 import com.lms.cdac.services.CourseService;
@@ -37,11 +46,12 @@ public class StudentDashboardController {
 	private final CourseModuleService courseModuleService;
 	private final CourseTopicService courseTopicService;
 	private final QuizAssignmentService quizAssignmentService;
+	private final CourseProgressService courseProgressService;
 
 	public StudentDashboardController(CourseAssignmentService courseAssignmentService,
 			CourseResourceService courseResourceService, CourseScheduleService courseScheduleService,
 			CourseService courseService, CourseModuleService courseModuleService, CourseTopicService courseTopicService,
-			QuizAssignmentService quizAssignmentService) {
+			QuizAssignmentService quizAssignmentService, CourseProgressService courseProgressService) {
 		this.courseAssignmentService = courseAssignmentService;
 		this.courseResourceService = courseResourceService;
 		this.courseScheduleService = courseScheduleService;
@@ -49,6 +59,7 @@ public class StudentDashboardController {
 		this.courseModuleService = courseModuleService;
 		this.courseTopicService = courseTopicService;
 		this.quizAssignmentService = quizAssignmentService;
+		this.courseProgressService = courseProgressService;
 	}
 
 	@GetMapping("/student/dashboard")
@@ -63,20 +74,71 @@ public class StudentDashboardController {
 
 		// Load resources and schedules for each assigned course
 		Map<Integer, CourseSchedule> scheduleMap = new HashMap<>();
+		Map<Integer, Double> progressMap = new HashMap<>();
+
 		assignments.forEach(assignment -> {
 			Integer courseId = assignment.getCourse().getId();
 			List<CourseResource> resources = courseResourceService.getResourcesByCourse(courseId);
 			assignment.getCourse().setResources(resources);
 
+			// For each resource, fetch its progress from the database
+			resources.forEach(resource -> {
+				Optional<CourseProgress> progressOpt = courseProgressService.getProgress(student.getUserId(), courseId, resource.getId());
+				resource.setProgress(progressOpt.map(CourseProgress::getProgressPercentage).orElse(0.0));
+			});
+
 			List<CourseSchedule> schedules = courseScheduleService.getScheduleByCourseId(courseId);
 			if (!schedules.isEmpty()) {
-				scheduleMap.put(courseId, schedules.get(0)); // Assuming the first schedule is the primary one
+				scheduleMap.put(courseId, schedules.get(0));
 			}
+
+			// Calculate overall progress for each course
+			double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
+			progressMap.put(courseId, overallProgress);
 		});
 
 		model.addAttribute("assignments", assignments);
 		model.addAttribute("scheduleMap", scheduleMap);
+		model.addAttribute("progressMap", progressMap);
 		return "student-dashboard";
+	}
+
+	@PostMapping("/student/update-progress")
+	@ResponseBody
+	public ResponseEntity<String> updateCourseProgress(@RequestBody Map<String, Object> payload, Authentication authentication) {
+		try {
+			User student = (User) authentication.getPrincipal();
+			Integer courseId = Integer.parseInt(payload.get("courseId").toString());
+			Integer resourceId = Integer.parseInt(payload.get("resourceId").toString());
+			Double progressPercentage = Double.parseDouble(payload.getOrDefault("progressPercentage", 0.0).toString());
+			Double lastWatchedPosition = Double.parseDouble(payload.getOrDefault("lastWatchedPosition", 0.0).toString());
+
+			if (courseId == null || resourceId == null) {
+				return ResponseEntity.badRequest().body("Error: Course ID और Resource ID ज़रूरी हैं!");
+			}
+
+			CourseProgress courseProgress = courseProgressService.getProgress(student.getUserId(), courseId, resourceId)
+					.orElse(new CourseProgress(student.getUserId(), courseId, resourceId));
+
+			courseProgress.setProgressPercentage(progressPercentage);
+			courseProgress.setLastWatchedPosition(lastWatchedPosition);
+			courseProgressService.saveProgress(courseProgress);
+
+			return ResponseEntity.ok("Progress updated successfully!");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/student/get-progress")
+	@ResponseBody
+	public CourseProgress getProgress(@RequestParam("courseId") Integer courseId,
+			@RequestParam("resourceId") Integer resourceId,
+			Authentication authentication) {
+		User student = (User) authentication.getPrincipal();
+		return courseProgressService.getProgress(student.getUserId(), courseId, resourceId)
+				.orElseGet(() -> new CourseProgress(student.getUserId(), courseId, resourceId, 0.0, 0.0));
 	}
 
 	@GetMapping("/student/course-syllabus/{courseId}")
@@ -120,6 +182,14 @@ public class StudentDashboardController {
 						// Get topic-level quiz assignment
 						QuizAssignment topicQuizAssignment = quizAssignmentService.getAssignmentByTopic(topic);
 						topic.setQuizAssignment(topicQuizAssignment);
+
+						// Load progress for each resource in the topic
+						if (topic.getResources() != null) {
+							topic.getResources().forEach(resource -> {
+								courseProgressService.getProgress(student.getUserId(), course.getId(), resource.getId())
+										.ifPresent(progress -> resource.setProgress(progress.getProgressPercentage()));
+							});
+						}
 					}
 				}
 			}
@@ -128,9 +198,19 @@ public class StudentDashboardController {
 			course.setModules(new ArrayList<>());
 		}
 		
+		// Calculate and add overall course progress
+		double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
+		model.addAttribute("overallProgress", overallProgress);
 		model.addAttribute("course", course);
 		model.addAttribute("courseQuizAssignment", courseQuizAssignment);
 		model.addAttribute("courseQuizAssignments", courseQuizAssignments);
 		return "resource-center/course-syllabus";
+	}
+
+	@GetMapping("/admin/course-progress")
+	public String showAllProgress(Model model) {
+		List<CourseProgress> allProgress = courseProgressService.getAllCourseProgress();
+		model.addAttribute("progressList", allProgress);
+		return "course_progress_dashboard";
 	}
 }

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,10 @@ public class CourseResourceServiceImpl implements CourseResourceService {
                 .orElseThrow(() -> new RuntimeException("Resource not found"));
         
         return resource.getFileUrl();  // Assuming `filePath` column stores the file path
+    }
+    @Override
+    public Optional<CourseResource> getResourceById(Integer resourceId) {
+        return courseResourceRepository.findById(resourceId);
     }
 
 }

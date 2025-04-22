@@ -7,8 +7,35 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
     <script src="//unpkg.com/alpinejs" defer></script>
-    <!-- Font Awesome for the quiz icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-ku29ujdM9e2k0/ru6Wb4c0uwdbd1aV6HzDjq1avFJZzbUu8kDb1nD9q3b5wY8N2g9kG4T4eVFk6J8WskVvz0+g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js';
+    </script>
+    <!-- TensorFlow.js & BlazeFace -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/@tensorflow-models/blazeface/0.0.7/blazeface.min.js"></script>
+    <style>
+        .progress-bar {
+            height: 1.5rem;
+            line-height: 1.5rem;
+            text-align: center;
+            color: white;
+            border-radius: 0.25rem;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div id="content" class="min-h-screen">
@@ -50,10 +77,10 @@
                                class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-xs">
                                 ← Back to Courses
                             </a>
-							<a sec:authorize="hasAnyRole('STUDENT')" th:href="@{/student/dashboard}" 
-							   class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-xs">
-							   ← Back to Courses
-							</a>
+                            <a sec:authorize="hasAnyRole('STUDENT')" th:href="@{/student/dashboard}" 
+                               class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-xs">
+                               ← Back to Courses
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -153,24 +180,63 @@
 
                                     <div th:each="resource : ${topic.resources != null ? topic.resources : {}}"
                                          class="flex items-center justify-between bg-white rounded-md p-3 border border-gray-200">
-                                        <a th:href="${resource.fileUrl}" 
-                                           target="_blank"
-                                           class="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 truncate">
-                                            <svg class="w-4 h-4 text-blue-500 shrink-0" 
-                                                 fill="none" 
-                                                 stroke="currentColor" 
-                                                 viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" 
-                                                      stroke-linejoin="round" 
-                                                      stroke-width="2" 
-                                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            <span th:text="${resource.fileName}" class="truncate">filename.pdf</span>
-                                        </a>
-                                        <span th:if="${resource.fileType}" 
-                                              class="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                                            <span th:text="${resource.fileType}">PDF</span>
-                                        </span>
+                                        <!-- Video Resource with Webcam, Face Detection and Voice Alert -->
+                                        <div th:if="${#strings.endsWith(resource.fileUrl, '.mp4')}" x-data="videoModal()">
+                                            <a href="#" @click.prevent="openModal()" class="text-blue-600 hover:underline">
+                                                <i class="fas fa-play-circle mr-2"></i>Watch Video
+                                            </a>
+                                            <!-- Modal Popup for Video with Webcam and Face Detection -->
+                                            <div x-show="showModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50" @click.self="closeModal()">
+                                                <div class="bg-white rounded-lg p-6 shadow-lg relative max-w-4xl w-full">
+                                                    <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-2xl" @click="closeModal()">&times;</button>
+                                                    
+                                                    <!-- Video Section -->
+                                                    <div class="video-container">
+                                                        <video class="video-element w-full" 
+                                                               th:attr="data-course-id=${course.id}, data-resource-id=${resource.id}"
+                                                               controls 
+                                                               x-ref="videoPlayer" 
+                                                               @play="saveVideoTime()">
+                                                            <source th:src="${resource.fileUrl}" type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    </div>
+                                                    <!-- Progress Bar -->
+                                                    <div th:id="'video-progress-bar-' + ${resource.id}" class="progress-bar bg-blue-600 mt-4"></div>
+                                                    
+                                                    <!-- Webcam Monitoring Section -->
+                                                    <div class="mt-4">
+                                                        <p class="text-sm text-gray-600 mb-1 font-semibold">Webcam Monitoring</p>
+                                                        <video x-ref="webcam" autoplay muted class="rounded border border-gray-300 w-full" style="max-height: 200px;"></video>
+                                                        <p class="mt-2 text-sm font-semibold" x-text="faceStatus"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- PDF Resource -->
+                                        <div th:if="${#strings.endsWith(resource.fileUrl, '.pdf')}" x-data="{ showPdf: false, pdfOpenTime: null }">
+                                            <a href="#" @click.prevent="showPdf = true; pdfOpenTime = new Date().getTime();" class="text-blue-600 hover:underline">
+                                                <i class="fas fa-file-pdf mr-2"></i>View PDF
+                                            </a>
+                                            <div x-show="showPdf" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50" @click.self="showPdf = false">
+                                                <div class="bg-white rounded-lg p-6 max-w-4xl w-full max-h-screen overflow-auto relative">
+                                                    <div class="pdf-viewer" th:attr="data-course-id=${course.id}, data-resource-id=${resource.id}, data-file-url=${resource.fileUrl}" style="height:600px; overflow:auto;">Loading PDF...</div>
+                                                    <div id="pdf-progress-indicator" class="progress-bar bg-blue-600 mt-2"></div>
+                                                    <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-2xl" @click="showPdf = false">&times;</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Other Resource Types -->
+                                        <div th:unless="${#strings.endsWith(resource.fileUrl, '.mp4') or #strings.endsWith(resource.fileUrl, '.pdf')}">
+                                            <a th:href="${resource.fileUrl}" 
+                                               target="_blank"
+                                               class="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600">
+                                                <i class="fas fa-file mr-2"></i>
+                                                <span th:text="${resource.fileName}">Resource Name</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -180,5 +246,321 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Helper to ensure TensorFlow.js backend is ready
+        async function ensureBackendReady() {
+            await tf.ready();
+            let backend = tf.getBackend();
+            console.log("Ensuring backend ready. Current backend:", backend);
+            if (!backend) {
+                console.warn("Backend is undefined! Reinitializing...");
+                await tf.setBackend('webgl').catch(async () => await tf.setBackend('cpu'));
+                await tf.ready();
+                console.log("Reinitialized backend:", tf.getBackend());
+            }
+        }
+
+        // Function to speak an alert message using Web Speech API
+        function speakAlert(message) {
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
+        }
+
+        // AlpineJS data function for video modal with webcam, face detection, progress tracking and voice alert
+        function videoModal() {
+            return {
+                showModal: false,
+                stream: null,
+                faceModel: null,
+                faceStatus: "Initializing face detection...",
+                detectionInterval: null,
+                noFaceCount: 0,
+                warningThreshold: 3,
+                lastAlertTime: 0,
+                alertCooldown: 10000,
+                videoCompleted: false,
+                openModal() {
+                    if (this.videoCompleted) {
+                        this.showModal = true;
+                        return;
+                    }
+                    this.showModal = true;
+                    setTimeout(() => { 
+                        this.startWebcam();
+                        const vid = this.$refs.videoPlayer;
+                        if (vid) {
+                            vid.onpause = () => this.stopWebcam();
+                            vid.onended = () => this.stopWebcam();
+                            vid.onplay = () => {
+                                if (!this.videoCompleted) {
+                                    this.startWebcam();
+                                }
+                            };
+                        }
+                    }, 500);
+                },
+                closeModal() {
+                    this.showModal = false;
+                    this.stopWebcam();
+                    this.faceStatus = "";
+                },
+                startWebcam() {
+                    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                        navigator.mediaDevices.getUserMedia({ video: true })
+                            .then(stream => {
+                                this.stream = stream;
+                                if (this.$refs.webcam) {
+                                    this.$refs.webcam.srcObject = stream;
+                                    this.$refs.webcam.onloadeddata = () => this.loadFaceModel();
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Webcam error:", err);
+                                this.faceStatus = "Error accessing webcam";
+                            });
+                    } else {
+                        this.faceStatus = "Webcam not supported";
+                    }
+                },
+                stopWebcam() {
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                        this.stream = null;
+                    }
+                    if (this.detectionInterval) {
+                        clearInterval(this.detectionInterval);
+                        this.detectionInterval = null;
+                    }
+                },
+                async loadFaceModel() {
+                    try {
+                        await tf.ready();
+                        await ensureBackendReady();
+                        this.faceModel = await blazeface.load();
+                        this.detectFaceLoop();
+                    } catch (e) {
+                        console.error("Error loading face model:", e);
+                        this.faceStatus = "Face detection unavailable";
+                    }
+                },
+                async detectFaceLoop() {
+                    const webcamVideo = this.$refs.webcam;
+                    if (!webcamVideo || !this.faceModel) return;
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 300;
+                    canvas.height = 300;
+                    const ctx = canvas.getContext("2d");
+                    this.detectionInterval = setInterval(async () => {
+                        tf.tidy(() => {
+                            ctx.drawImage(webcamVideo, 0, 0, 300, 300);
+                            this.faceModel.estimateFaces(canvas, false).then(preds => {
+                                if (preds.length > 0) {
+                                    this.noFaceCount = 0;
+                                    this.faceStatus = "Face detected";
+                                } else {
+                                    this.noFaceCount++;
+                                    this.faceStatus = "No face detected";
+                                    const now = Date.now();
+                                    if (this.noFaceCount >= this.warningThreshold && now - this.lastAlertTime > this.alertCooldown) {
+                                        speakAlert("Please focus on the screen.");
+                                        this.lastAlertTime = now;
+                                    }
+                                }
+                            });
+                        });
+                    }, 1000);
+                },
+                saveVideoTime() {
+                    const video = this.$refs.videoPlayer;
+                    if (!video) return;
+                    const courseId = video.dataset.courseId;
+                    const resourceId = video.dataset.resourceId;
+                    if (video.dataset.progress && parseFloat(video.dataset.progress) >= 100) return;
+                    let pct = (video.currentTime / video.duration) * 100;
+                    if (pct >= 100) {
+                        pct = 100;
+                        video.dataset.progress = 100;
+                        this.videoCompleted = true;
+                    }
+                    const bar = document.getElementById("video-progress-bar-" + resourceId);
+                    if (bar) {
+                        bar.style.width = pct + "%";
+                        if (pct >= 100) {
+                            bar.style.backgroundColor = "green";
+                            bar.textContent = "Complete";
+                        }
+                    }
+                    fetch("/student/update-progress", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            courseId, 
+                            resourceId, 
+                            progressPercentage: pct, 
+                            lastWatchedPosition: video.currentTime
+                        })
+                    });
+                }
+            }
+        }
+
+        // Video progress tracking for all video elements
+        document.addEventListener("DOMContentLoaded", function () {
+            const videos = document.querySelectorAll(".video-element");
+            videos.forEach(video => {
+                const courseId = video.dataset.courseId;
+                const resourceId = video.dataset.resourceId;
+                let lastTime = 0;
+                const allowedForwardSkip = 2;
+                let videoCompleted = false;
+                fetch(`/student/get-progress?courseId=${courseId}&resourceId=${resourceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.lastWatchedPosition !== undefined) {
+                            video.currentTime = data.lastWatchedPosition;
+                            lastTime = data.lastWatchedPosition;
+                            if (data.progressPercentage >= 100) {
+                                videoCompleted = true;
+                                video.dataset.progress = 100;
+                                const progressBar = document.getElementById("video-progress-bar-" + resourceId);
+                                if (progressBar) {
+                                    progressBar.style.width = "100%";
+                                    progressBar.style.backgroundColor = "green";
+                                    progressBar.textContent = "Complete";
+                                }
+                            }
+                        }
+                    });
+                video.addEventListener("timeupdate", function () {
+                    if (videoCompleted) return;
+                    let progressPercentage = (video.currentTime / video.duration) * 100;
+                    lastTime = video.currentTime;
+                    const progressBar = document.getElementById("video-progress-bar-" + resourceId);
+                    if (progressBar) {
+                        progressBar.style.width = progressPercentage + "%";
+                        if (progressPercentage >= 100) {
+                            progressBar.style.backgroundColor = "green";
+                            progressBar.textContent = "Complete";
+                        } else {
+                            progressBar.style.backgroundColor = "";
+                            progressBar.textContent = "";
+                        }
+                    }
+                    fetch("/student/update-progress", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            courseId: courseId,
+                            resourceId: resourceId,
+                            progressPercentage: progressPercentage,
+                            lastWatchedPosition: video.currentTime
+                        })
+                    });
+                });
+                video.addEventListener("seeking", function () {
+                    if (video.currentTime > lastTime + allowedForwardSkip) {
+                        video.currentTime = lastTime;
+                    }
+                });
+                video.addEventListener("ended", function () {
+                    videoCompleted = true;
+                    lastTime = 0;
+                    fetch("/student/update-progress", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            courseId: courseId,
+                            resourceId: resourceId,
+                            progressPercentage: 100,
+                            lastWatchedPosition: video.duration
+                        })
+                    });
+                });
+            });
+        });
+
+        // PDF progress tracking
+        document.addEventListener("DOMContentLoaded", function () {
+            const pdfContainers = document.querySelectorAll(".pdf-viewer");
+            pdfContainers.forEach(container => {
+                const courseId = container.dataset.courseId;
+                const resourceId = container.dataset.resourceId;
+                const fileUrl = container.getAttribute("data-file-url");
+                if (!fileUrl) return;
+                fetch(`/student/get-progress?courseId=${courseId}&resourceId=${resourceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.progressPercentage >= 100) {
+                            const progressIndicator = document.getElementById("pdf-progress-indicator");
+                            if (progressIndicator) {
+                                progressIndicator.textContent = "Complete";
+                                progressIndicator.style.backgroundColor = "green";
+                            }
+                        }
+                    });
+                pdfjsLib.getDocument(fileUrl).promise.then(pdfDoc => {
+                    container.pdfDoc = pdfDoc;
+                    container.totalPages = pdfDoc.numPages;
+                    renderPdfPage(container, 1);
+                }).catch(err => {
+                    container.innerHTML = "Error loading PDF.";
+                    console.error(err);
+                });
+                container.addEventListener('scroll', function() {
+                    const scrollTop = container.scrollTop;
+                    const scrollHeight = container.scrollHeight - container.clientHeight;
+                    let progressPercentage = (scrollTop / scrollHeight) * 100;
+                    if (!isFinite(progressPercentage)) progressPercentage = 0;
+                    const progressIndicator = document.getElementById("pdf-progress-indicator");
+                    if (progressIndicator) {
+                        progressIndicator.textContent = Math.floor(progressPercentage) + "%";
+                        if (progressPercentage >= 100) {
+                            progressIndicator.style.backgroundColor = "green";
+                            progressIndicator.textContent = "Complete";
+                        } else {
+                            progressIndicator.style.backgroundColor = "";
+                        }
+                    }
+                    const modal = container.closest('[x-data]');
+                    let pdfOpenTime = modal ? modal.__x.$data.pdfOpenTime : null;
+                    const currentTime = new Date().getTime();
+                    const minReadingTime = 5000;
+                    if (progressPercentage >= 100) return;
+                    if (progressPercentage < 100 || (pdfOpenTime && (currentTime - pdfOpenTime) >= minReadingTime)) {
+                        fetch("/student/update-progress", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                courseId: courseId,
+                                resourceId: resourceId,
+                                progressPercentage: progressPercentage,
+                                lastWatchedPosition: scrollTop
+                            })
+                        });
+                    }
+                });
+            });
+        });
+
+        function renderPdfPage(container, pageNum) {
+            container.pdfDoc.getPage(pageNum).then(page => {
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale: scale });
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
+                    container.innerHTML = "";
+                    container.appendChild(canvas);
+                });
+            }).catch(err => {
+                container.innerHTML = "Error rendering PDF page.";
+                console.error(err); 
+            });
+        }
+    </script>
 </body>
 </html>

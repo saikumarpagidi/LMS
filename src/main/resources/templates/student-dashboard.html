@@ -28,7 +28,19 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
-        /* New professional button styles (matching course details) */
+        /* Progress bar styles */
+        .progress-bar {
+            height: 8px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #34d399, #10b981);
+            transition: width 0.5s ease-in-out;
+        }
+        /* Syllabus button styles */
         .syllabus-btn {
             display: block;
             width: 100%;
@@ -111,13 +123,35 @@
               </div>
             </div>
             
-            <!-- NEW: Syllabus Button -->
+            <!-- Progress Section -->
+            <div class="mt-4">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-semibold text-gray-700">Course Progress</span>
+                <span class="text-sm font-semibold text-blue-600" 
+                      th:text="${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
+                  0%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-in-out"
+                     th:style="'width:' + ${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
+                </div>
+              </div>
+              <!-- Completion Status -->
+              <div th:if="${progressMap[assignment.course.id] != null && progressMap[assignment.course.id] == 100}" 
+                   class="mt-2 text-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <i class="fas fa-check-circle mr-1"></i> Course Completed
+                </span>
+              </div>
+            </div>
+            
+            <!-- Syllabus Button -->
             <div class="mt-6">
-				<a th:href="@{/student/course-syllabus/{courseId}(courseId=${assignment.course.id})}"
-				   class="syllabus-btn">
-				    View Syllabus
-				</a>
-
+              <a th:href="@{/student/course-syllabus/{courseId}(courseId=${assignment.course.id})}"
+                 class="syllabus-btn">
+                View Syllabus
+              </a>
             </div>
           </div>
         </div>
