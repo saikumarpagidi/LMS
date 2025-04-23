@@ -25,4 +25,7 @@ public class AssignRole {
     @ManyToOne
     @JoinColumn(name = "role_user_id", referencedColumnName = "id", nullable = false)
     private RoleUser roleUser;
+
+    @Column(name = "resource_center")
+    private String resourceCenter;
 }

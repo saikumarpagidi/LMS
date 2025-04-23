@@ -76,7 +76,7 @@ public class AssignRoleServiceImpl implements AssignRoleService {
     }
 
     @Override
-    public void assignRoleToUser(String userId, Long roleId) {
+    public void assignRoleToUser(String userId, Long roleId, String resourceCenter) {
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<RoleUser> roleUserOptional = roleUserRepository.findById(roleId);
 
@@ -88,6 +88,7 @@ public class AssignRoleServiceImpl implements AssignRoleService {
                 AssignRole assignRole = new AssignRole();
                 assignRole.setUser(user);
                 assignRole.setRoleUser(roleUser);
+                assignRole.setResourceCenter(resourceCenter);
                 assignRoleRepository.save(assignRole);
             }
         } else {

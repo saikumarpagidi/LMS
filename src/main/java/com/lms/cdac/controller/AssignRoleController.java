@@ -1,5 +1,6 @@
 package com.lms.cdac.controller;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,47 +53,58 @@ public class AssignRoleController {
 
     // Handle the role assignment POST request
     @PostMapping("/role")
-    public String saveAssignRole(@RequestParam("userId") String userId, 
-                                 @RequestParam("roleId") Long roleId, 
-                                 RedirectAttributes redirectAttributes, Authentication authentication) {
+    public String saveAssignRole(@RequestParam("selectedUserIds") String selectedUserIds,
+                                @RequestParam("roleId") Long roleId,
+                                @RequestParam("resourceCenter") String resourceCenter,
+                                RedirectAttributes redirectAttributes, 
+                                Authentication authentication) {
         try {
-            Optional<User> userOpt = userService.findById(userId);
-            if (userOpt.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "❌ User not found.");
+            if (selectedUserIds == null || selectedUserIds.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "❌ Please select at least one user.");
                 return "redirect:/assign/assignrole";
             }
-            User user = userOpt.get();
 
+            String[] userIds = selectedUserIds.split(",");
             Optional<RoleUser> roleOpt = roleUserService.findById(roleId);
+            
             if (!roleOpt.isPresent()) {
                 redirectAttributes.addFlashAttribute("error", "❌ Role not found.");
                 return "redirect:/assign/assignrole";
             }
 
             RoleUser roleUser = roleOpt.get();
-
-            // Get the logged-in user and check if they are allowed to assign this role
-            User loggedInUser = (User) authentication.getPrincipal(); // Get logged-in user
+            User loggedInUser = (User) authentication.getPrincipal();
 
             if ("ADMIN".equals(roleUser.getRoleName()) && !isUserAdmin(loggedInUser)) {
                 redirectAttributes.addFlashAttribute("error", "⚠️ You do not have permission to assign admin role.");
                 return "redirect:/assign/assignrole";
             }
 
-            if (assignRoleService.existsByUserAndRoleUser(user, roleUser)) {
-                redirectAttributes.addFlashAttribute("error", "⚠️ This role is already assigned to the user.");
-                return "redirect:/assign/assignrole";
+            int successCount = 0;
+            int errorCount = 0;
+
+            for (String userId : userIds) {
+                Optional<User> userOpt = userService.findById(userId);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    if (!assignRoleService.existsByUserAndRoleUser(user, roleUser)) {
+                        assignRoleService.assignRoleToUser(userId, roleId, resourceCenter);
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                }
             }
 
-            // Creating the AssignRole and setting the user and roleUser
-            AssignRole assignRole = new AssignRole();
-            assignRole.setUser(user);         // Set user
-            assignRole.setRoleUser(roleUser); // Set roleUser (Role)
+            if (successCount > 0) {
+                redirectAttributes.addFlashAttribute("message", 
+                    "✅ Successfully assigned role to " + successCount + " user(s)." + 
+                    (errorCount > 0 ? " " + errorCount + " user(s) already had this role." : ""));
+            } else if (errorCount > 0) {
+                redirectAttributes.addFlashAttribute("error", 
+                    "⚠️ All selected users already have this role assigned.");
+            }
 
-            // Save the assignRole object
-            assignRoleService.saveAssignRole(assignRole);
-
-            redirectAttributes.addFlashAttribute("message", "✅ Role assigned successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "❌ Error assigning role: " + e.getMessage());
         }

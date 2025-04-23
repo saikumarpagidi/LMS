@@ -18,5 +18,5 @@ public interface AssignRoleService {
     
     boolean existsByUserAndRoleUser(User user, RoleUser roleUser);
 
-    void assignRoleToUser(String userId, Long roleId);
+    void assignRoleToUser(String userId, Long roleId, String resourceCenter);
 }
