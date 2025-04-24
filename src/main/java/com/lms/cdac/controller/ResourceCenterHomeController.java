@@ -134,28 +134,7 @@ public class ResourceCenterHomeController {
             logger.info("Dashboard accessed by: {} | Resource Center: {}", admin.getEmail(), resourceCenter);
             
             model.addAttribute("resourceCenter", resourceCenter);
-            
-            // Determine the view name based on resource center
-            String viewName;
-            switch (resourceCenter.toLowerCase()) {
-                case "aiims new delhi":
-                    viewName = "aiims-new-delhi-dashboard";
-                    break;
-                case "aiims madurai":
-                    viewName = "aiims-madurai-dashboard";
-                    break;
-                case "aiims guwahati":
-                    viewName = "aiims-guwahati-dashboard";
-                    break;
-                case "aiims gorakhpur":
-                    viewName = "aiims-gorakhpur-dashboard";
-                    break;
-                default:
-                    viewName = "resource-center-dashboard";
-                    break;
-            }
-            logger.info("Returning view: {}", viewName);
-            return "resource-center/" + viewName;
+            return "resource-center/RC-dashboard";
         } catch (Exception e) {
             logger.error("Error accessing dashboard: {}", e.getMessage());
             return "redirect:/user/dashboard";

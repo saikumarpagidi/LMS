@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
 <head>
-    <title th:text="'Dashboard for ' + ${resourceCenter}">Dashboard for AIIMS Delhi</title>
+    <title th:text="'Dashboard for ' + ${resourceCenter}">Resource Center Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
@@ -23,7 +23,7 @@
             <header class="mb-8">
                 <div class="bg-white shadow-custom rounded-xl p-8">
                     <h1 class="text-3xl font-bold tracking-tight text-gray-900" th:text="'Dashboard for ' + ${resourceCenter}">
-                        Dashboard for AIIMS Delhi
+                        Resource Center Dashboard
                     </h1>
                     <p class="mt-2 text-lg text-gray-600">
                         Welcome to your resource center dashboard. Use the navigation menu above to manage courses and students.
@@ -43,6 +43,9 @@
                                         <li>To view all courses, select <strong>Courses</strong> → <strong>Course Details</strong></li>
                                         <li>To assign courses to students, select <strong>Courses</strong> → <strong>Assign Course</strong></li>
                                         <li>To view all registered students, select <strong>Users</strong> → <strong>Registered Students</strong></li>
+                                        <li>To view all registered faculty, select <strong>Users</strong> → <strong>Registered Faculty</strong></li>
+                                        <li>To assign courses to faculty, select <strong>Courses</strong> → <strong>Assign Course to Faculty</strong></li>
+                                        <li>To view assigned courses, select <strong>Courses</strong> → <strong>Assigned Courses</strong></li>
                                     </ul>
                                 </div>
                             </div>
@@ -61,4 +64,4 @@
         </div>
     </div>
 </body>
-</html>
+</html> 

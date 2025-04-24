@@ -225,10 +225,12 @@
                 });
 
                 selectedUserIds.value = userIds.join(',');
+                console.log('Selected User IDs:', selectedUserIds.value); // Debug log
             }
 
             // Form submission
             form.addEventListener('submit', function(e) {
+                console.log('Form submitted with selectedUserIds:', selectedUserIds.value); // Debug log
                 if (selectedUsersMap.size === 0) {
                     e.preventDefault();
                     alert('Please select at least one user');
