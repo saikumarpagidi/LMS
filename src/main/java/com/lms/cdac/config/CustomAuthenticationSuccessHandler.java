@@ -16,17 +16,23 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
-		if (user.hasRole("RESOURCE_CENTER")) {
+		
+		// Check roles in order of priority
+		if (user.hasRole("ADMIN")) {
+			response.sendRedirect(request.getContextPath() + "/user/dashboard");
+		}  else if (user.hasRole("RESOURCE_CENTER")) {
 			response.sendRedirect(request.getContextPath() + "/center/dashboard");
-		} else if (user.hasRole("STUDENT")) {
-			response.sendRedirect(request.getContextPath() + "/student/dashboard");
 		} else if (user.hasRole("FACULTY")) {
 			response.sendRedirect(request.getContextPath() + "/faculty/dashboard");
-		} else if (user.hasRole("PMU_NOIDA")) { // New role check "PMU_NOIDA"
-            response.sendRedirect(request.getContextPath() + "/pmu/noida/dashboard"); // Redirect to Noida dashboard
-        } else if (user.hasRole("PMU_MOHALI")) { // New role check
-            response.sendRedirect(request.getContextPath() + "/pmu/mohali/dashboard"); // Redirect to Mohali dashboard
-		} else {
+		} else if (user.hasRole("PMU_NOIDA")) {
+			response.sendRedirect(request.getContextPath() + "/pmu/noida/dashboard");
+		} else if (user.hasRole("PMU_MOHALI")) {
+			response.sendRedirect(request.getContextPath() + "/pmu/mohali/dashboard");
+		} else if (user.hasRole("STUDENT")) {
+			response.sendRedirect(request.getContextPath() + "/student/dashboard");
+		}
+		else { 
+			// Default fallback
 			response.sendRedirect(request.getContextPath() + "/user/dashboard");
 		}
 	}

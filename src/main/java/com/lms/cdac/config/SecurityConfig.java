@@ -50,6 +50,8 @@ public class SecurityConfig {
 				.requestMatchers("/center/dashboard/**").hasAnyRole("RESOURCE_CENTER","STUDENT")
 				// Student dashboard accessible only to STUDENT users
 				.requestMatchers("/student/dashboard/**").hasRole("STUDENT")
+				// Admin dashboard accessible only to ADMIN users
+				.requestMatchers("/user/dashboard/**").hasRole("ADMIN")
 				// Attendance endpoints
 				.requestMatchers("/attendance/upload", "/attendance/faculty/view").hasRole("FACULTY")
 				.requestMatchers("/attendance/student/course/**").hasRole("STUDENT")
