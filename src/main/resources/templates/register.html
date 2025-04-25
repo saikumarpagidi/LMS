@@ -49,38 +49,31 @@
                     <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-red-500 text-sm"></div>
                 </div>
 
-                <!-- College -->
-                <div class="mb-4">
-                    <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
-                    <select id="college" th:field="*{college}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="">Select College</option>
-                        <option value="PMCH Patna">PMCH Patna</option>
-                        <option value="Assam Medical College">Assam Medical College</option>
-                        <option value="Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi">Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi</option>
-                        <option value="Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi">Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi</option>
-                        <option value="North Delhi Municipal Corporation Medical College, Delhi">North Delhi Municipal Corporation Medical College, Delhi</option>
-                        <option value="Indira Gandhi Institute of Medical Sciences, Patna">Indira Gandhi Institute of Medical Sciences, Patna</option>
-                    </select>
-                </div>
-
                 <!-- Resource Center -->
                 <div class="mb-4">
                     <label for="resourceCenter" class="block text-md font-medium text-gray-700">Resource Center</label>
-                    <select id="resourceCenter" th:field="*{resourceCenter}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <select id="resourceCenter" name="resourceCenter" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        onchange="loadColleges(this.value)">
                         <option value="">Select Resource Center</option>
-                        <option value="AIIMS New Delhi">AIIMS New Delhi</option>
-                        <option value="AIIMS Guwahati">AIIMS Guwahati</option>
-                        <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
-                        <option value="AIIMS Patna">AIIMS Patna</option>
-                        <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
-                        <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
-                        <option value="AIIMS Madurai">AIIMS Madurai</option>
-                        <option value="JIPMER Puducherry">JIPMER Puducherry</option>
-                        <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
-                        <option value="SGPGI Lucknow">SGPGI Lucknow</option>
+                        <option th:each="center : ${resourceCenters}" 
+                                th:value="${center.resourceCenter}"
+                                th:text="${center.resourceCenter}">
+                        </option>
                     </select>
+                </div>
+
+                <!-- College -->
+                <div class="mb-4">
+                    <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
+                    <select id="college" name="college" 
+                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        disabled>
+                        <option value="">Select College</option>
+                    </select>
+                    <div id="noCollegesMessage" class="hidden mt-2 text-sm text-red-600">
+                        No colleges available for the selected resource center
+                    </div>
                 </div>
 
                 <!-- Buttons -->
@@ -99,5 +92,60 @@
             </form>
         </div>
     </div>
+
+    <script>
+        const collegeSelect = document.getElementById('college');
+        const noCollegesMessage = document.getElementById('noCollegesMessage');
+
+        function loadColleges(resourceCenterName) {
+            console.log('Loading colleges for resource center:', resourceCenterName);
+            
+            if (!resourceCenterName) {
+                console.log('No resource center selected');
+                collegeSelect.disabled = true;
+                collegeSelect.innerHTML = '<option value="">Select College</option>';
+                noCollegesMessage.style.display = 'none';
+                return;
+            }
+
+            collegeSelect.disabled = true;
+            collegeSelect.innerHTML = '<option value="">Loading colleges...</option>';
+            noCollegesMessage.style.display = 'none';
+
+            fetch(`/api/college/by-resource-center-name/${encodeURIComponent(resourceCenterName)}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received colleges:', data);
+                    
+                    if (Array.isArray(data) && data.length > 0) {
+                        collegeSelect.innerHTML = '<option value="">Select College</option>';
+                        data.forEach(college => {
+                            const option = document.createElement('option');
+                            option.value = college.collegeName;
+                            option.textContent = college.collegeName;
+                            collegeSelect.appendChild(option);
+                        });
+                        collegeSelect.disabled = false;
+                        noCollegesMessage.style.display = 'none';
+                    } else {
+                        collegeSelect.innerHTML = '<option value="">No colleges available</option>';
+                        collegeSelect.disabled = true;
+                        noCollegesMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading colleges:', error);
+                    collegeSelect.innerHTML = '<option value="">Error loading colleges</option>';
+                    collegeSelect.disabled = true;
+                    noCollegesMessage.style.display = 'none';
+                });
+        }
+    </script>
 </body>
 </html>

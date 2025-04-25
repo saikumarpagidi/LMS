@@ -45,4 +45,9 @@ public class InstitutionService {
     public Optional<Institution> getInstitutionById(String id) {
         return institutionRepository.findById(id);
     }
+
+    // Get a specific institution by resource center name
+    public Optional<Institution> getInstitutionByResourceCenter(String resourceCenter) {
+        return institutionRepository.findByResourceCenter(resourceCenter);
+    }
 }

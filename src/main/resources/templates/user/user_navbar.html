@@ -147,6 +147,10 @@
                 <i class="fa-solid fa-gauge-high text-sm"></i>
                 <span>Resource Upload Dashboard</span>
               </a>
+              <a sec:authorize="hasRole('ROLE_ADMIN')" href="/college/add" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
+                <i class="fa-solid fa-building-columns text-sm"></i>
+                <span>Manage Colleges</span>
+              </a>
             </div>
           </div>
         </div>

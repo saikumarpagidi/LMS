@@ -34,13 +34,18 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.authorizeHttpRequests(authorize -> authorize
-				// Public pages
+				// Public pages and API endpoints
 				.requestMatchers("/home/test", "/home/about", "/home/register", "/home/services", "/home/do-register")
-				.permitAll().requestMatchers("/home/login", "/home/authenticate").permitAll()
+				.permitAll()
+				.requestMatchers("/home/login", "/home/authenticate").permitAll()
 				.requestMatchers("/static/**", "templates/**", "/css/**", "/js/**", "/images/**").permitAll()
-				.requestMatchers("/access-denied").permitAll().requestMatchers("/login/oauth2/code/google").permitAll()
+				.requestMatchers("/access-denied").permitAll()
+				.requestMatchers("/login/oauth2/code/google").permitAll()
 				.requestMatchers("/auth/forgot-password", "/auth/reset-password").permitAll()
 				.requestMatchers("/course-resources/upload/**").permitAll()
+				// Allow access to college API endpoints
+				.requestMatchers("/api/college/**").permitAll()
+				
 				// Resource center dashboard accessible only to RESOURCE_CENTER users
 				.requestMatchers("/center/dashboard/**").hasAnyRole("RESOURCE_CENTER","STUDENT")
 				// Student dashboard accessible only to STUDENT users
@@ -53,26 +58,29 @@ public class SecurityConfig {
 				// Other endpoints
 				.requestMatchers("/user/**").authenticated()
 				.requestMatchers("/admin/**", "/assign", "/course/create/**").hasRole("ADMIN")
-				.requestMatchers("/assign/assignrole").hasRole("ADMIN").requestMatchers("/faculty/**")
-				.hasRole("FACULTY").requestMatchers("/meity/**").hasRole("MEITY")
+				.requestMatchers("/assign/assignrole").hasRole("ADMIN")
+				.requestMatchers("/faculty/**").hasRole("FACULTY")
+				.requestMatchers("/meity/**").hasRole("MEITY")
 				.requestMatchers("/pmu/**", "AIIMS New Delhi").hasAnyRole("PMU_MOHALI", "PMU_NOIDA", "ADMIN")
-				.requestMatchers("/pmu/pmu-delhi").hasRole("PMU_MOHALI").requestMatchers("/co-pmu/**").hasRole("CO_PMU")
+				.requestMatchers("/pmu/pmu-delhi").hasRole("PMU_MOHALI")
+				.requestMatchers("/co-pmu/**").hasRole("CO_PMU")
 				.requestMatchers("/rc/**", "AIIMS New Delhi").hasRole("RESOURCE_CENTER")
 				.requestMatchers("/course-schedules/create").hasRole("ADMIN")
 				.requestMatchers("/resource-center-dashboard").hasAnyRole("RESOURCE_CENTER","PMU_MOHALI","ADMIN", "PMU_NOIDA")
 				.requestMatchers("/resource-center-dashboard").hasRole("PMU_MOHALI")
 
-				// ✅ Any other request should be authenticated
+				// Any other request should be authenticated
 				.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/home/login").loginProcessingUrl("/home/authenticate")
-						.successHandler(new CustomAuthenticationSuccessHandler()) // Use custom success handler for form
-																					// login
-						.failureUrl("/home/login?error=true").usernameParameter("email").passwordParameter("password")
+				.formLogin(form -> form.loginPage("/home/login")
+						.loginProcessingUrl("/home/authenticate")
+						.successHandler(new CustomAuthenticationSuccessHandler())
+						.failureUrl("/home/login?error=true")
+						.usernameParameter("email")
+						.passwordParameter("password")
 						.failureHandler(authFailureHandler))
-				.logout(logout -> logout.logoutUrl("/do-logout").logoutSuccessUrl("/home/login?logout=true"))
+				.logout(logout -> logout.logoutUrl("/do-logout")
+						.logoutSuccessUrl("/home/login?logout=true"))
 				.oauth2Login(oauth -> oauth.loginPage("/home/login")
-						// Use default success behavior for OAuth2 login (or add your own valid handler
-						// if desired)
 						.defaultSuccessUrl("/user/dashboard"))
 				.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.accessDeniedPage("/home/access-denied"));

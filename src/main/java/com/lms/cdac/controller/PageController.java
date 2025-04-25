@@ -15,6 +15,7 @@ import com.lms.cdac.forms.UserForms;
 import com.lms.cdac.helper.Message;
 import com.lms.cdac.helper.MessageType;
 import com.lms.cdac.services.UserService;
+import com.lms.cdac.services.InstitutionService;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -25,6 +26,9 @@ public class PageController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private InstitutionService institutionService;
     
 	@GetMapping("/home")
 	public String index() {
@@ -64,6 +68,7 @@ public class PageController {
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("userForm", new UserForms());
+        model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
         return "register"; // Returns the view name for register page
     }
 
@@ -80,14 +85,14 @@ public class PageController {
             return "register"; // Return to the registration page if errors exist
         }
 
-        // Save the user to the database
+        // Save the user to the database with college and resource center names
         User user = User.builder()
                 .name(userForm.getName())
                 .email(userForm.getEmail())
                 .password(userForm.getPassword())
                 .phoneNumber(userForm.getPhoneNumber())
-                .college(userForm.getCollege())
-                .resourceCenter(userForm.getResourceCenter())
+                .college(userForm.getCollege()) // Store college name directly
+                .resourceCenter(userForm.getResourceCenter()) // Store resource center name directly
                 .enabled(true) // Enable the user by default
                 .build();
 
