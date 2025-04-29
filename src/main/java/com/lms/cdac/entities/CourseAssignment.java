@@ -25,15 +25,10 @@ public class CourseAssignment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// The student (user with STUDENT role) to whom the course is assigned
+	// The user (either student or faculty) to whom the course is assigned
 	@ManyToOne
-	@JoinColumn(name = "student_id", nullable = true)
-	private User student;
-
-	// The faculty (user with FACULTY role) to whom the course is assigned
-	@ManyToOne
-	@JoinColumn(name = "faculty_id", nullable = true)
-	private User faculty;
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	// The assigned course
 	@ManyToOne

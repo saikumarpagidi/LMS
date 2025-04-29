@@ -1,5 +1,6 @@
 package com.lms.cdac.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,8 @@ import com.lms.cdac.entities.CourseTopic;
 import com.lms.cdac.entities.Quiz;
 import com.lms.cdac.entities.QuizAssignment;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.dto.ModuleDTO;
+import com.lms.cdac.dto.TopicDTO;
 import com.lms.cdac.services.CourseModuleService;
 import com.lms.cdac.services.CourseScheduleService;
 import com.lms.cdac.services.CourseService;
@@ -116,8 +119,14 @@ public class ResourceCenterQuizController {
 	// New: Endpoint to fetch modules for a selected course (returns JSON)
 	@GetMapping("/modules")
 	@ResponseBody
-	public List<CourseModule> getModules(@RequestParam("courseId") Integer courseId) {
-		return courseModuleService.getModulesByCourseId(courseId);
+	public List<ModuleDTO> getModules(@RequestParam Integer courseId) {
+		Course course = courseService.getCourseById(courseId);
+		if (course != null) {
+			return course.getModules().stream()
+				.map(module -> new ModuleDTO(module.getId(), module.getModuleName()))
+				.collect(Collectors.toList());
+		}
+		return Collections.emptyList();
 	}
 
 	// New: Endpoint to fetch topics for a selected module (returns JSON)

@@ -113,11 +113,7 @@
                 <i class="fa-solid fa-user-plus text-sm"></i>
                 <span>Assign Course</span>
               </a>
-              <!-- Resource Center Dashboard Link for Assign Course to Faculty -->
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" href="/center/assign-faculty" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user text-sm"></i>
-                <span>Assign Course to Faculty</span>
-              </a>
+              
 			  <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" href="/center/quiz/upload" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
 			    <i class="fa-solid fa-book text-sm"></i>
 			    <span>Upload Quiz</span>

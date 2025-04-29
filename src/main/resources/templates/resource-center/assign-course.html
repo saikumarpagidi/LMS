@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
 <head>
-    <title>Assign Course to Student</title>
+    <title>Assign Course to User</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
@@ -23,10 +23,10 @@
             <header class="mb-8">
                 <div class="bg-white shadow-custom rounded-xl p-6">
                     <h1 class="text-2xl font-bold tracking-tight text-gray-900">
-                        Assign Course to Student for <span th:text="${resourceCenter}" class="text-blue-600">Resource Center</span>
+                        Assign Course to User for <span th:text="${resourceCenter}" class="text-blue-600">Resource Center</span>
                     </h1>
                     <p class="mt-2 text-gray-600">
-                        Assign available courses to registered students.
+                        Assign available courses to registered users (students and faculty).
                     </p>
                 </div>
             </header>
@@ -46,25 +46,79 @@
                 </div>
                 
                 <!-- Assignment Form -->
-                <form th:action="@{/center/dashboard/assign}" method="post" class="max-w-md mx-auto space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
-                        <select name="studentId" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover-transition">
-                            <option value="">Select a student</option>
-                            <option th:each="student : ${students}"
-                                    th:value="${student.userId}"
-                                    th:text="${student.name + ' (' + student.email + ')'}"></option>
-                        </select>
+                <form th:action="@{/center/dashboard/assign}" method="post" class="max-w-4xl mx-auto space-y-6" id="assignCourseForm">
+                    <!-- User Selection Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Left Side: User Search and Selection -->
+                        <div class="space-y-4">
+                            <label class="block text-sm font-medium text-gray-700">Search Users</label>
+                            <div class="relative">
+                                <input type="text" id="userSearch" 
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                       placeholder="Search users...">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="border border-gray-300 rounded-lg h-64 overflow-y-auto">
+                                <div id="userList" class="divide-y divide-gray-200">
+                                    <!-- Students Section -->
+                                    <div class="p-2 bg-gray-50">
+                                        <h3 class="text-sm font-medium text-gray-700">Students</h3>
+                                    </div>
+                                    <th:block th:each="student : ${students}">
+                                        <div class="p-3 hover:bg-gray-50 cursor-pointer user-item" 
+                                             th:data-user-id="${student.userId}"
+                                             th:data-user-name="${student.name}"
+                                             th:data-user-email="${student.email}">
+                                            <div class="font-medium" th:text="${student.name}"></div>
+                                            <div class="text-sm text-gray-500" th:text="${student.email}"></div>
+                                        </div>
+                                    </th:block>
+                                    
+                                    <!-- Faculty Section -->
+                                    <div class="p-2 bg-gray-50">
+                                        <h3 class="text-sm font-medium text-gray-700">Faculty</h3>
+                                    </div>
+                                    <th:block th:each="faculty : ${faculty}">
+                                        <div class="p-3 hover:bg-gray-50 cursor-pointer user-item" 
+                                             th:data-user-id="${faculty.userId}"
+                                             th:data-user-name="${faculty.name}"
+                                             th:data-user-email="${faculty.email}">
+                                            <div class="font-medium" th:text="${faculty.name}"></div>
+                                            <div class="text-sm text-gray-500" th:text="${faculty.email}"></div>
+                                        </div>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side: Selected Users -->
+                        <div class="space-y-4">
+                            <label class="block text-sm font-medium text-gray-700">Selected Users</label>
+                            <div id="selectedUsers" class="border border-gray-300 rounded-lg h-64 overflow-y-auto p-2 space-y-2">
+                                <!-- Selected users will be added here -->
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Course Selection -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
-                        <select name="courseId" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover-transition">
+                        <select name="courseId" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover-transition" required>
                             <option value="">Select a course</option>
                             <option th:each="course : ${availableCourses}"
                                     th:value="${course.id}"
                                     th:text="${course.courseName}"></option>
                         </select>
                     </div>
+
+                    <!-- Hidden input for selected users -->
+                    <input type="hidden" name="selectedUserIds" id="selectedUserIds">
+
+                    <!-- Submit Button -->
                     <div>
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow-sm hover-transition">
                             <i class="fa-solid fa-user-plus mr-2"></i>
@@ -91,8 +145,8 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm text-blue-700">
-                                Students will be able to access assigned courses through their dashboard. 
-                                Ensure both student and course are registered under the correct resource center.
+                                Users will be able to access assigned courses through their dashboard. 
+                                Ensure both user and course are registered under the correct resource center.
                             </p>
                         </div>
                     </div>
@@ -100,5 +154,105 @@
             </div>
         </div>
     </div>
+
+    <script th:fragment="script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSearch = document.getElementById('userSearch');
+            const userList = document.getElementById('userList');
+            const selectedUsers = document.getElementById('selectedUsers');
+            const selectedUserIds = document.getElementById('selectedUserIds');
+            const form = document.getElementById('assignCourseForm');
+            const selectedUsersMap = new Map();
+
+            // Search functionality
+            userSearch.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const userItems = userList.getElementsByClassName('user-item');
+                
+                Array.from(userItems).forEach(item => {
+                    const userName = item.getAttribute('data-user-name').toLowerCase();
+                    const userEmail = item.getAttribute('data-user-email').toLowerCase();
+                    
+                    if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        if (searchTerm) {
+                            const regex = new RegExp(searchTerm, 'gi');
+                            const name = item.getAttribute('data-user-name');
+                            const email = item.getAttribute('data-user-email');
+                            item.innerHTML = `
+                                <div class="font-medium">${name.replace(regex, match => `<span class="bg-yellow-200">${match}</span>`)}</div>
+                                <div class="text-sm text-gray-500">${email.replace(regex, match => `<span class="bg-yellow-200">${match}</span>`)}</div>
+                            `;
+                        } else {
+                            item.innerHTML = `
+                                <div class="font-medium">${item.getAttribute('data-user-name')}</div>
+                                <div class="text-sm text-gray-500">${item.getAttribute('data-user-email')}</div>
+                            `;
+                        }
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // User selection functionality
+            userList.addEventListener('click', function(e) {
+                const userItem = e.target.closest('.user-item');
+                if (userItem) {
+                    const userId = userItem.getAttribute('data-user-id');
+                    const userName = userItem.getAttribute('data-user-name');
+                    const userEmail = userItem.getAttribute('data-user-email');
+
+                    if (!selectedUsersMap.has(userId)) {
+                        selectedUsersMap.set(userId, { name: userName, email: userEmail });
+                        updateSelectedUsers();
+                    }
+                }
+            });
+
+            // Remove selected user
+            selectedUsers.addEventListener('click', function(e) {
+                const removeBtn = e.target.closest('.remove-user');
+                if (removeBtn) {
+                    const userId = removeBtn.getAttribute('data-user-id');
+                    selectedUsersMap.delete(userId);
+                    updateSelectedUsers();
+                }
+            });
+
+            function updateSelectedUsers() {
+                selectedUsers.innerHTML = '';
+                const userIds = [];
+                
+                selectedUsersMap.forEach((user, userId) => {
+                    userIds.push(userId);
+                    const userDiv = document.createElement('div');
+                    userDiv.className = 'flex items-center justify-between p-2 bg-gray-50 rounded';
+                    userDiv.innerHTML = `
+                        <div>
+                            <div class="font-medium">${user.name}</div>
+                            <div class="text-sm text-gray-500">${user.email}</div>
+                        </div>
+                        <button type="button" class="remove-user text-red-500 hover:text-red-700" data-user-id="${userId}">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    selectedUsers.appendChild(userDiv);
+                });
+
+                selectedUserIds.value = userIds.join(',');
+            }
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                if (selectedUsersMap.size === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one user');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

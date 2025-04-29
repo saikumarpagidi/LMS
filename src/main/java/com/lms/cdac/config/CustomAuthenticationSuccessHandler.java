@@ -19,7 +19,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		
 		// Check roles in order of priority
 		if (user.hasRole("ADMIN")) {
-			response.sendRedirect(request.getContextPath() + "/user/dashboard");
+			response.sendRedirect(request.getContextPath() + "/user/dashboard");// Consider as Admin Dashboard
 		}  else if (user.hasRole("RESOURCE_CENTER")) {
 			response.sendRedirect(request.getContextPath() + "/center/dashboard");
 		} else if (user.hasRole("FACULTY")) {
@@ -33,7 +33,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		}
 		else { 
 			// Default fallback
-			response.sendRedirect(request.getContextPath() + "/user/dashboard");
+			response.sendRedirect(request.getContextPath() + "/student/dashboard");
 		}
 	}
 }

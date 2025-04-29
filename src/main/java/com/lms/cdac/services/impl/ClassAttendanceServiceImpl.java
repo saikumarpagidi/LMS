@@ -108,7 +108,11 @@ public class ClassAttendanceServiceImpl implements ClassAttendanceService {
 
     @Override
     public Map<Course, List<ClassAttendance>> getAttendanceMapByFaculty(User faculty) {
-        List<Course> facultyCourses = courseAssignmentRepository.findByFaculty(faculty)
+        if (!faculty.hasRole("FACULTY")) {
+            return new HashMap<>();
+        }
+        
+        List<Course> facultyCourses = courseAssignmentRepository.findByUserWithRole(faculty)
                 .stream()
                 .map(assignment -> assignment.getCourse())
                 .distinct()

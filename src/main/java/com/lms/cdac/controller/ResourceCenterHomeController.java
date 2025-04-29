@@ -225,7 +225,7 @@ public class ResourceCenterHomeController {
 
     // Assign course functionality
     @PostMapping("/center/dashboard/assign")
-    public String assignCourse(@RequestParam("studentId") String studentId, 
+    public String assignCourse(@RequestParam("selectedUserIds") String selectedUserIds, 
                                @RequestParam("courseId") Integer courseId,
                                RedirectAttributes redirectAttributes, 
                                Authentication authentication) {
@@ -233,13 +233,48 @@ public class ResourceCenterHomeController {
             User admin = validateResourceCenterAccess(authentication);
             String resourceCenter = (admin.getResourceCenter() != null) ? admin.getResourceCenter().trim() : "";
 
-            User student = userRepositories.findById(studentId)
-                    .orElseThrow(() -> new RuntimeException("Student not found"));
+            if (selectedUserIds == null || selectedUserIds.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Please select at least one user");
+                return "redirect:/center/assign-course";
+            }
+
+            String[] userIds = selectedUserIds.split(",");
             Optional<Course> courseOpt = courseService.findById(courseId);
             Course course = courseOpt.orElseThrow(() -> new RuntimeException("Course not found"));
 
-            courseAssignmentService.assignCourseToStudent(student, course);
-            redirectAttributes.addFlashAttribute("message", "Course assigned successfully.");
+            int successCount = 0;
+            int errorCount = 0;
+
+            for (String userId : userIds) {
+                try {
+                    User user = userRepositories.findById(userId)
+                            .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                    
+                    // Check if the course is already assigned to the user
+                    List<CourseAssignment> existingAssignments = courseAssignmentService.getAssignmentsForUser(user);
+                    boolean isAlreadyAssigned = existingAssignments.stream()
+                            .anyMatch(assignment -> assignment.getCourse().getId().equals(courseId));
+                    
+                    if (!isAlreadyAssigned) {
+                        courseAssignmentService.assignCourseToUser(user, course);
+                        successCount++;
+                    } else {
+                        errorCount++;
+                    }
+                } catch (Exception e) {
+                    errorCount++;
+                    logger.error("Error assigning course to user {}: {}", userId, e.getMessage());
+                }
+            }
+
+            if (successCount > 0) {
+                redirectAttributes.addFlashAttribute("message", 
+                    "Successfully assigned course to " + successCount + " user(s)" +
+                    (errorCount > 0 ? ". " + errorCount + " user(s) already had this course assigned." : "."));
+            } else if (errorCount > 0) {
+                redirectAttributes.addFlashAttribute("error", 
+                    "All selected users already have this course assigned.");
+            }
             
             return "redirect:/center/assign-course";
         } catch (Exception e) {
@@ -248,64 +283,6 @@ public class ResourceCenterHomeController {
         }
     }
     
-    // Assign course to faculty functionality
-    @PostMapping("/center/dashboard/assign-faculty")
-    public String assignCourseToFaculty(@RequestParam("facultyId") String facultyId, 
-                                       @RequestParam("courseId") Integer courseId,
-                                       RedirectAttributes redirectAttributes, 
-                                       Authentication authentication) {
-        try {
-            User admin = validateResourceCenterAccess(authentication);
-            String resourceCenter = (admin.getResourceCenter() != null) ? admin.getResourceCenter().trim() : "";
-
-            User faculty = userRepositories.findById(facultyId)
-                    .orElseThrow(() -> new RuntimeException("Faculty not found"));
-            
-            // Verify faculty belongs to the resource center
-            if (!resourceCenter.equalsIgnoreCase(faculty.getResourceCenter())) {
-                throw new RuntimeException("Faculty does not belong to this resource center");
-            }
-            
-            Optional<Course> courseOpt = courseService.findById(courseId);
-            Course course = courseOpt.orElseThrow(() -> new RuntimeException("Course not found"));
-
-            // Check if the course is already assigned to this faculty
-            List<CourseAssignment> existingAssignments = courseAssignmentService.getAssignmentsForFaculty(faculty);
-            boolean alreadyAssigned = existingAssignments.stream()
-                    .anyMatch(a -> a.getCourse().getId().equals(courseId));
-            
-            if (alreadyAssigned) {
-                redirectAttributes.addFlashAttribute("error", "Course is already assigned to this faculty member.");
-                return "redirect:/center/assign-faculty";
-            }
-
-            courseAssignmentService.assignCourseToFaculty(faculty, course);
-            redirectAttributes.addFlashAttribute("message", "Course assigned to faculty successfully.");
-            
-            return "redirect:/center/assign-faculty";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Assignment failed: " + e.getMessage());
-            return "redirect:/center/assign-faculty";
-        }
-    }
-    
-    // Assign faculty page
-    @GetMapping("/center/assign-faculty")
-    public String showAssignFacultyPage(Model model, Authentication authentication) {
-        try {
-            User admin = validateResourceCenterAccess(authentication);
-            String resourceCenter = (admin.getResourceCenter() != null) ? admin.getResourceCenter().trim() : "";
-            logger.info("Assign faculty page accessed by: {} | Resource Center: {}", admin.getEmail(), resourceCenter);
-            
-            prepareCommonModelAttributes(model, resourceCenter);
-            
-            return "resource-center/assign-faculty";
-        } catch (Exception e) {
-            logger.error("Error accessing assign faculty page: {}", e.getMessage());
-            return "redirect:/center/dashboard";
-        }
-    }
-
     // Course syllabus page
     @GetMapping("/center/course-syllabus/{courseId}")
     public String showCourseSyllabus(@PathVariable Integer courseId, 

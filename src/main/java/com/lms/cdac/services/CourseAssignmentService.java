@@ -6,18 +6,22 @@ import com.lms.cdac.entities.CourseAssignment;
 import com.lms.cdac.entities.User;
 
 public interface CourseAssignmentService {
-    CourseAssignment assignCourseToStudent(User student, Course course);
-    List<CourseAssignment> getAssignmentsForStudent(User student);
-
-    // New methods:
+    CourseAssignment assignCourseToUser(User user, Course course);
+    List<CourseAssignment> getAssignmentsForUser(User user);
     void deleteAssignment(Long assignmentId);
     List<CourseAssignment> getAssignmentsByResourceCenter(String resourceCenter);
+    List<Course> getCoursesByUser(User user);
+    List<User> getUsersByCourse(Course course);
     
-    // Faculty assignment methods
-    CourseAssignment assignCourseToFaculty(User faculty, Course course);
+    // Add method to get assignments for a student
+    List<CourseAssignment> getAssignmentsForStudent(User student);
+    
+    // Add method to get assignments for a faculty
     List<CourseAssignment> getAssignmentsForFaculty(User faculty);
     
-    // New methods for ClassAttendanceController
+    // Add method to get courses assigned to a faculty
     List<Course> getCoursesByFaculty(User faculty);
+    
+    // Add method to get students enrolled in a course
     List<User> getStudentsByCourse(Course course);
 }
