@@ -4,51 +4,145 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title th:text="${title}">Default Title</title>
+
+  <!-- Flowbite + Tailwind -->
   <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" th:href="@{'/css/output.css'}"/>
   <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body >
+
+<body class="flex flex-col min-h-screen">
+
+  <!-- Navbar -->
   <div th:if="${loggedInUser}">
     <div data-th-replace="~{user/user_navbar::user-navbar}"></div>
   </div>
-  
   <div th:unless="${loggedInUser}">
     <div data-th-replace="~{navbar::navbar}"></div>
   </div>
-  
-  <div class="pt-8">
+
+  <!-- Page Content -->
+  <div class="pt-8 flex-grow">
     <section th:replace="${content}"></section>
   </div>
-  
-  <div th:unless="${loggedInUser}">
-    <footer class="bg-blue-700 text-white py-2 w-full mx-auto"> <!-- Further decreased padding from py-4 to py-3 -->
-      <div class="container mx-auto px-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div class="footer-section">
-            <img src="/images/footer_cdac.png" alt="C-DAC Logo" class="h-12 w-auto" />
-            <p class="text-sm text-gray-300 mt-2 footer-rights"> <!-- Added margin-top to separate logo and text -->
-              &copy; 2025 Centre for Development of Advanced Computing. All rights reserved.
-            </p>
-          </div>
 
-          <div class="footer-section">
-            <h3 class="text-lg font-semibold mb-2">Contact Us</h3> <!-- Decreased margin-bottom -->
-            <p class="text-sm text-gray-300">
-              C-DAC Noida, Sector 62,Uttar Pradesh 201307<br>
-              Phone: +91-20-25503100<br>
-              Email: <a href="mailto:info@cdac.in" class="text-yellow-300 hover:underline">info@cdac.in</a>
-            </p>
-          </div>
+  <!-- AI-SPH Logos Section -->
+  <div th:unless="${loggedInUser}">
+  <section class="bg-white">
+    <div class="border-t-4 border-blue-600"></div>
+    <div class="max-w-7xl mx-auto px-4 py-6 text-center">
+      <h2 class="text-xl font-bold underline">
+        Artificial Intelligence – Special Purpose Hubs (AI-SPH)
+      </h2>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-8 overflow-x-auto">
+      <a href="https://aiimsbibinagar.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-bibinagar.jpg" alt="AIIMS Bibinagar" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Bibinagar</span>
+      </a>
+      <a href="https://www.aiimspatna.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-patna.jpg" alt="AIIMS Patna" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Patna</span>
+      </a>
+      <a href="https://aiimsnagpur.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-nagpur.jpg" alt="AIIMS Nagpur" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Nagpur</span>
+      </a>
+      <a href="https://www.aiimsrajkot.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-rajkot.jpg" alt="AIIMS Rajkot" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Rajkot</span>
+      </a>
+      <a href="https://www.aiimsjodhpur.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-jodhpur.jpg" alt="AIIMS Jodhpur" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Jodhpur</span>
+      </a>
+      <a href="https://jipmer.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/jipmer-puducherry.png" alt="JIPMER Puducherry" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">JIPMER Puducherry</span>
+      </a>
+      <a href="https://aiimsbhubaneswar.nic.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-bhubaneswar.jpg" alt="AIIMS Bhubaneswar" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Bhubaneswar</span>
+      </a>
+      <a href="https://pgichd.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/pgi-chandigarh.jpg" alt="PGI Chandigarh" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">PGI Chandigarh</span>
+      </a>
+      <a href="https://aiimsgorakhpur.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-gorkhpur.jpg" alt="AIIMS Gorakhpur" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Gorakhpur</span>
+      </a>
+      <a href="https://aiimsrishikesh.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-rishikesh.jpg" alt="AIIMS Rishikesh" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Rishikesh</span>
+      </a>
+      <a href="https://aiimskashmir.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-sirinagar.png" alt="AIIMS Srinagar" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Srinagar</span>
+      </a>
+      <a href="https://aiimsguwahati.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-guwahati.png" alt="AIIMS Guwahati" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Guwahati</span>
+      </a>
+      <a href="https://aiimsbhopal.edu.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-bhopal.jpg" alt="AIIMS Bhopal" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Bhopal</span>
+      </a>
+      <a href="https://www.aiims.ac.in" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img src="/images/aiims-delhi.jpg" alt="AIIMS Delhi" class="h-16 w-16 rounded-full">
+        <span class="mt-2 text-sm font-medium">AIIMS Delhi</span>
+      </a>
+    </div>
+  </section>
+  </div>
+
+  <!-- New Blue Footer (when NOT logged in) -->
+  <div th:unless="${loggedInUser}">
+    <footer class="bg-blue-600 text-white py-2 w-full h-10">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
+        <!-- Left: Copyright -->
+        <p class="text-sm mb-2 sm:mb-0">
+          &copy;2025 C-DAC Noida: All rights reserved.
+        </p>
+
+        <!-- Right: Social Icons -->
+        <div class="flex items-center space-x-4">
+          <span class="font-semibold">Social Connect @</span>
+          <a href="#" aria-label="YouTube" class="text-black bg-white rounded-full p-1">
+            <i class="fab fa-youtube fa-lg"></i>
+          </a>
+          <a href="#" aria-label="Facebook" class="text-black bg-white rounded-full p-1">
+            <i class="fab fa-facebook-f fa-lg"></i>
+          </a>
+          <a href="#" aria-label="LinkedIn" class="text-black bg-white rounded-full p-1">
+            <i class="fab fa-linkedin-in fa-lg"></i>
+          </a>
+          <a href="#" aria-label="Instagram" class="text-black bg-white rounded-full p-1">
+            <i class="fab fa-instagram fa-lg"></i>
+          </a>
+          <a href="#" aria-label="Twitter" class="text-black bg-white rounded-full p-1">
+            <i class="fab fa-twitter fa-lg"></i>
+          </a>
         </div>
       </div>
     </footer>
   </div>
 
+  <!-- Scripts -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
   <script data-th-src="@{'/js/script.js'}"></script>
   <th:block th:replace="${script}"></th:block>
+
 </body>
 </html>
