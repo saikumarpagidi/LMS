@@ -27,6 +27,7 @@ import com.lms.cdac.entities.CourseSchedule;
 import com.lms.cdac.entities.CourseTopic;
 import com.lms.cdac.entities.QuizAssignment;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.entities.Badge;
 import com.lms.cdac.services.CourseAssignmentService;
 import com.lms.cdac.services.CourseModuleService;
 import com.lms.cdac.services.CourseProgressService;
@@ -35,6 +36,7 @@ import com.lms.cdac.services.CourseScheduleService;
 import com.lms.cdac.services.CourseService;
 import com.lms.cdac.services.CourseTopicService;
 import com.lms.cdac.services.QuizAssignmentService;
+import com.lms.cdac.services.BadgeService;
 
 @Controller
 public class StudentDashboardController {
@@ -47,11 +49,13 @@ public class StudentDashboardController {
 	private final CourseTopicService courseTopicService;
 	private final QuizAssignmentService quizAssignmentService;
 	private final CourseProgressService courseProgressService;
+	private final BadgeService badgeService;
 
 	public StudentDashboardController(CourseAssignmentService courseAssignmentService,
 			CourseResourceService courseResourceService, CourseScheduleService courseScheduleService,
 			CourseService courseService, CourseModuleService courseModuleService, CourseTopicService courseTopicService,
-			QuizAssignmentService quizAssignmentService, CourseProgressService courseProgressService) {
+			QuizAssignmentService quizAssignmentService, CourseProgressService courseProgressService,
+			BadgeService badgeService) {
 		this.courseAssignmentService = courseAssignmentService;
 		this.courseResourceService = courseResourceService;
 		this.courseScheduleService = courseScheduleService;
@@ -60,6 +64,7 @@ public class StudentDashboardController {
 		this.courseTopicService = courseTopicService;
 		this.quizAssignmentService = quizAssignmentService;
 		this.courseProgressService = courseProgressService;
+		this.badgeService = badgeService;
 	}
 
 	@GetMapping("/student/dashboard")
@@ -75,11 +80,15 @@ public class StudentDashboardController {
 		// Load resources and schedules for each assigned course
 		Map<Integer, CourseSchedule> scheduleMap = new HashMap<>();
 		Map<Integer, Double> progressMap = new HashMap<>();
+		Map<Integer, Badge> badgeMap = new HashMap<>();
+		Map<Integer, Double> overallProgressMap = new HashMap<>();
 
 		assignments.forEach(assignment -> {
 			Integer courseId = assignment.getCourse().getId();
+			Course course = assignment.getCourse();
+
 			List<CourseResource> resources = courseResourceService.getResourcesByCourse(courseId);
-			assignment.getCourse().setResources(resources);
+			course.setResources(resources);
 
 			// For each resource, fetch its progress from the database
 			resources.forEach(resource -> {
@@ -95,11 +104,21 @@ public class StudentDashboardController {
 			// Calculate overall progress for each course
 			double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
 			progressMap.put(courseId, overallProgress);
+
+			// Calculate badge for the course
+			Badge badge = badgeService.calculateBadge(student, course);
+			badgeMap.put(courseId, badge);
+
+			// Calculate overall weighted progress
+			double weightedProgress = badgeService.calculateOverallProgress(student, course);
+			overallProgressMap.put(courseId, weightedProgress);
 		});
 
 		model.addAttribute("assignments", assignments);
 		model.addAttribute("scheduleMap", scheduleMap);
 		model.addAttribute("progressMap", progressMap);
+		model.addAttribute("badgeMap", badgeMap);
+		model.addAttribute("overallProgressMap", overallProgressMap);
 		return "student-dashboard";
 	}
 

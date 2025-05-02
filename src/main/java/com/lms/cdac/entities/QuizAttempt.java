@@ -16,19 +16,29 @@ public class QuizAttempt {
     private Long id;
 
     // The student who attempted the quiz
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
 
     // The quiz attempted
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
-    // Calculated score for the attempt
-    private int score;
+    // Number of correct answers
+    private int correctAnswers;
     
-    // Optionally, you can store attempt details (e.g. answers in JSON format)
-    @Lob
+    // Total number of questions
+    private int totalQuestions;
+    
+    // Store attempt details as a regular string instead of CLOB
+    @Column(columnDefinition = "TEXT")
     private String attemptDetails;
+    
+    // Calculate percentage score
+    @Transient
+    public double getScorePercentage() {
+        if (totalQuestions == 0) return 0.0;
+        return ((double) correctAnswers / totalQuestions) * 100;
+    }
 }

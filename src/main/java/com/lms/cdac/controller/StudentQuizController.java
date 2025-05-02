@@ -43,77 +43,100 @@ public class StudentQuizController {
 	@GetMapping("/{courseId}")
 	public String showQuiz(@PathVariable Integer courseId,
 			@RequestParam(value = "moduleId", required = false) Integer moduleId,
-			@RequestParam(value = "topicId", required = false) Integer topicId, Model model) {
-		// Fetch the course using its ID
-		Course course = courseService.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+			@RequestParam(value = "topicId", required = false) Integer topicId, 
+			Model model,
+			Authentication authentication) {
+		try {
+			User student = (User) authentication.getPrincipal();
+			Course course = courseService.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
 
-		QuizAssignment assignment = null;
-		
-		// Check for quiz assignment based on the provided parameters
-		if (topicId != null) {
-			// Get topic-level quiz assignment
-			CourseTopic topic = courseTopicService.getTopicById(topicId);
-			assignment = quizAssignmentService.getAssignmentByTopic(topic);
+			QuizAssignment assignment = null;
 			
-			if (assignment == null) {
-				model.addAttribute("error", "No quiz is assigned for this topic.");
-				return "student/quiz-error";
-			}
-		} else if (moduleId != null) {
-			// Get module-level quiz assignment
-			CourseModule module = courseModuleService.getModuleById(moduleId);
-			assignment = quizAssignmentService.getAssignmentByCourseAndModule(course, module);
-			
-			if (assignment == null) {
-				model.addAttribute("error", "No quiz is assigned for this module.");
-				return "student/quiz-error";
-			}
-		} else {
-			// Get course-level quiz assignment
-			var assignments = quizAssignmentService.getAssignmentByCourse(course);
-			if (assignments != null && !assignments.isEmpty()) {
-				for (QuizAssignment quizAssignment : assignments) {
-					if (quizAssignment.getModule() == null && quizAssignment.getTopic() == null) {
-						assignment = quizAssignment;
-						break;
+			if (topicId != null) {
+				CourseTopic topic = courseTopicService.getTopicById(topicId);
+				assignment = quizAssignmentService.getAssignmentByTopic(topic);
+				
+				if (assignment == null) {
+					model.addAttribute("error", "No quiz is assigned for this topic.");
+					return "student/quiz-error";
+				}
+			} else if (moduleId != null) {
+				CourseModule module = courseModuleService.getModuleById(moduleId);
+				assignment = quizAssignmentService.getAssignmentByCourseAndModule(course, module);
+				
+				if (assignment == null) {
+					model.addAttribute("error", "No quiz is assigned for this module.");
+					return "student/quiz-error";
+				}
+			} else {
+				var assignments = quizAssignmentService.getAssignmentByCourse(course);
+				if (assignments != null && !assignments.isEmpty()) {
+					for (QuizAssignment quizAssignment : assignments) {
+						if (quizAssignment.getModule() == null && quizAssignment.getTopic() == null) {
+							assignment = quizAssignment;
+							break;
+						}
 					}
 				}
+				
+				if (assignment == null) {
+					model.addAttribute("error", "No quiz is assigned for this course.");
+					return "student/quiz-error";
+				}
 			}
-			
-			if (assignment == null) {
-				model.addAttribute("error", "No quiz is assigned for this course.");
+
+			Quiz quiz = assignment.getQuiz();
+			if (quiz == null) {
+				model.addAttribute("error", "The assigned quiz could not be found.");
 				return "student/quiz-error";
 			}
-		}
 
-		// Get the quiz from the assignment
-		Quiz quiz = assignment.getQuiz();
-		if (quiz == null) {
-			model.addAttribute("error", "The assigned quiz could not be found.");
+			// Check if student has already attempted this quiz
+			var previousAttempt = quizAttemptService.findPreviousAttempt(student, quiz);
+			if (previousAttempt.isPresent()) {
+				model.addAttribute("attempt", previousAttempt.get());
+				model.addAttribute("message", String.format("You have already attempted this quiz. Your score was: %.1f%% (%d/%d correct)", 
+					previousAttempt.get().getScorePercentage(),
+					previousAttempt.get().getCorrectAnswers(),
+					previousAttempt.get().getTotalQuestions()));
+				return "student/quiz-result";
+			}
+
+			model.addAttribute("quiz", quiz);
+			return "student/quiz-attempt";
+		} catch (Exception e) {
+			model.addAttribute("error", "An error occurred: " + e.getMessage());
 			return "student/quiz-error";
 		}
-
-		model.addAttribute("quiz", quiz);
-		return "student/quiz-attempt";
 	}
 
 	// Process quiz submission from student.
 	@PostMapping("/{quizId}/submit")
 	public String submitQuiz(@PathVariable Long quizId, @RequestParam Map<String, String> allParams,
 			Authentication authentication, Model model) {
-		// Extract answers from request parameters. Keys are expected as
-		// "q_{questionId}"
-		Map<Long, String> answers = allParams.entrySet().stream().filter(e -> e.getKey().startsWith("q_")).collect(
-				java.util.stream.Collectors.toMap(e -> Long.parseLong(e.getKey().substring(2)), Map.Entry::getValue));
+		try {
+			User student = (User) authentication.getPrincipal();
+			Quiz quiz = quizService.getQuizById(quizId);
+			if (quiz == null) {
+				model.addAttribute("error", "Quiz not found.");
+				return "student/quiz-error";
+			}
 
-		User student = (User) authentication.getPrincipal();
-		Quiz quiz = quizService.getQuizById(quizId);
-		if (quiz == null) {
-			model.addAttribute("error", "Quiz not found.");
+			Map<Long, String> answers = allParams.entrySet().stream()
+					.filter(e -> e.getKey().startsWith("q_"))
+					.collect(java.util.stream.Collectors.toMap(
+							e -> Long.parseLong(e.getKey().substring(2)),
+							Map.Entry::getValue));
+
+			var attempt = quizAttemptService.submitAttempt(student, quiz, answers);
+			model.addAttribute("attempt", attempt);
+			return "student/quiz-result";
+		} catch (IllegalStateException e) {
+			model.addAttribute("error", e.getMessage());
+			return "student/quiz-error";
+		} catch (Exception e) {
+			model.addAttribute("error", "An error occurred while submitting the quiz: " + e.getMessage());
 			return "student/quiz-error";
 		}
-		var attempt = quizAttemptService.submitAttempt(student, quiz, answers);
-		model.addAttribute("message", "Quiz submitted! Your score: " + attempt.getScore());
-		return "student/quiz-result";
 	}
 }

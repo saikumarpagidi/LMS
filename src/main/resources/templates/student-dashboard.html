@@ -91,11 +91,23 @@
       
       <!-- Assigned Courses Cards -->
       <div th:if="${!#lists.isEmpty(assignments)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div th:each="assignment : ${assignments}" class="bg-white rounded-xl shadow-md card-hover overflow-hidden fade-in">
+        <div th:each="assignment : ${assignments != null ? assignments : {}}" 
+             class="bg-white rounded-xl shadow-md card-hover overflow-hidden fade-in">
           <!-- Card Header: Course Name -->
           <div class="px-6 py-5 bg-blue-600">
+                <div class="flex justify-between items-center">
             <h2 class="text-2xl font-bold text-white"
                 th:text="${assignment.course.courseName}">Course Name</h2>
+                    <!-- Badge Display -->
+                    <div class="flex items-center space-x-2">
+                        <span th:with="badge=${badgeMap[assignment.course.id]}"
+                              th:style="'background-color: ' + ${badge.color}"
+                              class="px-3 py-1 rounded-full text-white text-sm font-semibold flex items-center">
+                            <i class="fas fa-award mr-1"></i>
+                            <span th:text="${badge.label}">Badge Label</span>
+                        </span>
+                    </div>
+                </div>
           </div>
           <!-- Card Body: Schedule Details & Resources -->
           <div class="p-6">
@@ -121,22 +133,89 @@
                   N/A
                 </span>
               </div>
-            </div>
-            
-            <!-- Progress Section -->
-            <div class="mt-4">
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-sm font-semibold text-gray-700">Course Progress</span>
-                <span class="text-sm font-semibold text-blue-600" 
-                      th:text="${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
-                  0%
-                </span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-in-out"
-                     th:style="'width:' + ${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
+
+              <!-- Course Progress Section (Resources) -->
+              <div class="mt-4">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm font-semibold text-gray-700">Course Progress</span>
+                  <span class="text-sm font-semibold text-blue-600" 
+                        th:text="${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
+                    0%
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-in-out"
+                       th:style="'width:' + ${#numbers.formatDecimal(progressMap[assignment.course.id] != null ? progressMap[assignment.course.id] : 0, 0, 0)} + '%'">
+                  </div>
                 </div>
               </div>
+
+              <!-- Overall Progress Section (Weighted) -->
+              <div class="mt-4">
+                <!-- <div class="flex justify-between items-center mb-1">
+                  <div class="flex items-center">
+                    <span class="text-sm font-semibold text-gray-700">Overall Progress</span>
+                    <span class="ml-2 text-xs text-gray-500 cursor-help group relative" 
+                          title="Weighted calculation based on multiple factors">
+                      <i class="fas fa-info-circle"></i>
+                      
+                      <div class="hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg">
+                        <div class="space-y-1">
+                          <p>• Class Attendance: 20%</p>
+                          <p>• Course Progress: 15%</p>
+                          <p>• Lab Performance: 25%</p>
+                          <p>• Quiz Performance: 40%</p>
+                        </div>
+                      </div>
+                    </span>
+                  </div>
+                  <span class="text-sm font-semibold text-blue-600" 
+                        th:with="overallScore=${overallProgressMap[assignment.course.id] != null ? overallProgressMap[assignment.course.id] : 0}"
+                        th:text="${#numbers.formatDecimal(overallScore, 1, 1)} + '%'">
+                    0%
+                  </span>
+                </div> -->
+                <!-- <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="h-2.5 rounded-full transition-all duration-500 ease-in-out"
+                       th:with="overallScore=${overallProgressMap[assignment.course.id] != null ? overallProgressMap[assignment.course.id] : 0}"
+                       th:style="${'width:' + overallScore + '%; background-color: ' + 
+                                (overallScore >= 90 ? '#10B981' : 
+                                 overallScore >= 70 ? '#3B82F6' : '#FBBF24')}">
+                  </div>
+                </div> -->
+
+                <!-- Progress Components Breakdown -->
+                <!-- <div class="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
+                  <div class="flex items-center">
+                    <i class="fas fa-user-clock mr-1 w-4"></i>
+                    <span>Class Attendance</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fas fa-book-reader mr-1 w-4"></i>
+                    <span>Course Progress</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fas fa-flask mr-1 w-4"></i>
+                    <span>Lab Performance</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fas fa-question-circle mr-1 w-4"></i>
+                    <span>Quiz Performance</span>
+                  </div>
+                </div>
+              </div> -->
+
+              <!-- Badge Display -->
+              <div class="mt-4 flex justify-center">
+                <div th:with="badge=${badgeMap[assignment.course.id]}" 
+                     th:if="${badge != null}"
+                     class="flex items-center space-x-2 px-4 py-2 rounded-full"
+                     th:style="'background-color: ' + ${badge.color} + '1A'">
+                  <i class="fas fa-award" th:style="'color: ' + ${badge.color}"></i>
+                  <span class="font-medium" th:style="'color: ' + ${badge.color}" th:text="${badge.label}">Badge Label</span>
+                </div>
+              </div>
+
               <!-- Completion Status -->
               <div th:if="${progressMap[assignment.course.id] != null && progressMap[assignment.course.id] == 100}" 
                    class="mt-2 text-center">
@@ -144,14 +223,14 @@
                   <i class="fas fa-check-circle mr-1"></i> Course Completed
                 </span>
               </div>
-            </div>
-            
-            <!-- Syllabus Button -->
-            <div class="mt-6">
-              <a th:href="@{/student/course-syllabus/{courseId}(courseId=${assignment.course.id})}"
-                 class="syllabus-btn">
-                View Course
-              </a>
+
+              <!-- Syllabus Button -->
+              <div class="mt-6">
+                <a th:href="@{/student/course-syllabus/{courseId}(courseId=${assignment.course.id})}"
+                   class="syllabus-btn">
+                  View Course
+                </a>
+              </div>
             </div>
           </div>
         </div>
