@@ -31,9 +31,7 @@ public class UserForms {
     @Pattern(regexp = "^[+]?\\d{8,12}$", message = "Phone number must contain only numbers and optional +")
     private String phoneNumber;
 
-    @NotBlank(message = "College name is required")
     private String college;
 
-    @NotBlank(message = "Resource center name is required")
     private String resourceCenter;
 }

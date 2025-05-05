@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Create Course</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <!-- Add Heroicons for icons -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
 </head>
@@ -12,7 +12,7 @@
     <div class="assign-container w-full max-w-md bg-white  rounded-2xl p-8">
         <!-- Back Button -->
         <div class="mb-6">
-            <a href="/user/dashboard" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
+            <a th:href="@{/user/dashboard}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
                 <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Form Section -->
-        <form action="#" th:action="@{/course/save}" th:object="${course}" method="post" class="space-y-6">
+        <form th:action="@{/course/save}" th:object="${course}" method="post" class="space-y-6">
             <!-- Course Name Input -->
             <div>
                 <label for="courseName" class="block text-sm font-medium text-gray-700 mb-2">Course Name</label>

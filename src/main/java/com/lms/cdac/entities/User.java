@@ -42,10 +42,10 @@ public class User implements UserDetails {
     @Column(name = "phone_number", length = 15, nullable = false)
     private String phoneNumber;
 
-    @Column(name = "college", nullable = false)
+    @Column(name = "college", nullable = true)
     private String college;
 
-    @Column(name = "resource_center", nullable = false)
+    @Column(name = "resource_center", nullable = true)
     private String resourceCenter;
 
     @Getter(value = AccessLevel.NONE)

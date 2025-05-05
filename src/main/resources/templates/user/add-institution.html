@@ -1,68 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::#script})}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Institution</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Add New Resource Center</h1>
-        
-        <form action="/pmu/add" method="POST" class="space-y-4">
-            <!-- College Name Dropdown (Commented) -->
-            <!-- <div class="mb-4">
-                <label for="collegeName" class="block text-gray-700 font-semibold">College Name</label>
-                <select id="collegeName" name="collegeName" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
-                    <option value="">Select College/Institution</option>
-                    <option value="PMCH Patna">PMCH Patna</option>
-                    <option value="Assam Medical College">Assam Medical College</option>
-                    <option value="Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi">Vardhman Mahavir Medical College & Safdarjung Hospital, Delhi</option>
-                    <option value="Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi">Atal Bihari Vajpeyee Inst. Of Medical Sc.PGIMER,Dr.RML Hospital,New Delhi</option>
-                    <option value="North Delhi Municipal Corporation Medical College, Delhi">North Delhi Municipal Corporation Medical College, Delhi</option>
-                    <option value="Indira Gandhi Institute of Medical Sciences, Patna">Indira Gandhi Institute of Medical Sciences, Patna</option>
-                    <option value="AIIMS Noida">AIIMS Noida</option>
-                    <option value="Shivaji Medical College, Delhi">Shivaji Medical College, Delhi</option>
-                    <option value="Lady Hardinge Medical College, Delhi">Lady Hardinge Medical College, Delhi</option>
-                    <option value="Nalanda Medical College, Patna">Nalanda Medical College, Patna</option>
-                </select>
-            </div> -->
-            
-            <div>
-                <label for="resourceCenter" class="block text-gray-700 font-semibold">Resource Center</label>
-                <select id="resourceCenter" name="resourceCenter" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
-                    <option value="">Select Resource Center</option>
-					<option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
-                    <option value="AIIMS New Delhi">AIIMS New Delhi</option>
-					<option value="AIIMS Patna">AIIMS Patna</option>
-					<option value="AIIMS Nagpur">AIIMS Nagpur</option>
-					<option value="AIIMS Rajkot">AIIMS Rajkot</option>
-					<option value="JIPMER Puducherry">JIPMER Puducherry</option>
-                    <option value="AIIMS Madurai">AIIMS Bhubneshwar</option>
+<body class="bg-gray-100">
+    <div id="content" class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Add New Resource Center</h1>
+                <p class="mt-2 text-gray-600">Register a new resource center in the system</p>
+            </div>
 
-					<option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
-                    <option value="AIIMS Guwahati">AIIMS Guwahati</option>
-                    <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
-                    <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
-                    <option value="AIIMS Srinagar">AIIMS Srinagar</option>
-                    <option value="AIIMS Bhopal">AIIMS Bhopal</option>
-                    <option value="AIIMS Jodhpur">AIIMS Jodhpur</option>
-                    <option value="AIIMS Madurai">AIIMS Madurai</option>
-                </select>
+            <!-- Back Button -->
+            <div class="mb-6">
+                <a th:href="@{/user/dashboard}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
+                    <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${message}" class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                <p th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                <p th:text="${error}"></p>
             </div>
             
-            <div>
-                <label for="location" class="block text-gray-700 font-semibold">Location</label>
-                <select id="location" name="location" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required>
-                    <option value="PMU Noida">PMU Noida</option>
-                    <option value="PMU Mohali">PMU Mohali</option>
-                </select>
-            </div>
-            
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">Add Institution</button>
-        </form>
+            <form th:action="@{/pmu/add}" method="POST" class="space-y-6">
+                <div>
+                    <label for="resourceCenter" class="block text-sm font-medium text-gray-700">Resource Center</label>
+                    <select id="resourceCenter" name="resourceCenter" 
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                            required>
+                        <option value="">Select Resource Center</option>
+                        <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
+                        <option value="AIIMS New Delhi">AIIMS New Delhi</option>
+                        <option value="AIIMS Patna">AIIMS Patna</option>
+                        <option value="AIIMS Nagpur">AIIMS Nagpur</option>
+                        <option value="AIIMS Rajkot">AIIMS Rajkot</option>
+                        <option value="JIPMER Puducherry">JIPMER Puducherry</option>
+                        <option value="AIIMS Bhubneshwar">AIIMS Bhubneshwar</option>
+                        <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
+                        <option value="AIIMS Guwahati">AIIMS Guwahati</option>
+                        <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
+                        <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
+                        <option value="AIIMS Srinagar">AIIMS Srinagar</option>
+                        <option value="AIIMS Bhopal">AIIMS Bhopal</option>
+                        <option value="AIIMS Jodhpur">AIIMS Jodhpur</option>
+                        <option value="AIIMS Madurai">AIIMS Madurai</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                    <select id="location" name="location" 
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                            required>
+                        <option value="PMU Noida">PMU Noida</option>
+                        <option value="PMU Mohali">PMU Mohali</option>
+                    </select>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Add Institution
+                </button>
+            </form>
+        </div>
     </div>
+
+    <!-- Script Fragment -->
+    <script id="script">
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Add Institution page loaded');
+        });
+    </script>
 </body>
 </html>
    

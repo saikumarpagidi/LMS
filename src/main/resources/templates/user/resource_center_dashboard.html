@@ -8,7 +8,7 @@
     <!-- Add Heroicons for icons -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
 
@@ -41,44 +41,45 @@
         </div>
     </div>
 
-    <!-- Dashboard Button -->
-    <div class="mt-8">
-        <a sec:authorize="hasAnyRole('ADMIN')" href="/user/dashboard" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+    <!-- Dashboard Buttons -->
+    <div class="mt-8 space-y-4">
+        <a sec:authorize="hasAnyRole('ADMIN')" th:href="@{/user/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
             <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
             </svg>
-            Dashboard
+            Back to Dashboard
+        </a>
+
+        <a sec:authorize="hasAnyRole('PMU_NOIDA')" th:href="@{/pmu/noida/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <a sec:authorize="hasAnyRole('ROLE_PMU_MOHALI')" th:href="@{/pmu/mohali/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
         </a>
     </div>
-	<div class="mt-8">
-	        <a sec:authorize="hasAnyRole('PMU_NOIDA')"  href="/pmu/noida/dashboard" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
-	            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-	                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-	            </svg>
-	            Dashboard
-	        </a>
-	    </div>
-		<div class="mt-8">
-			        <a sec:authorize="hasAnyRole('ROLE_PMU_MOHALI')"  href="/pmu/mohali/dashboard" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
-			            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-			                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-			            </svg>
-			            Dashboard
-			        </a>
-	               </div>	
 
     <script>
         $(document).ready(function () {
             $(".resource-center").click(function () {
                 let resourceCenter = $(this).attr("data-center");
 
-                $.get("/courses/" + encodeURIComponent(resourceCenter), function (data) {
+                $.get("[[@{/courses/}]]" + encodeURIComponent(resourceCenter), function (data) {
                     $("#courses-container").html(data);
 
                     // Smooth scroll to the courses section
                     $('html, body').animate({
                         scrollTop: $("#courses-section").offset().top
-                    }, 1000); // Adjust the duration (in milliseconds) as needed
+                    }, 1000);
                 });
             });
         });
