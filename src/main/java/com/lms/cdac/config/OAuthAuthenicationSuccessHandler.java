@@ -2,11 +2,13 @@ package com.lms.cdac.config;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,8 +18,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.lms.cdac.entities.Providers;
 import com.lms.cdac.entities.User;
@@ -31,74 +33,87 @@ import jakarta.servlet.http.HttpServletResponse;
 @Qualifier("oauthAuthHandler")
 public class OAuthAuthenicationSuccessHandler implements AuthenticationSuccessHandler {
 
+    private static final Logger logger =
+        LoggerFactory.getLogger(OAuthAuthenicationSuccessHandler.class);
+
     @Autowired
     private UserServiceImpl userService;
 
-    private static final Logger logger = LoggerFactory.getLogger(OAuthAuthenicationSuccessHandler.class);
-
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication)
+                                        throws IOException, ServletException {
 
-        logger.info("OAuth Authentication Success Handler triggered");
+        logger.info("OAuth Success Handler triggered");
 
-        OAuth2AuthenticationToken oauth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
-        String provider = oauth2AuthenticationToken.getAuthorizedClientRegistrationId();
-        logger.info("OAuth provider: {}", provider);
-
+        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         DefaultOAuth2User oauthUser = (DefaultOAuth2User) authentication.getPrincipal();
 
-        // Log all OAuth attributes
-        oauthUser.getAttributes().forEach((key, value) -> logger.info("OAuth Attribute - {} : {}", key, value));
-
-        // Extract email and name from OAuth response
         String email = oauthUser.getAttribute("email");
-        String name = oauthUser.getAttribute("name");
-
+        String name  = oauthUser.getAttribute("name");
         if (email == null || name == null) {
-            logger.error("Email or name attribute not found for the user");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email or name not found in OAuth response");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                               "Missing email or name");
             return;
         }
 
-        // Check if user already exists
+        // 1) find-or-create JPA User
         User user = userService.findByEmail(email);
-
         if (user == null) {
-            // ✅ First-time login -> Save user (No role assignment yet)
-            logger.info("Creating new user with email: {}", email);
-
+            logger.info("Creating new OAuth user: {}", email);
             user = new User();
             user.setEmail(email);
-            user.setName(name);
+            user.setName(name);                   // correct setter
             user.setEnabled(true);
             user.setEmailVerified(true);
-            user.setPassword(null); // No password for OAuth users
-            user.setProviderUserId(oauthUser.getName()); // Provider user id
-            user.setProvider(Providers.GOOGLE); // Google as the provider
+            user.setProvider(Providers.GOOGLE);
+            user.setProviderUserId(oauthUser.getName());
+            user.setPassword(UUID.randomUUID().toString());
 
-            userService.saveUser(user);  // Save user to the database
-            logger.info("New user created and saved: {}", email);
+            // satisfy NOT NULL constraint on phone_number
+            user.setPhoneNumber("");                 
+
+            user = userService.saveUser(user);
         }
 
-        // ✅ Fetch assigned roles (If user already exists)
+        // 2) ensure at least STUDENT role
+        if (user.getAssignedRoles().isEmpty()) {
+            userService.assignRole(user.getUserId(), "STUDENT");
+            logger.info("Assigned STUDENT role to {}", email);
+        }
+
+        // 3) reload user (to pick up roles/fields)
+        user = userService.findByEmail(email);
+
+        // 4) build authorities
         List<SimpleGrantedAuthority> authorities = user.getAssignedRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleUser().getRoleName().toUpperCase()))
-                .collect(Collectors.toList());
+            .map(ar -> new SimpleGrantedAuthority(
+                "ROLE_" + ar.getRoleUser().getRoleName().toUpperCase()))
+            .collect(Collectors.toList());
 
-        // ✅ Create authentication token and update SecurityContext
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                oauthUser, null, authorities);
+        // 5) swap Authentication principal to your JPA User
+        UsernamePasswordAuthenticationToken newAuth =
+            new UsernamePasswordAuthenticationToken(user, null, authorities);
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authToken);
-        SecurityContextHolder.setContext(securityContext);
+        // 6) store in SecurityContext & HTTP session
+        SecurityContext sc = SecurityContextHolder.createEmptyContext();
+        sc.setAuthentication(newAuth);
+        request.getSession().setAttribute(
+            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+            sc
+        );
+        SecurityContextHolder.setContext(sc);
 
-        logger.info("User session updated with roles: {}", authorities);
+        logger.info("User {} authenticated with roles {}",
+                    user.getEmail(), authorities);
 
-        // ✅ Redirect to dashboard
-        new DefaultRedirectStrategy().sendRedirect(request, response, "/user/dashboard");
+        // 7) conditional redirect:
+        //    if missing college or phoneNumber, go to complete-profile
+        String target = (user.getCollege() == null || user.getPhoneNumber().isBlank())
+                      ? "/complete-profile"
+                      : "/student/dashboard";
+        new DefaultRedirectStrategy()
+            .sendRedirect(request, response, target);
     }
 }
-
- 

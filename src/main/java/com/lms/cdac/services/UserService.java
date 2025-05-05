@@ -54,6 +54,8 @@ public interface UserService {
 	Optional<User> findByVerificationToken(String token);
 
 	User findByEmail(String email);
+	
+	List<String> getAllResourceCenters();
 
 	//
 }

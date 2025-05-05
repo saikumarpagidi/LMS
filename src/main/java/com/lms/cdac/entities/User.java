@@ -36,7 +36,7 @@ public class User implements UserDetails {
     private String email;
 
     @Getter(value = AccessLevel.NONE)
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "phone_number", length = 15, nullable = false)

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,4 +30,11 @@ public class CollegeServiceImpl implements CollegeService {
     public boolean existsByCollegeNameAndResourceCenter(String collegeName, Institution resourceCenter) {
         return collegeRepository.existsByCollegeNameAndResourceCenter(collegeName, resourceCenter);
     }
+    
+
+    @Override
+    public Optional<College> getCollegeById(String id) {
+        return collegeRepository.findById(id);
+    }
+
 } 
