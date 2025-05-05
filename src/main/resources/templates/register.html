@@ -112,7 +112,7 @@
             collegeSelect.innerHTML = '<option value="">Loading colleges...</option>';
             noCollegesMessage.style.display = 'none';
 
-            fetch(`/api/college/by-resource-center-name/${encodeURIComponent(resourceCenterName)}`)
+            fetch(`[[@{/api/college/by-resource-center-name/}]]${encodeURIComponent(resourceCenterName)}`)
                 .then(response => {
                     console.log('Response status:', response.status);
                     if (!response.ok) {
