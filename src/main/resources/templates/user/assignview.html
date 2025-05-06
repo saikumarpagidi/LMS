@@ -44,7 +44,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr th:each="assign : ${assign}" class="hover:bg-gray-50 transition-colors duration-200">
+                        <tr th:each="assign : ${assignPage.content}" class="hover:bg-gray-50 transition-colors duration-200">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${assign.user.name}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${assign.roleUser.roleName}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${assign.resourceCenter}"></td>
@@ -62,10 +62,39 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination controls -->
+            <div class="bg-white px-6 py-4 flex items-center justify-between border-t border-gray-200">
+              <span class="text-sm text-gray-700">
+                Showing
+                <strong th:text="${assignPage.number * assignPage.size + 1}"></strong>
+                –
+                <strong th:text="${assignPage.number * assignPage.size + assignPage.numberOfElements}"></strong>
+                of
+                <strong th:text="${assignPage.totalElements}"></strong>
+              </span>
+              <nav class="inline-flex -space-x-px">
+                <a th:if="${assignPage.hasPrevious()}"
+                   th:href="@{/assign/assignview(page=${currentPage-1},size=${pageSize})}"
+                   class="px-3 py-1 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                  Previous
+                </a>
+                <a th:each="i : ${#numbers.sequence(0, assignPage.totalPages-1)}"
+                   th:classappend="${i == currentPage} ? ' bg-gray-200 text-gray-900' : ' bg-white text-gray-500'"
+                   th:href="@{/assign/assignview(page=${i},size=${pageSize})}"
+                   class="px-3 py-1 border border-gray-300 hover:bg-gray-50"
+                   th:text="${i + 1}">1</a>
+                <a th:if="${assignPage.hasNext()}"
+                   th:href="@{/assign/assignview(page=${currentPage+1},size=${pageSize})}"
+                   class="px-3 py-1 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                  Next
+                </a>
+              </nav>
+            </div>
         </div>
 
         <!-- Empty State -->
-        <div th:if="${assign == null || #lists.isEmpty(assign)}" class="text-center py-12">
+        <div th:if="${assignPage.totalElements == 0}" class="text-center py-12">
             <div class="text-gray-400 mb-4">
                 <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />

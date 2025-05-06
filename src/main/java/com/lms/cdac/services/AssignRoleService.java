@@ -6,6 +6,9 @@ import com.lms.cdac.entities.User;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 public interface AssignRoleService {
 
     List<AssignRole> getAllAssignedRoles();
@@ -19,4 +22,6 @@ public interface AssignRoleService {
     boolean existsByUserAndRoleUser(User user, RoleUser roleUser);
 
     void assignRoleToUser(String userId, Long roleId, String resourceCenter);
+    
+    Page<AssignRole> getAssignedRoles(Pageable pageable);
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +17,10 @@ import com.lms.cdac.repsitories.RoleRepo;
 import com.lms.cdac.repsitories.UserRepositories;
 import com.lms.cdac.services.AssignRoleService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
+@Transactional
 public class AssignRoleServiceImpl implements AssignRoleService {
 
     private final AssignRoleRepo assignRoleRepository;
@@ -27,41 +32,47 @@ public class AssignRoleServiceImpl implements AssignRoleService {
                                  UserRepositories userRepository, 
                                  RoleRepo roleUserRepository) {
         this.assignRoleRepository = assignRoleRepository;
-        this.userRepository = userRepository;
-        this.roleUserRepository = roleUserRepository;
+        this.userRepository       = userRepository;
+        this.roleUserRepository   = roleUserRepository;
     }
 
     @Override
-    @Transactional
     public List<AssignRole> getAllAssignedRoles() {
         return assignRoleRepository.findAll();
     }
 
     @Override
-    @Transactional
+    public Page<AssignRole> getAssignedRoles(Pageable pageable) {
+        return assignRoleRepository.findAll(pageable);
+    }
+
+    @Override
     public AssignRole saveAssignRole(AssignRole assignRole) {
         if (assignRole.getUser() == null || assignRole.getRoleUser() == null) {
             throw new IllegalArgumentException("User or RoleUser is null");
         }
 
-        Optional<User> userOptional = userRepository.findById(assignRole.getUser().getUserId());
-        Optional<RoleUser> roleOptional = roleUserRepository.findById(assignRole.getRoleUser().getId());
+        Optional<User> userOpt      = userRepository.findById(assignRole.getUser().getUserId());
+        Optional<RoleUser> roleOpt  = roleUserRepository.findById(assignRole.getRoleUser().getId());
 
-        if (userOptional.isEmpty()) {
+        if (userOpt.isEmpty()) {
             throw new IllegalArgumentException("User not found with ID: " + assignRole.getUser().getUserId());
         }
-        if (roleOptional.isEmpty()) {
+        if (roleOpt.isEmpty()) {
             throw new IllegalArgumentException("RoleUser not found with ID: " + assignRole.getRoleUser().getId());
         }
 
-        assignRole.setUser(userOptional.get());
-        assignRole.setRoleUser(roleOptional.get());
+        assignRole.setUser(userOpt.get());
+        assignRole.setRoleUser(roleOpt.get());
 
         return assignRoleRepository.save(assignRole);
     }
 
     @Override
     public void deleteAssignRole(Long id) {
+        if (!assignRoleRepository.existsById(id)) {
+            throw new EntityNotFoundException("Assigned role not found with id " + id);
+        }
         assignRoleRepository.deleteById(id);
     }
 
@@ -77,22 +88,22 @@ public class AssignRoleServiceImpl implements AssignRoleService {
 
     @Override
     public void assignRoleToUser(String userId, Long roleId, String resourceCenter) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        Optional<RoleUser> roleUserOptional = roleUserRepository.findById(roleId);
+        Optional<User> userOpt        = userRepository.findById(userId);
+        Optional<RoleUser> roleOpt    = roleUserRepository.findById(roleId);
 
-        if (userOptional.isPresent() && roleUserOptional.isPresent()) {
-            User user = userOptional.get();
-            RoleUser roleUser = roleUserOptional.get();
+        if (userOpt.isPresent() && roleOpt.isPresent()) {
+            User user         = userOpt.get();
+            RoleUser roleUser = roleOpt.get();
 
             if (!assignRoleRepository.existsByUserAndRoleUser(user, roleUser)) {
-                AssignRole assignRole = new AssignRole();
-                assignRole.setUser(user);
-                assignRole.setRoleUser(roleUser);
-                assignRole.setResourceCenter(resourceCenter);
-                assignRoleRepository.save(assignRole);
+                AssignRole ar = new AssignRole();
+                ar.setUser(user);
+                ar.setRoleUser(roleUser);
+                ar.setResourceCenter(resourceCenter);
+                assignRoleRepository.save(ar);
             }
         } else {
-            throw new RuntimeException("User or Role not found");
+            throw new EntityNotFoundException("User or RoleUser not found");
         }
     }
 }

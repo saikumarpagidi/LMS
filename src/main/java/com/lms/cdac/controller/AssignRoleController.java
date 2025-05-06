@@ -1,9 +1,10 @@
 package com.lms.cdac.controller;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +18,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.lms.cdac.entities.AssignRole;
 import com.lms.cdac.entities.RoleUser;
 import com.lms.cdac.entities.User;
-import com.lms.cdac.service.RoleUserService;
 import com.lms.cdac.services.AssignRoleService;
 import com.lms.cdac.services.UserService;
+import com.lms.cdac.service.RoleUserService;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/assign")
+@Slf4j
 public class AssignRoleController {
 
     private final AssignRoleService assignRoleService;
@@ -30,20 +35,36 @@ public class AssignRoleController {
     private final RoleUserService roleUserService;
 
     @Autowired
-    public AssignRoleController(AssignRoleService assignRoleService, RoleUserService roleUserService, UserService userService) {
+    public AssignRoleController(AssignRoleService assignRoleService,
+                                RoleUserService roleUserService,
+                                UserService userService) {
         this.assignRoleService = assignRoleService;
         this.userService = userService;
         this.roleUserService = roleUserService;
     }
 
-    // Show list of assigned roles
+    /**
+     * Show paginated list of assigned roles
+     */
     @GetMapping("/assignview")
-    public String showAssignRoleView(Model model) {
-        model.addAttribute("assign", assignRoleService.getAllAssignedRoles());
+    public String showAssignRoleView(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        // Sort by assignment ID descending, adjust as needed
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<AssignRole> assignPage = assignRoleService.getAssignedRoles(pageable);
+
+        model.addAttribute("assignPage", assignPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
         return "user/assignview";
     }
 
-    // Show the form for assigning roles
+    /**
+     * Show assign form
+     */
     @GetMapping("/assignrole")
     public String showAssignRoleForm(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -51,13 +72,15 @@ public class AssignRoleController {
         return "user/assignrole";
     }
 
-    // Handle the role assignment POST request
+    /**
+     * Handle role assignment
+     */
     @PostMapping("/role")
     public String saveAssignRole(@RequestParam("selectedUserIds") String selectedUserIds,
-                                @RequestParam("roleId") Long roleId,
-                                @RequestParam("resourceCenter") String resourceCenter,
-                                RedirectAttributes redirectAttributes, 
-                                Authentication authentication) {
+                                 @RequestParam("roleId") Long roleId,
+                                 @RequestParam("resourceCenter") String resourceCenter,
+                                 RedirectAttributes redirectAttributes,
+                                 Authentication authentication) {
         try {
             if (selectedUserIds == null || selectedUserIds.trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "❌ Please select at least one user.");
@@ -65,63 +88,45 @@ public class AssignRoleController {
             }
 
             String[] userIds = selectedUserIds.split(",");
-            Optional<RoleUser> roleOpt = roleUserService.findById(roleId);
-            
-            if (!roleOpt.isPresent()) {
-                redirectAttributes.addFlashAttribute("error", "❌ Role not found.");
-                return "redirect:/assign/assignrole";
-            }
+            RoleUser roleUser = roleUserService.findById(roleId)
+                    .orElseThrow(() -> new EntityNotFoundException("Role not found: " + roleId));
 
-            RoleUser roleUser = roleOpt.get();
             User loggedInUser = (User) authentication.getPrincipal();
-
             if ("ADMIN".equals(roleUser.getRoleName()) && !isUserAdmin(loggedInUser)) {
                 redirectAttributes.addFlashAttribute("error", "⚠️ You do not have permission to assign admin role.");
                 return "redirect:/assign/assignrole";
             }
 
-            int successCount = 0;
-            int errorCount = 0;
-
             for (String userId : userIds) {
-                Optional<User> userOpt = userService.findById(userId);
-                if (userOpt.isPresent()) {
-                    User user = userOpt.get();
+                userService.findById(userId).ifPresent(user -> {
                     if (!assignRoleService.existsByUserAndRoleUser(user, roleUser)) {
                         assignRoleService.assignRoleToUser(userId, roleId, resourceCenter);
-                        successCount++;
-                    } else {
-                        errorCount++;
                     }
-                }
+                });
             }
 
-            if (successCount > 0) {
-                redirectAttributes.addFlashAttribute("message", 
-                    "✅ Successfully assigned role to " + successCount + " user(s)." + 
-                    (errorCount > 0 ? " " + errorCount + " user(s) already had this role." : ""));
-            } else if (errorCount > 0) {
-                redirectAttributes.addFlashAttribute("error", 
-                    "⚠️ All selected users already have this role assigned.");
-            }
-
+            redirectAttributes.addFlashAttribute("message", "✅ Roles assigned successfully!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "❌ Error assigning role: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "❌ Error: " + e.getMessage());
         }
         return "redirect:/assign/assignview";
     }
 
-    // Handle deleting assigned roles
+    /**
+     * Delete an assigned role
+     */
     @GetMapping("/delete/{id}")
     public String deleteAssignedRole(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        log.debug("Controller: deleteAssignedRole id={}", id);
         try {
             if (!assignRoleService.existsById(id)) {
                 redirectAttributes.addFlashAttribute("error", "❌ Assigned role not found.");
                 return "redirect:/assign/assignview";
             }
-
             assignRoleService.deleteAssignRole(id);
             redirectAttributes.addFlashAttribute("message", "✅ Assigned role deleted successfully!");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("error", "❌ " + e.getMessage());
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "❌ Error deleting role: " + e.getMessage());
         }
@@ -130,6 +135,6 @@ public class AssignRoleController {
 
     private boolean isUserAdmin(User user) {
         return user.getAssignedRoles().stream()
-                .anyMatch(assignRole -> "ADMIN".equals(assignRole.getRoleUser().getRoleName()));
+                   .anyMatch(ar -> "ADMIN".equals(ar.getRoleUser().getRoleName()));
     }
 }

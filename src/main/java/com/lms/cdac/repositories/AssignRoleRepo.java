@@ -12,5 +12,6 @@ public interface AssignRoleRepo extends JpaRepository<AssignRole, Long> {
    // boolean existsByUserAndRole(User user, Role role);
     
     boolean existsByUserAndRoleUser(User user, RoleUser roleUser);
+   
 
    }
