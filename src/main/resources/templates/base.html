@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:fragment="parent(content, title, script)" xmlns:th="http://www.thymeleaf.org">
+<html th:fragment="parent(content, title, script)" xmlns:th="http://www.thymeleaf.org" class="m-0 p-0">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,7 +21,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen m-0 p-0">
 
   <!-- Navbar -->
   <div th:if="${loggedInUser}">
@@ -32,7 +32,7 @@
   </div>
 
   <!-- Page Content -->
-  <div class="pt-8 flex-grow">
+  <div class="flex-grow">
     <section th:replace="${content}"></section>
   </div>
 
@@ -40,67 +40,68 @@
   <div th:unless="${loggedInUser}">
   <section class="bg-white">
     <div class="border-t-4 border-blue-600"></div>
-    <div class="max-w-7xl mx-auto px-4 py-6 text-center">
-      <h2 class="text-xl font-bold underline">
-        Artificial Intelligence – Special Purpose Hubs (AI-SPH)
+    <div class="w-full px-4 py-2 text-center">
+      <h2 class="text-lg font-bold underline tracking-tight mb-2">
+        Artificial Intelligence- Special Purpose Hubs(AI-SPH)
       </h2>
     </div>
-    <div class="max-w-7xl mx-auto px-4 py-6 flex items-center space-x-8 overflow-x-auto">
+    <div class="w-full px-4 py-2 flex items-center justify-start space-x-6 overflow-x-scroll scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
+      <style>
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      </style>
       <a th:href="@{https://aiimsbibinagar.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-bibinagar.jpg}" alt="AIIMS Bibinagar" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Bibinagar</span>
+        <img th:src="@{/images/aiims-bibinagar.jpg}" alt="AIIMS Bibinagar" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bibinagar</span>
       </a>
       <a th:href="@{https://www.aiimspatna.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-patna.jpg}" alt="AIIMS Patna" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Patna</span>
+        <img th:src="@{/images/aiims-patna.jpg}" alt="AIIMS Patna" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Patna</span>
       </a>
       <a th:href="@{https://aiimsnagpur.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-nagpur.jpg}" alt="AIIMS Nagpur" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Nagpur</span>
+        <img th:src="@{/images/aiims-nagpur.jpg}" alt="AIIMS Nagpur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Nagpur</span>
       </a>
       <a th:href="@{https://www.aiimsrajkot.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-rajkot.jpg}" alt="AIIMS Rajkot" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Rajkot</span>
-      </a>
-      <a th:href="@{https://www.aiimsjodhpur.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-jodhpur.jpg}" alt="AIIMS Jodhpur" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Jodhpur</span>
+        <img th:src="@{/images/aiims-rajkot.jpg}" alt="AIIMS Rajkot" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Rajkot</span>
       </a>
       <a th:href="@{https://jipmer.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/jipmer-puducherry.png}" alt="JIPMER Puducherry" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">JIPMER Puducherry</span>
+        <img th:src="@{/images/jipmer-puducherry.png}" alt="JIPMER Puducherry" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">JIPMER Puducherry</span>
       </a>
       <a th:href="@{https://aiimsbhubaneswar.nic.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-bhubaneswar.jpg}" alt="AIIMS Bhubaneswar" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Bhubaneswar</span>
+        <img th:src="@{/images/aiims-bhubaneswar.jpg}" alt="AIIMS Bhubaneswar" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bhubaneswar</span>
       </a>
       <a th:href="@{https://pgichd.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/pgi-chandigarh.jpg}" alt="PGI Chandigarh" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">PGI Chandigarh</span>
+        <img th:src="@{/images/pgi-chandigarh.jpg}" alt="PGI Chandigarh" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">PGI Chandigarh</span>
       </a>
       <a th:href="@{https://aiimsgorakhpur.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-gorkhpur.jpg}" alt="AIIMS Gorakhpur" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Gorakhpur</span>
+        <img th:src="@{/images/aiims-gorkhpur.jpg}" alt="AIIMS Gorakhpur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Gorakhpur</span>
       </a>
       <a th:href="@{https://aiimsrishikesh.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-rishikesh.jpg}" alt="AIIMS Rishikesh" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Rishikesh</span>
+        <img th:src="@{/images/aiims-rishikesh.jpg}" alt="AIIMS Rishikesh" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Rishikesh</span>
       </a>
-      <a th:href="@{https://aiimskashmir.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-sirinagar.png}" alt="AIIMS Srinagar" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Srinagar</span>
+      <a th:href="@{https://www.aiimsbilaspur.edu.in/}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/AIIMS Bilaspur Logo_2.png}" alt="AIIMS Bilaspur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bilaspur</span>
       </a>
       <a th:href="@{https://aiimsguwahati.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-guwahati.png}" alt="AIIMS Guwahati" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Guwahati</span>
+        <img th:src="@{/images/aiims-guwahati.png}" alt="AIIMS Guwahati" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Guwahati</span>
       </a>
       <a th:href="@{https://aiimsbhopal.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-bhopal.jpg}" alt="AIIMS Bhopal" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Bhopal</span>
+        <img th:src="@{/images/aiims-bhopal.jpg}" alt="AIIMS Bhopal" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bhopal</span>
       </a>
       <a th:href="@{https://www.aiims.ac.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
-        <img th:src="@{/images/aiims-delhi.jpg}" alt="AIIMS Delhi" class="h-16 w-16 rounded-full">
-        <span class="mt-2 text-sm font-medium">AIIMS Delhi</span>
+        <img th:src="@{/images/aiims-delhi.jpg}" alt="AIIMS Delhi" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Delhi</span>
       </a>
     </div>
   </section>
@@ -108,31 +109,20 @@
 
   <!-- New Blue Footer (when NOT logged in) -->
   <div th:unless="${loggedInUser}">
-    <footer class="bg-blue-600 text-white py-2 w-full h-10">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center">
+    <footer class="bg-blue-600 text-white py-2 w-full m-0 p-0 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex flex-row justify-between items-center">
         <!-- Left: Copyright -->
-        <p class="text-sm mb-2 sm:mb-0">
+        <p class="text-xs sm:text-sm">
           &copy;2025 C-DAC Noida: All rights reserved.
         </p>
-
         <!-- Right: Social Icons -->
-        <div class="flex items-center space-x-4">
-          <span class="font-semibold">Social Connect @</span>
-          <a th:href="@{#}" aria-label="YouTube" class="text-black bg-white rounded-full p-1">
-            <i class="fab fa-youtube fa-lg"></i>
-          </a>
-          <a th:href="@{#}" aria-label="Facebook" class="text-black bg-white rounded-full p-1">
-            <i class="fab fa-facebook-f fa-lg"></i>
-          </a>
-          <a th:href="@{#}" aria-label="LinkedIn" class="text-black bg-white rounded-full p-1">
-            <i class="fab fa-linkedin-in fa-lg"></i>
-          </a>
-          <a th:href="@{#}" aria-label="Instagram" class="text-black bg-white rounded-full p-1">
-            <i class="fab fa-instagram fa-lg"></i>
-          </a>
-          <a th:href="@{#}" aria-label="Twitter" class="text-black bg-white rounded-full p-1">
-            <i class="fab fa-twitter fa-lg"></i>
-          </a>
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-xs sm:text-sm">Social Connect @</span>
+          <a th:href="@{#}" aria-label="YouTube" class="text-black bg-white rounded-full p-1"><i class="fab fa-youtube fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Facebook" class="text-black bg-white rounded-full p-1"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="LinkedIn" class="text-black bg-white rounded-full p-1"><i class="fab fa-linkedin-in fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Instagram" class="text-black bg-white rounded-full p-1"><i class="fab fa-instagram fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Twitter" class="text-black bg-white rounded-full p-1"><i class="fab fa-twitter fa-lg"></i></a>
         </div>
       </div>
     </footer>
