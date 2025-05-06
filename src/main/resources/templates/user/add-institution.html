@@ -35,28 +35,15 @@
             </div>
             
             <form th:action="@{/pmu/add}" method="POST" class="space-y-6">
+                <!-- Resource Center Input -->
                 <div>
-                    <label for="resourceCenter" class="block text-sm font-medium text-gray-700">Resource Center</label>
-                    <select id="resourceCenter" name="resourceCenter" 
-                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                            required>
-                        <option value="">Select Resource Center</option>
-                        <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
-                        <option value="AIIMS New Delhi">AIIMS New Delhi</option>
-                        <option value="AIIMS Patna">AIIMS Patna</option>
-                        <option value="AIIMS Nagpur">AIIMS Nagpur</option>
-                        <option value="AIIMS Rajkot">AIIMS Rajkot</option>
-                        <option value="JIPMER Puducherry">JIPMER Puducherry</option>
-                        <option value="AIIMS Bhubneshwar">AIIMS Bhubneshwar</option>
-                        <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
-                        <option value="AIIMS Guwahati">AIIMS Guwahati</option>
-                        <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
-                        <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
-                        <option value="AIIMS Srinagar">AIIMS Srinagar</option>
-                        <option value="AIIMS Bhopal">AIIMS Bhopal</option>
-                        <option value="AIIMS Jodhpur">AIIMS Jodhpur</option>
-                        <option value="AIIMS Madurai">AIIMS Madurai</option>
-                    </select>
+                    <label for="resourceCenter" class="block text-sm font-medium text-gray-700">Resource Center Name</label>
+                    <input type="text"
+                           id="resourceCenter"
+                           name="resourceCenter"
+                           placeholder="Enter resource center name"
+                           required
+                           class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                 </div>
                 
                 <div>
@@ -64,6 +51,7 @@
                     <select id="location" name="location" 
                             class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                             required>
+                        <option value="">Select Location</option>
                         <option value="PMU Noida">PMU Noida</option>
                         <option value="PMU Mohali">PMU Mohali</option>
                     </select>
@@ -85,4 +73,3 @@
     </script>
 </body>
 </html>
-   
