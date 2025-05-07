@@ -18,6 +18,8 @@ import com.lms.cdac.repsitories.UserRepositories;
 import com.lms.cdac.services.AssignRoleService;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional
@@ -26,6 +28,9 @@ public class AssignRoleServiceImpl implements AssignRoleService {
     private final AssignRoleRepo assignRoleRepository;
     private final UserRepositories userRepository;
     private final RoleRepo roleUserRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public AssignRoleServiceImpl(AssignRoleRepo assignRoleRepository, 
@@ -69,11 +74,16 @@ public class AssignRoleServiceImpl implements AssignRoleService {
     }
 
     @Override
+    @Transactional
     public void deleteAssignRole(Long id) {
-        if (!assignRoleRepository.existsById(id)) {
-            throw new EntityNotFoundException("Assigned role not found with id " + id);
-        }
-        assignRoleRepository.deleteById(id);
+        AssignRole assignRole = assignRoleRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Assigned role not found with id " + id));
+            
+        // Delete the entity directly
+        assignRoleRepository.delete(assignRole);
+        
+        // Ensure changes are synchronized with the database
+        entityManager.flush();
     }
 
     @Override
