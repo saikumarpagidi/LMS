@@ -18,14 +18,24 @@ public class AssignRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_user_id", referencedColumnName = "id", nullable = false)
     private RoleUser roleUser;
 
     @Column(name = "resource_center")
     private String resourceCenter;
+
+    @PreRemove
+    private void preRemove() {
+        if (user != null) {
+            user.getAssignedRoles().remove(this);
+        }
+        if (roleUser != null) {
+            roleUser.getAssignedRoles().remove(this);
+        }
+    }
 }

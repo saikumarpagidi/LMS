@@ -115,7 +115,7 @@ public class AssignRoleController {
     /**
      * Delete an assigned role
      */
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteAssignedRole(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         log.debug("Controller: deleteAssignedRole id={}", id);
         try {
