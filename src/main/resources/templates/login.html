@@ -43,7 +43,7 @@
                 
                 <!-- Forgot Password Link -->
                 <div class="mb-3 text-center">
-                    <a href="/auth/forgot-password" class="text-blue-600 hover:underline">Forgot Password?</a>
+                    <a th:href="@{/auth/forgot-password}" class="text-blue-600 hover:underline">Forgot Password?</a>
                 </div>
 
                 <!-- Buttons -->
@@ -70,7 +70,7 @@
             
             <!-- Redirect to Register -->
             <p class="text-center text-sm text-gray-600 mt-4">
-                Don't have an account? <a href="/home/register" class="text-blue-600 font-semibold hover:underline">Sign Up here</a>
+                Don't have an account? <a th:href="@{/home/register}" class="text-blue-600 font-semibold hover:underline">Sign Up here</a>
             </p>
         </div>
     </div>
