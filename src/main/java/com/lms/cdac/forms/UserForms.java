@@ -30,8 +30,8 @@ public class UserForms {
     @Size(min = 8, max = 12, message = "Phone number must be between 8 and 12 digits")
     @Pattern(regexp = "^[+]?\\d{8,12}$", message = "Phone number must contain only numbers and optional +")
     private String phoneNumber;
-
+    @NotBlank(message = "College required")
     private String college;
-
+    @NotBlank(message = "resource center is required")
     private String resourceCenter;
 }

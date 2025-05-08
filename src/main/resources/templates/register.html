@@ -54,13 +54,14 @@
                     <label for="resourceCenter" class="block text-md font-medium text-gray-700">Resource Center</label>
                     <select id="resourceCenter" name="resourceCenter" 
                         class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        onchange="loadColleges(this.value)">
+                        onchange="loadColleges(this.value)" th:field="*{resourceCenter}">
                         <option value="">Select Resource Center</option>
                         <option th:each="center : ${resourceCenters}" 
                                 th:value="${center.resourceCenter}"
                                 th:text="${center.resourceCenter}">
                         </option>
                     </select>
+                    <div th:if="${#fields.hasErrors('resourceCenter')}" th:errors="*{resourceCenter}" class="text-red-500 text-sm"></div>
                 </div>
 
                 <!-- College -->
@@ -68,12 +69,13 @@
                     <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
                     <select id="college" name="college" 
                         class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        disabled>
+                        disabled th:field="*{college}">
                         <option value="">Select College</option>
                     </select>
                     <div id="noCollegesMessage" class="hidden mt-2 text-sm text-red-600">
                         No colleges available for the selected resource center
                     </div>
+                    <div th:if="${#fields.hasErrors('college')}" th:errors="*{college}" class="text-red-500 text-sm"></div>
                 </div>
 
                 <!-- Buttons -->

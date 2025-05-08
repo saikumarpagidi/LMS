@@ -36,16 +36,16 @@ public class User implements UserDetails {
     private String email;
 
     @Getter(value = AccessLevel.NONE)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(name = "phone_number", length = 15, nullable = false)
     private String phoneNumber;
 
-    @Column(name = "college", nullable = true)
+    @Column(name = "college", nullable = false)
     private String college;
 
-    @Column(name = "resource_center", nullable = true)
+    @Column(name = "resource_center", nullable = false)
     private String resourceCenter;
 
     @Getter(value = AccessLevel.NONE)

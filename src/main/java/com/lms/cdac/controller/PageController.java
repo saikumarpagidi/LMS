@@ -75,6 +75,7 @@ public class PageController {
     @PostMapping("/do-register")
     public String processRegister(@Valid @ModelAttribute("userForm") UserForms userForm, 
                                   BindingResult bindingResult, 
+                                  Model model,
                                   HttpSession session) {
         System.out.println("Processing Registration");
         System.out.println(userForm); // Log form data
@@ -82,6 +83,7 @@ public class PageController {
         // Validate form data
         if (bindingResult.hasErrors()) {
             System.out.println("Error in registration form");
+            model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
             return "register"; // Return to the registration page if errors exist
         }
 
