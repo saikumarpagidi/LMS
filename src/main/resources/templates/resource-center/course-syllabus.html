@@ -193,11 +193,13 @@
                                                     <!-- Video Section -->
                                                     <div class="video-container">
                                                         <video class="video-element w-full" 
-                                                               th:attr="data-course-id=${course.id}, data-resource-id=${resource.id}"
+                                                               th:attr="data-course-id=${course.id}, 
+                                                                        data-resource-id=${resource.id},
+                                                                        data-file-url=${resource.fileUrl}"
                                                                controls 
                                                                x-ref="videoPlayer" 
                                                                @play="saveVideoTime()">
-                                                            <source th:src="${resource.fileUrl}" type="video/mp4">
+                                                            <source th:src="@{${resource.fileUrl}}" type="video/mp4">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                     </div>
@@ -221,7 +223,13 @@
                                             </a>
                                             <div x-show="showPdf" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50" @click.self="showPdf = false">
                                                 <div class="bg-white rounded-lg p-6 max-w-4xl w-full max-h-screen overflow-auto relative">
-                                                    <div class="pdf-viewer" th:attr="data-course-id=${course.id}, data-resource-id=${resource.id}, data-file-url=${resource.fileUrl}" style="height:600px; overflow:auto;">Loading PDF...</div>
+                                                    <div class="pdf-viewer" 
+                                                         th:attr="data-course-id=${course.id}, 
+                                                                 data-resource-id=${resource.id}, 
+                                                                 data-file-url=@{${resource.fileUrl}}" 
+                                                         style="height:600px; overflow:auto;">
+                                                        Loading PDF...
+                                                    </div>
                                                     <div id="pdf-progress-indicator" class="progress-bar bg-blue-600 mt-2"></div>
                                                     <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-2xl" @click="showPdf = false">&times;</button>
                                                 </div>
@@ -247,7 +255,11 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+        // Get the base URLs from Thymeleaf
+        const updateProgressUrl = /*[[@{/student/update-progress}]]*/ '/student/update-progress';
+        const getProgressUrl = /*[[@{/student/get-progress}]]*/ '/student/get-progress';
+
         // Helper to ensure TensorFlow.js backend is ready
         async function ensureBackendReady() {
             await tf.ready();
@@ -392,15 +404,27 @@
                             bar.textContent = "Complete";
                         }
                     }
-                    fetch("/student/update-progress", {
+                    fetch(updateProgressUrl, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
                         body: JSON.stringify({
                             courseId, 
                             resourceId, 
                             progressPercentage: pct, 
                             lastWatchedPosition: video.currentTime
                         })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text(); // Changed from response.json() to response.text()
+                    })
+                    .catch(error => {
+                        console.error("Error updating progress:", error);
                     });
                 }
             }
@@ -409,15 +433,27 @@
         // Video progress tracking for all video elements
         document.addEventListener("DOMContentLoaded", function () {
             const videos = document.querySelectorAll(".video-element");
+            console.log("Found video elements:", videos.length);
+
             videos.forEach(video => {
                 const courseId = video.dataset.courseId;
                 const resourceId = video.dataset.resourceId;
+                const fileUrl = video.dataset.fileUrl;
+                
+                console.log("Video element data:", { courseId, resourceId, fileUrl });
+
                 let lastTime = 0;
                 const allowedForwardSkip = 2;
                 let videoCompleted = false;
-                fetch(`/student/get-progress?courseId=${courseId}&resourceId=${resourceId}`)
-                    .then(response => response.json())
+
+                // Fetch initial progress
+                fetch(getProgressUrl + `?courseId=${courseId}&resourceId=${resourceId}`)
+                    .then(response => {
+                        console.log("Progress fetch response:", response.status);
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log("Initial progress data:", data);
                         if (data.lastWatchedPosition !== undefined) {
                             video.currentTime = data.lastWatchedPosition;
                             lastTime = data.lastWatchedPosition;
@@ -432,11 +468,24 @@
                                 }
                             }
                         }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching progress:", error);
                     });
+
+                // Time update event for progress tracking
                 video.addEventListener("timeupdate", function () {
                     if (videoCompleted) return;
+                    
                     let progressPercentage = (video.currentTime / video.duration) * 100;
                     lastTime = video.currentTime;
+                    
+                    console.log("Video progress update:", {
+                        currentTime: video.currentTime,
+                        duration: video.duration,
+                        progressPercentage: progressPercentage
+                    });
+
                     const progressBar = document.getElementById("video-progress-bar-" + resourceId);
                     if (progressBar) {
                         progressBar.style.width = progressPercentage + "%";
@@ -448,34 +497,80 @@
                             progressBar.textContent = "";
                         }
                     }
-                    fetch("/student/update-progress", {
+
+                    // Update progress on server
+                    const progressData = {
+                        courseId: courseId,
+                        resourceId: resourceId,
+                        progressPercentage: progressPercentage,
+                        lastWatchedPosition: video.currentTime
+                    };
+                    
+                    console.log("Sending progress update:", progressData);
+
+                    fetch(updateProgressUrl, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            courseId: courseId,
-                            resourceId: resourceId,
-                            progressPercentage: progressPercentage,
-                            lastWatchedPosition: video.currentTime
-                        })
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: JSON.stringify(progressData)
+                    })
+                    .then(response => {
+                        console.log("Progress update response:", response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text(); // Changed from response.json() to response.text()
+                    })
+                    .then(data => {
+                        console.log("Progress update success:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating progress:", error);
                     });
                 });
+
+                // Prevent skipping ahead
                 video.addEventListener("seeking", function () {
                     if (video.currentTime > lastTime + allowedForwardSkip) {
                         video.currentTime = lastTime;
                     }
                 });
+
+                // Handle video completion
                 video.addEventListener("ended", function () {
+                    console.log("Video ended, marking as complete");
                     videoCompleted = true;
                     lastTime = 0;
-                    fetch("/student/update-progress", {
+                    
+                    const progressData = {
+                        courseId: courseId,
+                        resourceId: resourceId,
+                        progressPercentage: 100,
+                        lastWatchedPosition: video.duration
+                    };
+
+                    fetch(updateProgressUrl, {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            courseId: courseId,
-                            resourceId: resourceId,
-                            progressPercentage: 100,
-                            lastWatchedPosition: video.duration
-                        })
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: JSON.stringify(progressData)
+                    })
+                    .then(response => {
+                        console.log("Completion update response:", response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.text(); // Changed from response.json() to response.text()
+                    })
+                    .then(data => {
+                        console.log("Completion update success:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating completion:", error);
                     });
                 });
             });
@@ -487,8 +582,11 @@
             pdfContainers.forEach(container => {
                 const courseId = container.dataset.courseId;
                 const resourceId = container.dataset.resourceId;
-                const fileUrl = container.getAttribute("data-file-url");
+                const fileUrl = container.dataset.fileUrl;
+                
                 if (!fileUrl) return;
+
+                // Fetch initial progress
                 fetch(`/student/get-progress?courseId=${courseId}&resourceId=${resourceId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -500,33 +598,41 @@
                             }
                         }
                     });
+
+                // Load and render PDF
                 pdfjsLib.getDocument(fileUrl).promise.then(pdfDoc => {
                     container.pdfDoc = pdfDoc;
                     container.totalPages = pdfDoc.numPages;
                     renderPdfPage(container, 1);
                 }).catch(err => {
-                    container.innerHTML = "Error loading PDF.";
-                    console.error(err);
+                    container.innerHTML = "Error loading PDF: " + err.message;
+                    console.error("PDF loading error:", err);
                 });
+
+                // Track PDF scrolling progress
                 container.addEventListener('scroll', function() {
                     const scrollTop = container.scrollTop;
                     const scrollHeight = container.scrollHeight - container.clientHeight;
                     let progressPercentage = (scrollTop / scrollHeight) * 100;
                     if (!isFinite(progressPercentage)) progressPercentage = 0;
+
                     const progressIndicator = document.getElementById("pdf-progress-indicator");
                     if (progressIndicator) {
-                        progressIndicator.textContent = Math.floor(progressPercentage) + "%";
+                        progressIndicator.style.width = Math.floor(progressPercentage) + "%";
                         if (progressPercentage >= 100) {
                             progressIndicator.style.backgroundColor = "green";
                             progressIndicator.textContent = "Complete";
                         } else {
                             progressIndicator.style.backgroundColor = "";
+                            progressIndicator.textContent = Math.floor(progressPercentage) + "%";
                         }
                     }
+
                     const modal = container.closest('[x-data]');
                     let pdfOpenTime = modal ? modal.__x.$data.pdfOpenTime : null;
                     const currentTime = new Date().getTime();
                     const minReadingTime = 5000;
+
                     if (progressPercentage >= 100) return;
                     if (progressPercentage < 100 || (pdfOpenTime && (currentTime - pdfOpenTime) >= minReadingTime)) {
                         fetch("/student/update-progress", {
@@ -545,6 +651,8 @@
         });
 
         function renderPdfPage(container, pageNum) {
+            if (!container.pdfDoc) return;
+            
             container.pdfDoc.getPage(pageNum).then(page => {
                 const scale = 1.5;
                 const viewport = page.getViewport({ scale: scale });
@@ -552,13 +660,17 @@
                 const context = canvas.getContext("2d");
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                
                 page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
                     container.innerHTML = "";
                     container.appendChild(canvas);
+                }).catch(err => {
+                    container.innerHTML = "Error rendering PDF page: " + err.message;
+                    console.error("PDF rendering error:", err);
                 });
             }).catch(err => {
-                container.innerHTML = "Error rendering PDF page.";
-                console.error(err); 
+                container.innerHTML = "Error loading PDF page: " + err.message;
+                console.error("PDF page loading error:", err);
             });
         }
     </script>
