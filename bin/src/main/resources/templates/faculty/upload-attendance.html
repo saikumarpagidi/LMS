@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::#script})}">
+<head>
+    <title>Upload Lab Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .shadow-custom { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
+        .hover-transition { transition: all 0.2s ease-in-out; }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="content" class="min-h-screen">
+        <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
+            <!-- Header -->
+            <header class="mb-8 fade-in">
+                <div class="bg-white text-black shadow-2xl rounded-xl p-8 text-center">
+                    <h1 class="text-4xl font-bold mb-2">Upload Lab Attendance</h1>
+                    <p class="text-lg text-gray-700">
+                        Upload CSV file containing student lab attendance data
+                    </p>
+                </div>
+            </header>
+            
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg shadow-custom">
+                <p th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg shadow-custom">
+                <p th:text="${error}"></p>
+            </div>
+            
+            <!-- Error Details -->
+            <div th:if="${errors}" class="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg shadow-custom">
+                <h3 class="font-semibold mb-2">Upload Errors:</h3>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li th:each="err : ${errors}" th:text="${err}"></li>
+                </ul>
+            </div>
+            
+            <!-- Upload Form -->
+            <div class="bg-white shadow-custom rounded-xl overflow-hidden border border-gray-100 fade-in">
+                <div class="px-6 py-5 bg-gray-50 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900">CSV File Upload</h3>
+                    <p class="mt-1 text-sm text-gray-600">
+                        Upload a CSV file with the following columns: Student Name, Course Name, Practical Name, Marks, Attendance
+                    </p>
+                </div>
+                
+                <div class="p-6">
+                    <form th:action="@{/ims/attendance/upload}" method="post" enctype="multipart/form-data" class="space-y-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="file" class="block text-sm font-medium text-gray-700">Select CSV File</label>
+                                <div class="mt-1 flex items-center">
+                                    <input type="file" id="file" name="file" accept=".csv" required
+                                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="text-sm font-medium text-blue-800 mb-2">CSV Format Requirements:</h4>
+                                <ul class="text-sm text-blue-700 list-disc pl-5 space-y-1">
+                                    <li>File must be in CSV format</li>
+                                    <li>Required columns: Student Name, Course Name, Practical Name, Marks, Attendance Status</li>
+                                    <li>Attendance Status values must be "PRESENT" or "ABSENT" (case sensitive)</li>
+                                    <li>Marks must be numeric values (0-100)</li>
+                                    <li>Duplicate practical data for the same student and course will be rejected</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Upload Attendance
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script id="script">
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Upload attendance page loaded');
+        });
+    </script>
+</body>
+</html> 

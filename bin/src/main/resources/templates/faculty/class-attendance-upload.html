@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::#script})}">
+<head>
+    <title>Class Attendance Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div id="content" class="min-h-screen">
+        <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Class Attendance Upload</h1>
+                    <p class="mt-1 text-gray-500 text-sm">
+                        Select a course and day to mark attendance for students
+                    </p>
+                </div>
+            </header>
+
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg">
+                <p th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- Course and Day Selection Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <form id="attendanceForm" class="space-y-6">
+                    <!-- Course Selection -->
+                    <div>
+                        <label for="course" class="block text-sm font-medium text-gray-700">Select Course</label>
+                        <select id="course" name="course" 
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                required>
+                            <option value="">Select a course</option>
+                            <option th:each="course : ${courses}"
+                                    th:value="${course.id}"
+                                    th:text="${course.courseName}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Day Selection -->
+                    <div>
+                        <label for="day" class="block text-sm font-medium text-gray-700">Select Day</label>
+                        <select id="day" name="day"
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                disabled>
+                            <option value="">Select a day</option>
+                        </select>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="button" id="proceedBtn"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                disabled>
+                            Proceed to Attendance Sheet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script id="script">
+        $(document).ready(function() {
+            const contextPath = '/ims';
+            
+            // Handle course selection
+            $('#course').change(function() {
+                const courseId = $(this).val();
+                if (courseId) {
+                    // Fetch available days for the selected course
+                    $.get(contextPath + '/class-attendance/get-days/' + courseId, function(days) {
+                        const $daySelect = $('#day');
+                        $daySelect.empty().append('<option value="">Select a day</option>');
+                        
+                        days.forEach(function(day) {
+                            $daySelect.append(`<option value="${day}">Day ${day}</option>`);
+                        });
+                        
+                        $daySelect.prop('disabled', false);
+                    });
+                } else {
+                    $('#day').prop('disabled', true).val('');
+                    $('#proceedBtn').prop('disabled', true);
+                }
+            });
+
+            // Handle day selection
+            $('#day').change(function() {
+                const daySelected = $(this).val();
+                $('#proceedBtn').prop('disabled', !daySelected);
+            });
+
+            // Handle proceed button click
+            $('#proceedBtn').click(function() {
+                const courseId = $('#course').val();
+                const dayNumber = $('#day').val();
+                if (courseId && dayNumber) {
+                    window.location.href = contextPath + `/class-attendance/get-students/${courseId}?dayNumber=${dayNumber}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

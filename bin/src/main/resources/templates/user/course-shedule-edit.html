@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-blue-800 min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-2xl bg-white shadow-2xl rounded-2xl p-8 border border-gray-300">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">✏️ Edit Course Schedule</h1>
+        
+        <form th:action="@{/course-schedules/edit/{id}(id=${courseSchedule.id})}" 
+              th:object="${courseSchedule}" method="post" 
+              class="space-y-4">
+            
+            <!-- Course Name -->
+            <label class="block font-medium">Course Name:</label>
+            <select th:field="*{course}" required 
+                    class="bg-gray-100 border border-blue-500 rounded-lg p-3 w-full">
+                <option th:value="*{course.id}" th:text="*{course.courseName}">Select Course</option>
+            </select>
+
+            <!-- Duration -->
+            <label class="block font-medium">Duration (days):</label>
+            <select th:field="*{duration}" onchange="calculateEndDate()" 
+                    class="bg-gray-100 border border-blue-500 rounded-lg p-3 w-full">
+                <option value="1">1 day</option>
+                <option value="2">2 days</option>
+                <option value="3">3 days</option>
+                <option value="5">5 days</option>
+                <option value="10">10 days</option>
+            </select>
+
+            <!-- Start Date -->
+            <label class="block font-medium">Start Date:</label>
+            <input type="date" th:field="*{startDate}" onchange="calculateEndDate()" required
+                   class="bg-gray-100 border border-blue-500 rounded-lg p-3 w-full"/>
+
+            <!-- End Date -->
+            <label class="block font-medium">End Date:</label>
+            <input type="date" th:field="*{endDate}" disabled
+                   class="bg-blue-100 border border-blue-300 rounded-lg p-3 w-full opacity-70 cursor-not-allowed"/>
+
+            <!-- Resource Center -->
+            <label class="block font-medium">Resource Center Name:</label>
+            <select th:field="*{resourceCenterName}" class="bg-gray-100 border border-blue-500 rounded-lg p-3 w-full">
+                <option value="PMU Noida">PMU Noida</option>
+                <option value="PMU Mohali">PMU Mohali</option>
+                <option value="AIIMS Delhi">AIIMS Delhi</option>
+                <option value="AIIMS Patna">AIIMS Patna</option>
+                <option value="AIIMS Bhopal">AIIMS Bhopal</option>
+            </select>
+
+            <!-- Location -->
+            <label class="block font-medium">Location:</label>
+            <select th:field="*{location}" class="bg-gray-100 border border-blue-500 rounded-lg p-3 w-full">
+                <option value="PMU Noida">PMU Noida</option>
+                <option value="PMU Mohali">PMU Mohali</option>
+                <option value="AIIMS Delhi">AIIMS Delhi</option>
+                <option value="AIIMS Patna">AIIMS Patna</option>
+                <option value="AIIMS Bhopal">AIIMS Bhopal</option>
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 transition-all text-white font-semibold p-3 rounded-lg w-full mt-4">
+                💾 Update Course Schedule
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function calculateEndDate() {
+            var startDate = document.querySelector("[name='startDate']").value;
+            var duration = document.querySelector("[name='duration']").value;
+            if (startDate && duration) {
+                var start = new Date(startDate);
+                var end = new Date(start);
+                end.setDate(start.getDate() + parseInt(duration));
+                var endDate = end.toISOString().split('T')[0];
+                document.querySelector("[name='endDate']").value = endDate;
+            }
+        }
+    </script>
+</body>
+</html>

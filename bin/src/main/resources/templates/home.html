@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{navbar :: navbar}"></div>
+    
+    <div class="container mt-4">
+        <div class="jumbotron">
+            <h1 class="display-4">Welcome to LMS</h1>
+            <p class="lead">Your one-stop solution for learning management</p>
+            <hr class="my-4">
+            <p>Get started with our comprehensive learning platform</p>
+            <div class="mt-4">
+                <a class="btn btn-primary btn-lg" th:href="@{/register}" role="button">Register</a>
+                <a class="btn btn-secondary btn-lg" th:href="@{/login}" role="button">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log("Home page loaded");
+    </script>
+</body>
+</html>

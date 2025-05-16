@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html th:fragment="parent(content, title, script)" xmlns:th="http://www.thymeleaf.org" class="m-0 p-0">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:text="${title}">Default Title</title>
+
+  <!-- Flowbite + Tailwind -->
+  <link th:href="@{https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css}" rel="stylesheet"/>
+  <script th:src="@{https://cdn.tailwindcss.com}"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" th:href="@{/css/output.css}"/>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css}"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="flex flex-col min-h-screen m-0 p-0">
+
+  <!-- Navbar -->
+  <div th:if="${loggedInUser}">
+    <div data-th-replace="~{user/user_navbar::user-navbar}"></div>
+  </div>
+  <div th:unless="${loggedInUser}">
+    <div data-th-replace="~{navbar::navbar}"></div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="flex-grow pt-[96px]">
+    <section th:replace="${content}"></section>
+  </div>
+
+  <!-- AI-SPH Logos Section -->
+  <div th:unless="${loggedInUser}">
+  <section class="bg-white">
+    <div class="border-t-4 border-blue-600"></div>
+    <div class="w-full px-4 py-2 text-center">
+      <h2 class="text-lg font-bold underline tracking-tight mb-2">
+        Artificial Intelligence- Special Purpose Hubs(AI-SPH)
+      </h2>
+    </div>
+    <div class="w-full px-4 py-2 flex items-center justify-start space-x-6 overflow-x-scroll scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
+      <style>
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      </style>
+      <a th:href="@{https://aiimsbibinagar.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-bibinagar.jpg}" alt="AIIMS Bibinagar" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bibinagar</span>
+      </a>
+      <a th:href="@{https://www.aiimspatna.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-patna.jpg}" alt="AIIMS Patna" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Patna</span>
+      </a>
+      <a th:href="@{https://aiimsnagpur.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-nagpur.jpg}" alt="AIIMS Nagpur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Nagpur</span>
+      </a>
+      <a th:href="@{https://www.aiimsrajkot.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-rajkot.jpg}" alt="AIIMS Rajkot" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Rajkot</span>
+      </a>
+      <a th:href="@{https://jipmer.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/jipmer-puducherry.png}" alt="JIPMER Puducherry" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">JIPMER Puducherry</span>
+      </a>
+      <a th:href="@{https://aiimsbhubaneswar.nic.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-bhubaneswar.jpg}" alt="AIIMS Bhubaneswar" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bhubaneswar</span>
+      </a>
+      <a th:href="@{https://pgichd.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/pgi-chandigarh.jpg}" alt="PGI Chandigarh" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">PGI Chandigarh</span>
+      </a>
+      <a th:href="@{https://aiimsgorakhpur.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-gorkhpur.jpg}" alt="AIIMS Gorakhpur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Gorakhpur</span>
+      </a>
+      <a th:href="@{https://aiimsrishikesh.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-rishikesh.jpg}" alt="AIIMS Rishikesh" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Rishikesh</span>
+      </a>
+      <a th:href="@{https://www.aiimsbilaspur.edu.in/}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/AIIMS Bilaspur Logo_2.png}" alt="AIIMS Bilaspur" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bilaspur</span>
+      </a>
+      <a th:href="@{https://aiimsguwahati.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-guwahati.png}" alt="AIIMS Guwahati" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Guwahati</span>
+      </a>
+      <a th:href="@{https://aiimsbhopal.edu.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-bhopal.jpg}" alt="AIIMS Bhopal" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Bhopal</span>
+      </a>
+      <a th:href="@{https://www.aiims.ac.in}" target="_blank" class="flex-shrink-0 flex flex-col items-center">
+        <img th:src="@{/images/aiims-delhi.jpg}" alt="AIIMS Delhi" class="h-12 w-12 rounded-full">
+        <span class="mt-1 text-xs font-medium">AIIMS Delhi</span>
+      </a>
+    </div>
+  </section>
+  </div>
+
+  <!-- New Blue Footer (when NOT logged in) -->
+  <div th:unless="${loggedInUser}">
+    <footer class="bg-blue-600 text-white py-2 w-full m-0 p-0 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex flex-row justify-between items-center">
+        <!-- Left: Copyright -->
+        <p class="text-xs sm:text-sm">
+          &copy;2025 C-DAC Noida: All rights reserved.
+        </p>
+        <!-- Right: Social Icons -->
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-xs sm:text-sm">Social Connect @</span>
+          <a th:href="@{#}" aria-label="YouTube" class="text-black bg-white rounded-full p-1"><i class="fab fa-youtube fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Facebook" class="text-black bg-white rounded-full p-1"><i class="fab fa-facebook-f fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="LinkedIn" class="text-black bg-white rounded-full p-1"><i class="fab fa-linkedin-in fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Instagram" class="text-black bg-white rounded-full p-1"><i class="fab fa-instagram fa-lg"></i></a>
+          <a th:href="@{#}" aria-label="Twitter" class="text-black bg-white rounded-full p-1"><i class="fab fa-twitter fa-lg"></i></a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script defer th:src="@{https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js}"></script>
+  <script th:src="@{https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js}"></script>
+  <script th:src="@{/js/script.js}"></script>
+  <th:block th:replace="${script}"></th:block>
+
+</body>
+</html>

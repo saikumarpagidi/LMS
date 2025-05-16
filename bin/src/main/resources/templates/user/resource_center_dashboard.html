@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Center Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Heroicons for icons -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center p-6">
+
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Resource Centers</h1>
+        <p class="text-gray-600">Select a resource center to view available courses</p>
+    </div>
+
+    <!-- Resource Center Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl assign-container">
+        <a th:each="center : ${resourceCenters}"
+           href="javascript:void(0);"
+           th:attr="data-center=${center}"
+           class="resource-center bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200 text-center">
+            <div class="flex justify-center items-center mb-4">
+                <svg class="h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900" th:text="${center}"></h3>
+        </a>
+    </div>
+
+    <!-- Courses Section -->
+    <div id="courses-section" class="w-full max-w-6xl mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Courses</h2>
+        <div id="courses-container" class="bg-white p-6 rounded-xl ">
+            <p class="text-gray-500 text-center">Select a resource center to view courses.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Buttons -->
+    <div class="mt-8 space-y-4">
+        <a sec:authorize="hasAnyRole('ADMIN')" th:href="@{/user/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <a sec:authorize="hasAnyRole('PMU_NOIDA')" th:href="@{/pmu/noida/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <a sec:authorize="hasAnyRole('ROLE_PMU_MOHALI')" th:href="@{/pmu/mohali/dashboard}" 
+           class="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $(".resource-center").click(function () {
+                let resourceCenter = $(this).attr("data-center");
+
+                $.get("[[@{/courses/}]]" + encodeURIComponent(resourceCenter), function (data) {
+                    $("#courses-container").html(data);
+
+                    // Smooth scroll to the courses section
+                    $('html, body').animate({
+                        scrollTop: $("#courses-section").offset().top
+                    }, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

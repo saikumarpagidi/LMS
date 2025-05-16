@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Assigned Courses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .shadow-custom { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
+        .hover-transition { transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="content" class="min-h-screen">
+        <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
+            <!-- Page Header -->
+            <header class="mb-8">
+                <div class="bg-white shadow-custom rounded-xl p-6">
+                    <h1 class="text-2xl font-bold tracking-tight text-gray-900">
+                        Assigned Courses for <span th:text="${resourceCenter}" class="text-blue-600"></span>
+                    </h1>
+                    <p class="mt-2 text-gray-600">
+                        Manage assigned courses. You can delete an assignment if necessary.
+                    </p>
+                </div>
+            </header>
+            
+            <!-- Flash Messages -->
+            <div th:if="${message}" class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg shadow-custom">
+                <p th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg shadow-custom">
+                <p th:text="${error}"></p>
+            </div>
+            
+            <!-- Assignments Table -->
+            <div class="bg-white shadow-custom rounded-xl p-6 border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Course Assignments</h2>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Course</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr th:each="assignment : ${assignments}">
+                            <td class="px-6 py-4 whitespace-nowrap" 
+                                th:text="${assignment.user.name} + ' (' + assignment.user.email + ')'">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${assignment.user.hasRole('STUDENT')}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Student
+                                </span>
+                                <span th:if="${assignment.user.hasRole('FACULTY')}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Faculty
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap" 
+                                th:text="${assignment.course.courseName}">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <form th:action="@{/center/assigned-courses/delete}" method="post" 
+                                      onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+                                    <input type="hidden" name="assignmentId" th:value="${assignment.id}" />
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-lg">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(assignments)}">
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">No assignments found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Back Button -->
+            <div class="mt-6 text-center">
+                <a th:href="@{/center/dashboard}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    <script th:fragment="script">
+        // Add any JavaScript code here if needed
+         document.addEventListener('DOMContentLoaded', function() {
+            const studentTab = document.getElementById('student-tab');
+            const facultyTab = document.getElementById('faculty-tab');
+            const studentAssignments = document.getElementById('student-assignments');
+            const facultyAssignments = document.getElementById('faculty-assignments');
+            
+            studentTab.addEventListener('click', function() {
+                studentTab.classList.remove('border-transparent', 'text-gray-500');
+                studentTab.classList.add('border-blue-500', 'text-blue-600');
+                facultyTab.classList.remove('border-blue-500', 'text-blue-600');
+                facultyTab.classList.add('border-transparent', 'text-gray-500');
+                
+                studentAssignments.classList.remove('hidden');
+                facultyAssignments.classList.add('hidden');
+            });
+            
+            facultyTab.addEventListener('click', function() {
+                facultyTab.classList.remove('border-transparent', 'text-gray-500');
+                facultyTab.classList.add('border-blue-500', 'text-blue-600');
+                studentTab.classList.remove('border-blue-500', 'text-blue-600');
+                studentTab.classList.add('border-transparent', 'text-gray-500');
+                
+                facultyAssignments.classList.remove('hidden');
+                studentAssignments.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

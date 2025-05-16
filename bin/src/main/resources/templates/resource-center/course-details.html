@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <title>Course Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+        }
+        .page-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .content-wrapper {
+            width: 100%;
+        }
+        .card-shadow { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+        }
+        .section-tab {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.15s ease-in-out;
+        }
+        .section-tab.active {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            color: #3b82f6;
+        }
+        .section-tab.active span:last-child {
+            background-color: #dbeafe;
+            color: #3b82f6;
+        }
+        .section-tab span:last-child {
+            background-color: #f3f4f6;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 1.5rem 0;
+        }
+        .course-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f3f4f6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+        .status-upcoming {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .status-inprogress {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-completed {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        /* New professional button styles */
+        .syllabus-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+            border: none;
+            outline: none;
+        }
+        .syllabus-btn:hover {
+            background: linear-gradient(to right, #1d4ed8, #2563eb);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.25), 0 4px 6px -2px rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+        .syllabus-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
+        }
+        /* Fixed welcome message size */
+        .welcome-message {
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+<body class="bg-gray-50">
+    <div id="content" class="min-h-screen">
+        <div class="page-container">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <header class="mb-8">
+                    <div class="bg-white card-shadow rounded-xl p-8 border border-gray-100">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h1 class="text-3xl font-bold tracking-tight text-gray-900 flex items-center">
+                                    <svg class="w-7 h-7 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    Course Details
+                                </h1>
+                                <div class="flex items-center mt-3 ml-10">
+                                    <span class="bg-blue-100 text-blue-800 font-medium px-3 py-1 rounded-md text-sm">
+                                        <span th:text="${resourceCenter}">AIIMS Delhi</span>
+                                    </span>
+                                    <span class="mx-2 text-gray-400">·</span>
+                                    <p class="text-gray-600">
+                                        View all available courses for your resource center
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-4 md:mt-0">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Flash Messages with fixed height -->
+                <div th:if="${message}" class="welcome-message mb-6 p-5 bg-white border-l-4 border-green-500 rounded-lg card-shadow flex items-center gap-3">
+                    <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p th:text="${message}" class="text-gray-700 font-medium"></p>
+                </div>
+
+                <div th:if="${error}" class="welcome-message mb-6 p-5 bg-white border-l-4 border-red-500 rounded-lg card-shadow flex items-center gap-3">
+                    <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p th:text="${error}" class="text-gray-700 font-medium"></p>
+                </div>
+
+                <!-- Section Tabs -->
+                <div x-data="{ 
+                    activeSection: 'inprogress',
+                    upcomingCount: 0,
+                    inProgressCount: 0,
+                    completedCount: 0,
+                    init() {
+                        // Calculate counts after DOM is loaded
+                        this.$nextTick(() => {
+                            this.upcomingCount = document.querySelectorAll('.upcoming-course').length;
+                            this.inProgressCount = document.querySelectorAll('.inprogress-course').length;
+                            this.completedCount = document.querySelectorAll('.completed-course').length;
+                        });
+                    }
+                }">
+                    <div class="inline-flex bg-gray-100 p-1.5 rounded-xl shadow-sm">
+                        <div class="section-tab" 
+                             :class="{ 'active': activeSection === 'upcoming' }"
+                             @click="activeSection = 'upcoming'">
+                            <span>Upcoming</span>
+                            <span class="text-gray-500" th:text="${#lists.size(courses.?[startDate.isAfter(T(java.time.LocalDate).now())])}">0</span>
+                        </div>
+                        <div class="section-tab" 
+                             :class="{ 'active': activeSection === 'inprogress' }"
+                             @click="activeSection = 'inprogress'">
+                            <span>In Progress</span>
+                            <span class="text-gray-500" th:text="${#lists.size(courses.?[!startDate.isAfter(T(java.time.LocalDate).now()) && !endDate.isBefore(T(java.time.LocalDate).now())])}">0</span>
+                        </div>
+                        <div class="section-tab" 
+                             :class="{ 'active': activeSection === 'completed' }"
+                             @click="activeSection = 'completed'">
+                            <span>Completed</span>
+                            <span class="text-gray-500" th:text="${#lists.size(courses.?[endDate.isBefore(T(java.time.LocalDate).now())])}">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Divider Line -->
+                    <div class="divider"></div>
+
+                    <!-- Course Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Upcoming Courses -->
+                        <div th:each="courseSchedule : ${courses}"
+                             th:if="${courseSchedule.startDate.isAfter(T(java.time.LocalDate).now())}"
+                             class="course-card p-6 upcoming-course"
+                             x-show="activeSection === 'upcoming'">
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-xl font-semibold text-gray-900" th:text="${courseSchedule.course.courseName}">Course Name</h3>
+                                <span class="status-badge status-upcoming">Upcoming</span>
+                            </div>
+                            <div class="space-y-4 mb-6">
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">Start:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.startDate, 'MMM dd, yyyy')}">Start Date</span>
+                                </p>
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">End:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.endDate, 'MMM dd, yyyy')}">End Date</span>
+                                </p>
+                                <div class="h-1 w-full bg-gray-100 rounded-full mt-2">
+                                    <div class="h-1 bg-blue-100 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-gray-600 mb-6 border-t border-gray-100 pt-4">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.modules != null ? #lists.size(courseSchedule.course.modules) : 0}">0</span> Modules
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.topics != null ? #lists.size(courseSchedule.course.topics) : 0}">0</span> Topics
+                                </div>
+                            </div>
+                            <a th:href="@{/center/course-syllabus/{courseId}(courseId=${courseSchedule.course.id})}"
+                               class="syllabus-btn">
+                                View Course
+                            </a>
+                        </div>
+
+                        <!-- In Progress Courses -->
+                        <div th:each="courseSchedule : ${courses}"
+                             th:if="${!courseSchedule.startDate.isAfter(T(java.time.LocalDate).now()) && !courseSchedule.endDate.isBefore(T(java.time.LocalDate).now())}"
+                             class="course-card p-6 inprogress-course"
+                             x-show="activeSection === 'inprogress'">
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-xl font-semibold text-gray-900" th:text="${courseSchedule.course.courseName}">Course Name</h3>
+                                <span class="status-badge status-inprogress">In Progress</span>
+                            </div>
+                            <div class="space-y-4 mb-6">
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">Start:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.startDate, 'MMM dd, yyyy')}">Start Date</span>
+                                </p>
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">End:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.endDate, 'MMM dd, yyyy')}">End Date</span>
+                                </p>
+                                <div class="h-1 w-full bg-gray-100 rounded-full mt-2">
+                                    <div class="h-1 bg-green-500 rounded-full" style="width: 50%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-gray-600 mb-6 border-t border-gray-100 pt-4">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.modules != null ? #lists.size(courseSchedule.course.modules) : 0}">0</span> Modules
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.topics != null ? #lists.size(courseSchedule.course.topics) : 0}">0</span> Topics
+                                </div>
+                            </div>
+                            <a th:href="@{/center/course-syllabus/{courseId}(courseId=${courseSchedule.course.id})}"
+                               class="syllabus-btn">
+                                View Course
+                            </a>
+                        </div>
+
+                        <!-- Completed Courses -->
+                        <div th:each="courseSchedule : ${courses}"
+                             th:if="${courseSchedule.endDate.isBefore(T(java.time.LocalDate).now())}"
+                             class="course-card p-6 completed-course"
+                             x-show="activeSection === 'completed'">
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-xl font-semibold text-gray-900" th:text="${courseSchedule.course.courseName}">Course Name</h3>
+                                <span class="status-badge status-completed">Completed</span>
+                            </div>
+                            <div class="space-y-4 mb-6">
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">Start:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.startDate, 'MMM dd, yyyy')}">Start Date</span>
+                                </p>
+                                <p class="text-sm text-gray-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="font-medium">End:</span>
+                                    <span class="ml-1.5" th:text="${#temporals.format(courseSchedule.endDate, 'MMM dd, yyyy')}">End Date</span>
+                                </p>
+                                <div class="h-1 w-full bg-gray-100 rounded-full mt-2">
+                                    <div class="h-1 bg-gray-500 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-sm text-gray-600 mb-6 border-t border-gray-100 pt-4">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.modules != null ? #lists.size(courseSchedule.course.modules) : 0}">0</span> Modules
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="font-medium" th:text="${courseSchedule.course.topics != null ? #lists.size(courseSchedule.course.topics) : 0}">0</span> Topics
+                                </div>
+                            </div>
+                            <a th:href="@{/center/course-syllabus/{courseId}(courseId=${courseSchedule.course.id})}"
+                               class="syllabus-btn">
+                                View Course
+                            </a>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div x-show="activeSection === 'upcoming' && upcomingCount === 0" 
+                             class="col-span-full p-10 text-center bg-white rounded-xl border border-dashed border-gray-300">
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No upcoming courses</h3>
+                            <p class="text-gray-500 max-w-md mx-auto">There are no courses scheduled for future dates. Check back later for new course offerings.</p>
+                        </div>
+                        
+                        <div x-show="activeSection === 'inprogress' && inProgressCount === 0" 
+                             class="col-span-full p-10 text-center bg-white rounded-xl border border-dashed border-gray-300">
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No courses in progress</h3>
+                            <p class="text-gray-500 max-w-md mx-auto">There are no active courses at the moment. Check the upcoming tab for courses that will start soon.</p>
+                        </div>
+                        
+                        
+                        <div x-show="activeSection === 'completed' && completedCount === 0" 
+                             class="col-span-full p-10 text-center bg-white rounded-xl border border-dashed border-gray-300">
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No completed courses</h3>
+                            <p class="text-gray-500 max-w-md mx-auto">You haven't completed any courses yet. Courses will appear here after their end date has passed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Additional script to ensure course counts are calculated correctly
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('courseStats', {
+                countCourses() {
+                    const upcomingCount = document.querySelectorAll('.upcoming-course').length;
+                    const inProgressCount = document.querySelectorAll('.inprogress-course').length;
+                    const completedCount = document.querySelectorAll('.completed-course').length;
+                    
+                    return { upcomingCount, inProgressCount, completedCount };
+                }
+            });
+        });
+    </script>
+</body>
+</html>

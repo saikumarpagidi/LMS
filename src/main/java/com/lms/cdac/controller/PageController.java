@@ -2,6 +2,8 @@ package com.lms.cdac.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,11 +32,7 @@ public class PageController {
 	@Autowired
 	private InstitutionService institutionService;
     
-	@GetMapping("/home")
-	public String index() {
-		return "redirect:/home/test";
-	}
-    
+	
     @GetMapping("/test")
     public String home() {
         System.out.println("Home Page handler");
@@ -45,6 +43,11 @@ public class PageController {
     public String aboutPage() {
         System.out.println("About Page handler");
         return "about"; // Returns the view name for about page
+    }
+    
+    @GetMapping("/oneDayProgram")
+    public String oneDay() {
+        return "ai-one-day"; // Returns the view name for about page
     }
 
     @GetMapping("/services")
@@ -61,12 +64,66 @@ public class PageController {
 
     @GetMapping("/login")
     public String loginPage() {
+        // Check if the user is already authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+            
+            // Redirect based on role
+            User user = (User) authentication.getPrincipal();
+            
+            // Check roles in order of priority (same as CustomAuthenticationSuccessHandler)
+            if (user.hasRole("ADMIN")) {
+                return "redirect:/user/dashboard";
+            } else if (user.hasRole("RESOURCE_CENTER")) {
+                return "redirect:/center/dashboard";
+            } else if (user.hasRole("FACULTY")) {
+                return "redirect:/faculty/dashboard";
+            } else if (user.hasRole("PMU_NOIDA")) {
+                return "redirect:/pmu/noida/dashboard";
+            } else if (user.hasRole("PMU_MOHALI")) {
+                return "redirect:/pmu/mohali/dashboard";
+            } else if (user.hasRole("STUDENT")) {
+                return "redirect:/student/dashboard";
+            } else {
+                // Default fallback
+                return "redirect:/student/dashboard";
+            }
+        }
+        
         System.out.println("Login Page handler");
         return "login"; // Returns the view name for login page
     }
 
     @GetMapping("/register")
     public String registerPage(Model model) {
+        // Check if user is already authenticated
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+            
+            // Redirect based on role
+            User user = (User) authentication.getPrincipal();
+            
+            // Check roles in order of priority (same as CustomAuthenticationSuccessHandler)
+            if (user.hasRole("ADMIN")) {
+                return "redirect:/user/dashboard";
+            } else if (user.hasRole("RESOURCE_CENTER")) {
+                return "redirect:/center/dashboard";
+            } else if (user.hasRole("FACULTY")) {
+                return "redirect:/faculty/dashboard";
+            } else if (user.hasRole("PMU_NOIDA")) {
+                return "redirect:/pmu/noida/dashboard";
+            } else if (user.hasRole("PMU_MOHALI")) {
+                return "redirect:/pmu/mohali/dashboard";
+            } else if (user.hasRole("STUDENT")) {
+                return "redirect:/student/dashboard";
+            } else {
+                // Default fallback
+                return "redirect:/student/dashboard";
+            }
+        }
+        
         model.addAttribute("userForm", new UserForms());
         model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
         return "register"; // Returns the view name for register page
@@ -120,5 +177,10 @@ public class PageController {
     public String accessDenied(Model model) {
         model.addAttribute("pageName", "Restricted Page"); // Dynamically add page name
         return "access-denied"; // Returns the access-denied page
+    }
+
+    @GetMapping("/course/ai-healthcare-intro")
+    public String courseDetails() {
+        return "course-details";
     }
 }

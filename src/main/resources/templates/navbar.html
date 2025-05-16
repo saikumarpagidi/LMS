@@ -1,5 +1,5 @@
 <!-- Navbar fragment: सिर्फ nav -->
-<nav th:fragment="navbar" class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0" x-data="{ showAbout:false, showCourses:false, subCourse:null }" @click.away="showAbout=false; showCourses=false; subCourse=null">
+<nav th:fragment="navbar" class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0" x-data="{ showAbout:false, showCourses:false, showBulletin:false, subCourse:null }" @click.away="showAbout=false; showCourses=false; showBulletin=false; subCourse=null">
   <!-- Header Top Bar -->
   <div class="w-full border-b border-gray-200 bg-white m-0 p-0">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-2 py-2 m-0 p-0">
@@ -37,48 +37,66 @@
             <i :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="ml-1 text-xs"></i>
           </button>
           <ul x-show="showAbout" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-            <li><a th:href="@{/home/about}" class="block px-6 py-2 hover:bg-gray-100">About Us</a></li>
-            <li><a th:href="@{/home/why-program}" class="block px-6 py-2 hover:bg-gray-100">Why this Program?</a></li>
-            <li><a th:href="@{/home/what-achieve}" class="block px-6 py-2 hover:bg-gray-100">What do you achieve?</a></li>
-            <li><a th:href="@{/home/who-intended}" class="block px-6 py-2 hover:bg-gray-100">Who is this intended for?</a></li>
-            <li><a th:href="@{/home/what-acquire}" class="block px-6 py-2 hover:bg-gray-100">What can you acquire?</a></li>
+            <li><a th:href="@{/home/about}" class="block px-4 py-2 hover:bg-gray-100 text-left">About Us</a></li>
+            <li><a th:href="@{/home/why-program}" class="block px-4 py-2 hover:bg-gray-100 text-left">Why this Program?</a></li>
+            <li><a th:href="@{/home/what-achieve}" class="block px-4 py-2 hover:bg-gray-100 text-left">What do you achieve?</a></li>
+            <li><a th:href="@{/home/who-intended}" class="block px-4 py-2 hover:bg-gray-100 text-left">Who is this intended for?</a></li>
+            <li><a th:href="@{/home/what-acquire}" class="block px-4 py-2 hover:bg-gray-100 text-left">What can you acquire?</a></li>
           </ul>
         </li>
         <!-- Courses -->
         <li class="relative h-full flex items-center">
-          <button @click.prevent="showCourses = !showCourses" class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-base focus:outline-none flex items-center">
+          <button @click.prevent="showCourses = !showCourses; subCourse=null" class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-base focus:outline-none flex items-center">
             Courses
             <i :class="showCourses ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="ml-1 text-xs"></i>
           </button>
           <!-- Level 1 Dropdown -->
           <ul x-show="showCourses" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
             <li class="relative group">
-              <button @mouseenter="subCourse='ai'" @mouseleave="subCourse=null" class="w-full text-left px-6 py-2 hover:bg-gray-100 flex items-center justify-between">Artificial Intelligence <i class="fas fa-chevron-right text-xs ml-2"></i></button>
+              <button @click.prevent="subCourse = subCourse === 'ai' ? null : 'ai'" class="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between">
+                Artificial Intelligence 
+                <i :class="subCourse === 'ai' ? 'fas fa-chevron-down' : 'fas fa-chevron-right'" class="text-xs ml-2"></i>
+              </button>
               <!-- Level 2 Dropdown -->
-              <ul x-show="subCourse==='ai'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-                <li><a th:href="@{/courses/ai/1-day}" class="block px-6 py-2 hover:bg-gray-100">1-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/2-day}" class="block px-6 py-2 hover:bg-gray-100">2-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/3-day}" class="block px-6 py-2 hover:bg-gray-100">3-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/5-day}" class="block px-6 py-2 hover:bg-gray-100">5-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/10-day}" class="block px-6 py-2 hover:bg-gray-100">10-Day Program</a></li>
-          </ul>
+              <ul x-show="subCourse === 'ai'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
+                <li><a th:href="@{/home/oneDayProgram}" class="block px-4 py-2 hover:bg-gray-100">1-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/2-day}" class="block px-4 py-2 hover:bg-gray-100">2-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/3-day}" class="block px-4 py-2 hover:bg-gray-100">3-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/5-day}" class="block px-4 py-2 hover:bg-gray-100">5-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/10-day}" class="block px-4 py-2 hover:bg-gray-100">10-Day Program</a></li>
+              </ul>
             </li>
             <li class="relative group">
-              <button @mouseenter="subCourse='cyber'" @mouseleave="subCourse=null" class="w-full text-left px-6 py-2 hover:bg-gray-100 flex items-center justify-between">Cyber Security <i class="fas fa-chevron-right text-xs ml-2"></i></button>
+              <button @click.prevent="subCourse = subCourse === 'cyber' ? null : 'cyber'" class="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between">
+                Cyber Security
+                <i :class="subCourse === 'cyber' ? 'fas fa-chevron-down' : 'fas fa-chevron-right'" class="text-xs ml-2"></i>
+              </button>
               <!-- Level 2 Dropdown -->
-              <ul x-show="subCourse==='cyber'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-                <li><a th:href="@{/courses/cyber/1-day}" class="block px-6 py-2 hover:bg-gray-100">1-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/2-day}" class="block px-6 py-2 hover:bg-gray-100">2-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/3-day}" class="block px-6 py-2 hover:bg-gray-100">3-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/5-day}" class="block px-6 py-2 hover:bg-gray-100">5-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/10-day}" class="block px-6 py-2 hover:bg-gray-100">10-Day Program</a></li>
-          </ul>
+              <ul x-show="subCourse === 'cyber'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
+                <li><a th:href="@{/courses/cyber/1-day}" class="block px-4 py-2 hover:bg-gray-100">1-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/2-day}" class="block px-4 py-2 hover:bg-gray-100">2-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/3-day}" class="block px-4 py-2 hover:bg-gray-100">3-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/5-day}" class="block px-4 py-2 hover:bg-gray-100">5-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/10-day}" class="block px-4 py-2 hover:bg-gray-100">10-Day Program</a></li>
+              </ul>
             </li>
           </ul>
         </li>
         <!-- Information Bulletin -->
-        <li class="h-full flex items-center">
-          <a th:href="@{/bulletin}" class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-base">Information Bulletin</a>
+        <li class="relative h-full flex items-center">
+          <button @click.prevent="showBulletin = !showBulletin" class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-base focus:outline-none flex items-center">
+            Information Bulletin
+            <i :class="showBulletin ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="ml-1 text-xs"></i>
+          </button>
+          <ul x-show="showBulletin" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
+            <li><a th:href="@{/bulletin}" class="block px-4 py-2 hover:bg-gray-100 text-left">News Room</a></li>
+            <li><a th:href="@{/newsroom}" class="block px-4 py-2 hover:bg-gray-100 text-left">Events</a></li>
+            <li><a th:href="@{/internship}" class="block px-4 py-2 hover:bg-gray-100 text-left">Internship</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Blogs</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Research Work</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Board of Studies</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Technical Expert Committee</a></li>
+          </ul>
         </li>
       </ul>
       <!-- Search Bar -->

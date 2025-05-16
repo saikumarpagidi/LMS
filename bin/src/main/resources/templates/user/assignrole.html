@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Role</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add Heroicons for icons -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Only show the content if the user has the ADMIN role -->
+    <div sec:authorize="hasRole('ROLE_ADMIN')" id="content" class="flex justify-center items-center min-h-screen">
+        <div class="assign-container w-full max-w-4xl p-8 bg-white rounded-xl">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Assign Role</h2>
+                <p class="mt-2 text-gray-600">Assign roles to users in the system</p>
+            </div>
+        <!-- Form Section -->
+        <form th:action="@{/assign/role}" method="POST" class="space-y-6" id="assignRoleForm">
+            <!-- User Selection Section -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Left Side: User Search and Selection -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700">Search Users</label>
+                    <div class="relative">
+                        <input type="text" id="userSearch" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                               placeholder="Search users...">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="border border-gray-300 rounded-lg h-64 overflow-y-auto">
+                        <div id="userList" class="divide-y divide-gray-200">
+                            <th:block th:each="user : ${users}">
+                                <div class="p-3 hover:bg-gray-50 cursor-pointer user-item" 
+                                     th:data-user-id="${user.userId}"
+                                     th:data-user-name="${user.name}"
+                                     th:data-user-email="${user.email}">
+                                    <div class="font-medium" th:text="${user.name}"></div>
+                                    <div class="text-sm text-gray-500" th:text="${user.email}"></div>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Selected Users -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700">Selected Users</label>
+                    <div id="selectedUsers" class="border border-gray-300 rounded-lg h-64 overflow-y-auto p-2 space-y-2">
+                        <!-- Selected users will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Center Dropdown -->
+            <div>
+                <label for="resourceCenter" class="block text-sm font-medium text-gray-700 mb-2">Select Resource Center</label>
+                <div class="relative">
+                    <select id="resourceCenter" name="resourceCenter" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" required>
+                        <option value="">-- Select Resource Center --</option>
+                        <option value="AIIMS Bibinagar">AIIMS Bibinagar</option>
+                        <option value="AIIMS New Delhi">AIIMS New Delhi</option>
+                        <option value="AIIMS Patna">AIIMS Patna</option>
+                        <option value="AIIMS Nagpur">AIIMS Nagpur</option>
+                        <option value="AIIMS Rajkot">AIIMS Rajkot</option>
+                        <option value="JIPMER Puducherry">JIPMER Puducherry</option>
+                        <option value="AIIMS Bhubneshwar">AIIMS Bhubneshwar</option>
+                        <option value="PGIMER Chandigarh">PGIMER Chandigarh</option>
+                        <option value="AIIMS Guwahati">AIIMS Guwahati</option>
+                        <option value="AIIMS Gorakhpur">AIIMS Gorakhpur</option>
+                        <option value="AIIMS Rishikesh">AIIMS Rishikesh</option>
+                        <option value="AIIMS Srinagar">AIIMS Srinagar</option>
+                        <option value="AIIMS Bhopal">AIIMS Bhopal</option>
+                        <option value="AIIMS Jodhpur">AIIMS Jodhpur</option>
+                        <option value="AIIMS Madurai">AIIMS Madurai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Role Dropdown -->
+            <div>
+                <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Select Role</label>
+                <div class="relative">
+                    <select id="role" name="roleId" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" required>
+                        <option value="">-- Select Role --</option>
+                        <th:block th:each="role : ${roles}">
+                            <option th:value="${role.id}" th:text="${role.roleName}"></option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Hidden input for selected users -->
+            <input type="hidden" name="selectedUserIds" id="selectedUserIds">
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="w-full flex justify-center items-center px-4 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200">
+                    <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                    </svg>
+                    Assign Role
+                </button>
+            </div>
+        </form>
+
+        <!-- Success/Error Messages -->
+        <div class="mt-6 text-center">
+            <div th:if="${message}" class="p-3 bg-green-50 rounded-lg border border-green-200 flex items-center justify-center">
+                <svg class="h-5 w-5 text-green-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-sm text-green-700" th:text="${message}"></p>
+            </div>
+            <div th:if="${error}" class="p-3 bg-red-50 rounded-lg border border-red-200 flex items-center justify-center">
+                <svg class="h-5 w-5 text-red-400 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-sm text-red-700" th:text="${error}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optionally, show a message to non-admin users -->
+<div sec:authorize="!hasRole('ROLE_ADMIN')" class="text-center py-12">
+    <h2 class="text-2xl font-bold text-gray-900">Access Denied</h2>
+    <p class="text-gray-600 mt-2">You do not have permission to view this page.</p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userSearch = document.getElementById('userSearch');
+        const userList = document.getElementById('userList');
+        const selectedUsers = document.getElementById('selectedUsers');
+        const selectedUserIds = document.getElementById('selectedUserIds');
+        const form = document.getElementById('assignRoleForm');
+        const selectedUsersMap = new Map();
+
+        // Search functionality
+        userSearch.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const userItems = userList.getElementsByClassName('user-item');
+            
+            Array.from(userItems).forEach(item => {
+                const userName = item.getAttribute('data-user-name').toLowerCase();
+                const userEmail = item.getAttribute('data-user-email').toLowerCase();
+                
+                if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    if (searchTerm) {
+                        const regex = new RegExp(searchTerm, 'gi');
+                        const name = item.getAttribute('data-user-name');
+                        const email = item.getAttribute('data-user-email');
+                        item.innerHTML = `
+                            <div class="font-medium">${name.replace(regex, match => `<span class="bg-yellow-200">${match}</span>`)}</div>
+                            <div class="text-sm text-gray-500">${email.replace(regex, match => `<span class="bg-yellow-200">${match}</span>`)}</div>
+                        `;
+                    } else {
+                        item.innerHTML = `
+                            <div class="font-medium">${item.getAttribute('data-user-name')}</div>
+                            <div class="text-sm text-gray-500">${item.getAttribute('data-user-email')}</div>
+                        `;
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // User selection functionality
+        userList.addEventListener('click', function(e) {
+            const userItem = e.target.closest('.user-item');
+            if (userItem) {
+                const userId = userItem.getAttribute('data-user-id');
+                const userName = userItem.getAttribute('data-user-name');
+                const userEmail = userItem.getAttribute('data-user-email');
+
+                if (!selectedUsersMap.has(userId)) {
+                    selectedUsersMap.set(userId, { name: userName, email: userEmail });
+                    updateSelectedUsers();
+                }
+            }
+        });
+
+        // Remove selected user
+        selectedUsers.addEventListener('click', function(e) {
+            const removeBtn = e.target.closest('.remove-user');
+            if (removeBtn) {
+                const userId = removeBtn.getAttribute('data-user-id');
+                selectedUsersMap.delete(userId);
+                updateSelectedUsers();
+            }
+        });
+
+        function updateSelectedUsers() {
+            selectedUsers.innerHTML = '';
+            const userIds = [];
+            
+            selectedUsersMap.forEach((user, userId) => {
+                userIds.push(userId);
+                const userDiv = document.createElement('div');
+                userDiv.className = 'flex items-center justify-between p-2 bg-gray-50 rounded';
+                userDiv.innerHTML = `
+                    <div>
+                        <div class="font-medium">${user.name}</div>
+                        <div class="text-sm text-gray-500">${user.email}</div>
+                    </div>
+                    <button type="button" class="remove-user text-red-500 hover:text-red-700" data-user-id="${userId}">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                selectedUsers.appendChild(userDiv);
+            });
+
+            selectedUserIds.value = userIds.join(',');
+            console.log('Selected User IDs:', selectedUserIds.value); // Debug log
+        }
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitted with selectedUserIds:', selectedUserIds.value); // Debug log
+            if (selectedUsersMap.size === 0) {
+                e.preventDefault();
+                alert('Please select at least one user');
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html> 

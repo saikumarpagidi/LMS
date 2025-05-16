@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                        "/home/test", "/home/about", "/home/register", "/home/services", "/home/do-register",
+                        "/home/test", "/home/about", "/home/oneDayProgram", "/home/course/ai-healthcare-intro", "/home/register", "/home/services", "/home/do-register",
                         "/home/login", "/home/authenticate",
                         "/static/**", "/templates/**", "/css/**", "/js/**", "/images/**",
                         "/home/access-denied",  // fixed path for access-denied

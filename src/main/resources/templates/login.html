@@ -78,5 +78,17 @@
     <script>
         console.log("Login page loaded");
     </script>
+
+    <script th:fragment="script">
+        // Prevent going back to login page after logout
+        window.onload = function() {
+            if (window.history && window.history.pushState) {
+                window.history.pushState('forward', null, './login');
+                window.onpopstate = function() {
+                    window.history.pushState('forward', null, './login');
+                };
+            }
+        }
+    </script>
 </body>
 </html>

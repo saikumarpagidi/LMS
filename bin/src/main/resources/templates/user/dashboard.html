@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<head>
+  <title>Dashboard - Home Page</title>
+  <!-- Include Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="//unpkg.com/alpinejs" defer></script>
+  <style>
+    /* Custom styles for a clean, professional look */
+    .dashboard-container {
+      background-color: transparent; /* Removed background */
+    }
+    .dashboard-content {
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div id="content" class="min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-7xl p-8">
+      <!-- Header -->
+      <div th:if="${loggedInUser}">
+        <!-- Uncomment if you want to include the sidebar -->
+        <!-- <div data-th-replace="~{user/sidebar::sidebar}"></div> -->
+      </div>
+
+      <!-- Main Content -->
+      <div class="dashboard-container">
+        <!-- Professional Greeting Section -->
+        <div class="text-center mb-12">
+          <h1 class="text-4xl font-bold text-gray-900 mb-2">
+            Welcome, <span class="text-blue-600" data-th-text="${loggedInUser.name}"></span>
+          </h1>
+          <p class="text-lg text-gray-600">
+            Manage your activities and monitor your performance from this central hub.
+          </p>
+        </div>
+
+        <!-- Quick Stats or Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-700">Quick Actions</h3>
+            <p class="text-gray-600 mt-2">Start new tasks or view reports</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-700">Recent Activity</h3>
+            <p class="text-gray-600 mt-2">Check your latest updates</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-semibold text-gray-700">Performance</h3>
+            <p class="text-gray-600 mt-2">View your progress metrics</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log("Dashboard initialized");
+  </script>
+</body>
+</html>

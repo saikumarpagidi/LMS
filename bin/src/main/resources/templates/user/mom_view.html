@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>MOM Details</title>
+</head>
+<body>
+
+<h2>📄 MOM Details</h2>
+
+<p><strong>Title:</strong> <span th:text="${mom.title}"></span></p>
+<p><strong>Description:</strong> <span th:text="${mom.description}"></span></p>
+
+<a th:href="@{/mom/download/{fileName}(fileName=${mom.filePath})}" download>⬇️ Download File</a>
+<a href="/mom/dashboard">🔙 Back to Dashboard</a>
+
+</body>
+</html>

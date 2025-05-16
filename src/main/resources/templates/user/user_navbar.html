@@ -1,206 +1,246 @@
-<nav data-th-fragment="user-navbar" class="fixed w-full top-0 left-0 right-0 z-50 bg-blue-700 border-b border-blue-700 shadow-sm">
-  <div class="max-w-screen-xl mx-auto px-2 sm:px-4 lg:px-6">
-    <div class="flex items-center justify-between h-16">
-      <!-- Left Side: Navigation Links -->
-      <div class="flex items-center space-x-2">
-        <!-- Logo -->
-        <div class="flex items-center space-x-2 ">
-          <a th:href="@{https://www.cdac.in/}" class="flex items-center">
-            <img th:src="@{/images/cdac-logo-sm.png}" class="h-12 w-auto" alt="C-DAC Logo">
-            <!-- Text Wrapper for Alignment -->
-            <div class="ml-2 text-left w-full">
-              <span class="block text-white font-bold text-lg">e-Adhyan</span>
-              <span class="block text-white text-sm font-semibold">AI-based Training Platform</span>
-            </div>
-          </a>
-        </div>
-
-        <!-- PMU Dropdown -->
-        <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI', 'ROLE_PMU_NOIDA')" class="relative group">
-          <button class="flex items-center space-x-2 px-3 py-2 text-white hover:text-blue-200 transition-all duration-200">
-            <i class="fa-solid fa-diagram-project text-lg"></i>
-            <span class="font-medium">PMU</span>
-            <i class="fa-solid fa-chevron-down text-xs mt-1"></i>
-          </button>
-          <div class="absolute hidden group-hover:block pt-2 w-48 nav-dropdown">
-            <div class="bg-white py-2 rounded-lg shadow-xl border border-gray-100">
-              <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI')" th:href="@{/pmu/pmu-delhi}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-city text-sm"></i>
-                <span>PMU Mohali</span>
-              </a>
-              <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'PMU_NOIDA')" th:href="@{/pmu/pmu-noida}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-building text-sm"></i>
-                <span>PMU Noida</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Create Users Dropdown -->
-        <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative group">
-          <button class="flex items-center space-x-2 px-3 py-2 text-white hover:text-blue-200 transition-all duration-200">
-            <i class="fa-solid fa-users-gear text-lg"></i>
-            <span class="font-medium">Users</span>
-            <i class="fa-solid fa-chevron-down text-xs mt-1"></i>
-          </button>
-          <div class="absolute hidden group-hover:block pt-2 w-48 nav-dropdown">
-            <div class="bg-white py-2 rounded-lg shadow-xl border border-gray-100">
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/assign/assignrole}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-user-shield text-sm"></i>
-                <span>Assign Role</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/users}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-users-viewfinder text-sm"></i>
-                <span>View Users</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/coordinator/add}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-user-plus text-sm"></i>
-                <span>Create Role</span>
-              </a>
-              <!-- Added View Role -->
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/coordinator/role}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-eye text-sm"></i>
-                <span>View Role</span>
-              </a>
-              <!-- Resource Center Dashboard Link for Registered Students -->
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/students}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-user-graduate text-sm"></i>
-                <span>Registered Students</span>
-              </a>
-              <!-- Resource Center Dashboard Link for Registered Faculty -->
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/faculty}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-chalkboard-user text-sm"></i>
-                <span>Registered Faculty</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Create Courses Dropdown -->
-        <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative group">
-          <button class="flex items-center space-x-2 px-3 py-2 text-white hover:text-blue-200 transition-all duration-200">
-            <i class="fa-solid fa-chalkboard-user text-lg"></i>
-            <span class="font-medium">Courses</span>
-            <i class="fa-solid fa-chevron-down text-xs mt-1"></i>
-          </button>
-          <div class="absolute hidden group-hover:block pt-2 w-48 nav-dropdown">
-            <div class="bg-white py-2 rounded-lg shadow-xl border border-gray-100">
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/course/create}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-plus-circle text-sm"></i>
-                <span>New Course</span>
-              </a>
-              
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/course-design}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-calendar-plus text-sm"></i>
-                <span> Course Design</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/course-schedules/create}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-calendar-plus text-sm"></i>
-                <span>Schedule Course</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/course-schedules/list}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-calendar-plus text-sm"></i>
-                <span>Schedule view Course</span>
-              </a>
-              <!-- Resource Center Dashboard Links -->
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/courses}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-book text-sm"></i>
-                <span>Course Details</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/assign-course}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-user-plus text-sm"></i>
-                <span>Assign Course</span>
-              </a>
-              
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/quiz/upload}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-book text-sm"></i>
-                <span>Upload Quiz</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_RESOURCE_CENTER')" th:href="@{/center/quiz/assign}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-book text-sm"></i>
-                <span>Assign Quiz</span>
-              </a>            
-            </div>
-          </div>
-        </div>
-
-        <!-- Resources Dropdown -->
-        <div sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI','PMU_NOIDA')" class="relative group">
-          <button class="flex items-center space-x-2 px-3 py-2 text-white hover:text-blue-200 transition-all duration-200">
-            <i class="fa-solid fa-folder-open text-lg"></i>
-            <span class="font-medium">Resources</span>
-            <i class="fa-solid fa-chevron-down text-xs mt-1"></i>
-          </button>
-          <div class="absolute hidden group-hover:block pt-2 w-48 nav-dropdown">
-            <div class="bg-white py-2 rounded-lg shadow-xl border border-gray-100">
-              <a sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI', 'PMU_NOIDA' )" th:href="@{/resource-center-dashboard}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-gauge-high text-sm"></i>
-                <span>Resource Dashboard</span>
-              </a>
-              <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/college/add}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-building-columns text-sm"></i>
-                <span>Manage Colleges</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Attendance Dropdown for Faculty -->
-        <div sec:authorize="hasRole('ROLE_FACULTY')" class="relative group">
-          <button class="flex items-center space-x-2 px-3 py-2 text-white hover:text-blue-200 transition-all duration-200">
-            <i class="fa-solid fa-clipboard-check text-lg"></i>
-            <span class="font-medium">Attendance</span>
-            <i class="fa-solid fa-chevron-down text-xs mt-1"></i>
-          </button>
-          <div class="absolute hidden group-hover:block pt-2 w-48 nav-dropdown">
-            <div class="bg-white py-2 rounded-lg shadow-xl border border-gray-100">
-              <!-- Lab Attendance Links -->
-              <a th:href="@{/attendance/upload}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-upload text-sm"></i>
-                <span>Upload Lab Attendance</span>
-              </a>
-              <a th:href="@{/attendance/faculty/view}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-eye text-sm"></i>
-                <span>View Lab Attendance</span>
-              </a>
-              <!-- Class Attendance Links -->
-              <a th:href="@{/class-attendance/upload}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-upload text-sm"></i>
-                <span>Upload Class Attendance</span>
-              </a>
-              <a th:href="@{/class-attendance/faculty/view}" class="flex items-center space-x-2 px-4 py-2.5 text-gray-700 transition duration-200">
-                <i class="fa-solid fa-eye text-sm"></i>
-                <span>View Class Attendance</span>
-              </a>
-            </div>
-          </div>
-        </div>
+<!-- User Navbar - Styling matched with main navbar -->
+<nav data-th-fragment="user-navbar" class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0" x-data="{ profileOpen: false }">
+  <!-- Header Top Bar -->
+  <div class="w-full border-b border-gray-200 bg-white m-0 p-0">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-2 py-2 m-0 p-0">
+      <!-- Left: Logos -->
+      <div class="flex items-center space-x-6">
+        <img th:src="@{/images/ministry.png}" alt="Govt of India" class="h-12 w-auto"/>
+        <img th:src="@{/images/cdac-seal.png}" alt="C-DAC" class="h-20 w-auto"/>
+        <img th:src="@{/images/e-adhyan.gif}" alt="e-Adhyan" class="h-20 w-auto"/>
       </div>
-
-      <!-- Right Side: Profile & Logout Dropdown -->
-      <div class="flex items-center space-x-4">
-        <div class="relative" x-data="{ open: false }">
-          <button @click="open = !open" class="profile-group flex items-center space-x-2 px-3 py-2 transition-all duration-200 focus:outline-none">
-            <span class="profile-name text-lg font-bold text-white" data-th-text="${loggedInUser.name}"></span>
-            <i class="profile-icon fa-solid fa-circle-user text-2xl text-white"></i>
-          </button>
-          <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 nav-dropdown">
-            <a th:href="@{/user/profile}" class="flex items-center space-x-2 px-4 py-2 text-gray-700 transition duration-200">
-              <i class="fa-solid fa-id-card text-sm"></i>
-              <span>Profile</span>
-            </a>
-            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/users}" class="flex items-center space-x-2 px-4 py-2 text-gray-700 transition duration-200">
-              <i class="fa-solid fa-users-line text-sm"></i>
-              <span>Users</span>
-            </a>
-            <div class="border-t border-gray-200"></div>
-            <a th:href="@{/do-logout}" class="flex items-center space-x-2 px-4 py-2 text-gray-700 transition duration-200">
-              <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
-              <span>Logout</span>
-            </a>
-          </div>
-        </div>
+      
+      <!-- Right: User Info and Support -->
+      <div class="flex items-center space-x-3">
+        <a th:href="@{mailto:eadhyan-support@cdac.in}" class="flex items-center text-blue-900 hover:text-blue-600 text-sm">
+          <i class="fas fa-envelope mr-1"></i>
+          <span>eadhyan-support@cdac.in</span>
+        </a>
+        <button @click="profileOpen = !profileOpen" class="flex items-center space-x-2 text-green-700 font-semibold hover:text-green-600">
+          <span data-th-text="${loggedInUser.name}" class="font-medium"></span>
+          <i class="fas fa-user-circle text-xl"></i>
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Blue Navigation Bar -->
+  <div class="w-full bg-gradient-to-b from-blue-600 to-blue-500 shadow h-12 flex items-center border-b border-blue-700">
+    <div class="max-w-7xl mx-auto flex items-center justify-between w-full px-2">
+      <!-- Menu Items -->
+      <ul class="flex items-center h-12">
+        <!-- PMU Dropdown -->
+        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI', 'ROLE_PMU_NOIDA')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+            <i class="fa-solid fa-diagram-project mr-1"></i>
+            <span>PMU</span>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+          </button>
+          <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
+            <div class="pt-1">
+              <ul class="bg-white text-black rounded shadow-lg border border-gray-200 overflow-hidden">
+                <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI')">
+                  <a th:href="@{/pmu/pmu-delhi}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-city mr-2 text-sm"></i>PMU Mohali
+                  </a>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'PMU_NOIDA')">
+                  <a th:href="@{/pmu/pmu-noida}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-building mr-2 text-sm"></i>PMU Noida
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <!-- Users Dropdown -->
+        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+            <i class="fa-solid fa-users-gear mr-1"></i>
+            <span>Users</span>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+          </button>
+          <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
+            <div class="pt-1">
+              <ul class="bg-white text-black rounded shadow-lg border border-gray-200 overflow-hidden">
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/assign/assignrole}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-user-shield mr-2 text-sm"></i>Assign Role
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/user/users}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-users-viewfinder mr-2 text-sm"></i>View Users
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/user/coordinator/add}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Create Role
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/user/coordinator/role}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-eye mr-2 text-sm"></i>View Role
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/students}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-user-graduate mr-2 text-sm"></i>Registered Students
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/faculty}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-chalkboard-user mr-2 text-sm"></i>Registered Faculty
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <!-- Courses Dropdown -->
+        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+            <i class="fa-solid fa-chalkboard-user mr-1"></i>
+            <span>Courses</span>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+          </button>
+          <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
+            <div class="pt-1">
+              <ul class="bg-white text-black rounded shadow-lg border border-gray-200 overflow-hidden">
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/course/create}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-plus-circle mr-2 text-sm"></i>New Course
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/course-design}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Course Design
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/course-schedules/create}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Schedule Course
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/course-schedules/list}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Schedule view Course
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/courses}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-book mr-2 text-sm"></i>Course Details
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/assign-course}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Assign Course
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/quiz/upload}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-book mr-2 text-sm"></i>Upload Quiz
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
+                  <a th:href="@{/center/quiz/assign}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-book mr-2 text-sm"></i>Assign Quiz
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <!-- Resources Dropdown -->
+        <li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI','PMU_NOIDA')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+            <i class="fa-solid fa-folder-open mr-1"></i>
+            <span>Resources</span>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+          </button>
+          <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
+            <div class="pt-1">
+              <ul class="bg-white text-black rounded shadow-lg border border-gray-200 overflow-hidden">
+                <li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI', 'PMU_NOIDA' )">
+                  <a th:href="@{/resource-center-dashboard}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-gauge-high mr-2 text-sm"></i>Resource Dashboard
+                  </a>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                  <a th:href="@{/college/add}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-building-columns mr-2 text-sm"></i>Manage Colleges
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        <!-- Attendance Dropdown for Faculty -->
+        <li sec:authorize="hasRole('ROLE_FACULTY')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+            <i class="fa-solid fa-clipboard-check mr-1"></i>
+            <span>Attendance</span>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+          </button>
+          <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
+            <div class="pt-1">
+              <ul class="bg-white text-black rounded shadow-lg border border-gray-200 overflow-hidden">
+                <li>
+                  <a th:href="@{/attendance/upload}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-upload mr-2 text-sm"></i>Upload Lab Attendance
+                  </a>
+                </li>
+                <li>
+                  <a th:href="@{/attendance/faculty/view}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-eye mr-2 text-sm"></i>View Lab Attendance
+                  </a>
+                </li>
+                <li>
+                  <a th:href="@{/class-attendance/upload}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-upload mr-2 text-sm"></i>Upload Class Attendance
+                  </a>
+                </li>
+                <li>
+                  <a th:href="@{/class-attendance/faculty/view}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+                    <i class="fa-solid fa-eye mr-2 text-sm"></i>View Class Attendance
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Search Bar -->
+      <form th:action="@{/search}" method="get" class="flex items-center space-x-0 bg-blue-400 rounded h-8 ml-4">
+        <input type="text" name="query" placeholder="Search for anything" class="px-2 py-1 h-8 rounded-l border-0 text-sm focus:outline-none w-44"/>
+        <button type="submit" class="bg-white text-blue-700 px-3 h-8 rounded-r font-semibold hover:bg-gray-100 text-sm flex items-center justify-center"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Profile Dropdown -->
+  <div x-show="profileOpen" @click.away="profileOpen = false" class="absolute right-6 top-24 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-50">
+    <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+      <i class="fa-solid fa-id-card mr-2"></i>Profile
+    </a>
+    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/users}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+      <i class="fa-solid fa-users-line mr-2"></i>Users
+    </a>
+    <div class="border-t border-gray-200 my-1"></div>
+    <a th:href="@{/do-logout}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+      <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Logout
+    </a>
+  </div>
 </nav>
+
+<style>
+  /* Custom hover behavior to avoid instant dropdown closing */
+  .group:hover .group-hover\:block {
+    display: block !important;
+  }
+</style>

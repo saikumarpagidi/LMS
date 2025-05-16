@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{navbar :: navbar}"></div>
+    
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Contact Us</h1>
+                <p class="card-text">Have questions? We'd love to hear from you.</p>
+                <a th:href="@{/}" class="btn btn-primary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
