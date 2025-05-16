@@ -31,18 +31,25 @@ public class LiveClassScheduleController {
         model.addAttribute("courses", courseService.getAllCourses());
 
         model.addAttribute("resourceCenters",
-            (location != null && !location.isEmpty())
-              ? institutionService.getInstitutionsByLocation(location)
-              : institutionService.getAllInstitutions()
-        );
+                (location != null && !location.isEmpty())
+                        ? institutionService.getInstitutionsByLocation(location)
+                        : institutionService.getAllInstitutions());
+
         model.addAttribute("selectedLocation", location);
-        return "live-class-create";  // resolves to live-class-create.html
+        return "live-class-create";  // live-class-create.html
     }
 
     @PostMapping("/create")
-    public String saveLiveClass(@ModelAttribute LiveClassSchedule liveClassSchedule) {
+    public String saveLiveClass(@ModelAttribute LiveClassSchedule liveClassSchedule, Model model) {
         liveClassScheduleService.createLiveClassSchedule(liveClassSchedule);
-        return "redirect:/live-classes/list";
+
+        // Add success message and reset the form
+        model.addAttribute("successMessage", "✅ Live class created successfully!");
+        model.addAttribute("liveClassSchedule", new LiveClassSchedule());
+        model.addAttribute("courses", courseService.getAllCourses());
+        model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
+
+        return "live-class-create";  // Return same form with success message
     }
 
     @GetMapping("/list")
