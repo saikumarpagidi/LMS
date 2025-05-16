@@ -1,10 +1,12 @@
 package com.lms.cdac.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.lms.cdac.entities.Badge;
 import com.lms.cdac.entities.Course;
 import com.lms.cdac.entities.CourseAssignment;
 import com.lms.cdac.entities.CourseModule;
@@ -27,7 +30,8 @@ import com.lms.cdac.entities.CourseSchedule;
 import com.lms.cdac.entities.CourseTopic;
 import com.lms.cdac.entities.QuizAssignment;
 import com.lms.cdac.entities.User;
-import com.lms.cdac.entities.Badge;
+import com.lms.cdac.entities.LiveClassSchedule;
+import com.lms.cdac.services.BadgeService;
 import com.lms.cdac.services.CourseAssignmentService;
 import com.lms.cdac.services.CourseModuleService;
 import com.lms.cdac.services.CourseProgressService;
@@ -36,200 +40,223 @@ import com.lms.cdac.services.CourseScheduleService;
 import com.lms.cdac.services.CourseService;
 import com.lms.cdac.services.CourseTopicService;
 import com.lms.cdac.services.QuizAssignmentService;
-import com.lms.cdac.services.BadgeService;
+import com.lms.cdac.services.LiveClassScheduleService;
+import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+
 
 @Controller
 public class StudentDashboardController {
 
-	private final CourseAssignmentService courseAssignmentService;
-	private final CourseResourceService courseResourceService;
-	private final CourseScheduleService courseScheduleService;
-	private final CourseService courseService;
-	private final CourseModuleService courseModuleService;
-	private final CourseTopicService courseTopicService;
-	private final QuizAssignmentService quizAssignmentService;
-	private final CourseProgressService courseProgressService;
-	private final BadgeService badgeService;
+    private final CourseAssignmentService courseAssignmentService;
+    private final CourseResourceService courseResourceService;
+    private final CourseScheduleService courseScheduleService;
+    private final CourseService courseService;
+    private final CourseModuleService courseModuleService;
+    private final CourseTopicService courseTopicService;
+    private final QuizAssignmentService quizAssignmentService;
+    private final CourseProgressService courseProgressService;
+    private final BadgeService badgeService;
+    private final LiveClassScheduleService liveClassScheduleService;
 
-	public StudentDashboardController(CourseAssignmentService courseAssignmentService,
-			CourseResourceService courseResourceService, CourseScheduleService courseScheduleService,
-			CourseService courseService, CourseModuleService courseModuleService, CourseTopicService courseTopicService,
-			QuizAssignmentService quizAssignmentService, CourseProgressService courseProgressService,
-			BadgeService badgeService) {
-		this.courseAssignmentService = courseAssignmentService;
-		this.courseResourceService = courseResourceService;
-		this.courseScheduleService = courseScheduleService;
-		this.courseService = courseService;
-		this.courseModuleService = courseModuleService;
-		this.courseTopicService = courseTopicService;
-		this.quizAssignmentService = quizAssignmentService;
-		this.courseProgressService = courseProgressService;
-		this.badgeService = badgeService;
-	}
+    public StudentDashboardController(
+            CourseAssignmentService courseAssignmentService,
+            CourseResourceService courseResourceService,
+            CourseScheduleService courseScheduleService,
+            CourseService courseService,
+            CourseModuleService courseModuleService,
+            CourseTopicService courseTopicService,
+            QuizAssignmentService quizAssignmentService,
+            CourseProgressService courseProgressService,
+            BadgeService badgeService,
+            LiveClassScheduleService liveClassScheduleService) {
+        this.courseAssignmentService = courseAssignmentService;
+        this.courseResourceService = courseResourceService;
+        this.courseScheduleService = courseScheduleService;
+        this.courseService = courseService;
+        this.courseModuleService = courseModuleService;
+        this.courseTopicService = courseTopicService;
+        this.quizAssignmentService = quizAssignmentService;
+        this.courseProgressService = courseProgressService;
+        this.badgeService = badgeService;
+        this.liveClassScheduleService = liveClassScheduleService;
+    }
 
-	@GetMapping("/student/dashboard")
-	public String studentDashboard(Model model, Authentication authentication) {
-		User student = (User) authentication.getPrincipal();
-		if (!student.hasRole("STUDENT")) {
-			return "redirect:/user/dashboard";
-		}
+    @GetMapping("/student/dashboard")
+    public String studentDashboard(Model model, Authentication authentication) {
+        User student = (User) authentication.getPrincipal();
+        if (!student.hasRole("STUDENT")) {
+            return "redirect:/user/dashboard";
+        }
 
-		// Fetch course assignments for the student
-		List<CourseAssignment> assignments = courseAssignmentService.getAssignmentsForStudent(student);
+        List<CourseAssignment> assignments = courseAssignmentService.getAssignmentsForStudent(student);
 
-		// Load resources and schedules for each assigned course
-		Map<Integer, CourseSchedule> scheduleMap = new HashMap<>();
-		Map<Integer, Double> progressMap = new HashMap<>();
-		Map<Integer, Badge> badgeMap = new HashMap<>();
-		Map<Integer, Double> overallProgressMap = new HashMap<>();
+        Map<Integer, CourseSchedule> scheduleMap = new HashMap<>();
+        Map<Integer, Double> progressMap = new HashMap<>();
+        Map<Integer, Badge> badgeMap = new HashMap<>();
+        Map<Integer, Double> overallProgressMap = new HashMap<>();
 
-		assignments.forEach(assignment -> {
-			Integer courseId = assignment.getCourse().getId();
-			Course course = assignment.getCourse();
+        List<Integer> courseIds = assignments.stream()
+                .map(a -> a.getCourse().getId())
+                .collect(Collectors.toList());
 
-			List<CourseResource> resources = courseResourceService.getResourcesByCourse(courseId);
-			course.setResources(resources);
+        Map<Integer, List<LiveClassSchedule>> liveClassMap = new HashMap<>();
+        if (!courseIds.isEmpty()) {
+            List<LiveClassSchedule> allLive = liveClassScheduleService.getLiveClassesByCourseIds(courseIds);
+            liveClassMap = allLive.stream()
+                    .collect(Collectors.groupingBy(LiveClassSchedule::getCourseId));
+        }
 
-			// For each resource, fetch its progress from the database
-			resources.forEach(resource -> {
-				Optional<CourseProgress> progressOpt = courseProgressService.getProgress(student.getUserId(), courseId, resource.getId());
-				resource.setProgress(progressOpt.map(CourseProgress::getProgressPercentage).orElse(0.0));
-			});
+        assignments.forEach(assignment -> {
+            Integer courseId = assignment.getCourse().getId();
+            Course course = assignment.getCourse();
 
-			List<CourseSchedule> schedules = courseScheduleService.getScheduleByCourseId(courseId);
-			if (!schedules.isEmpty()) {
-				scheduleMap.put(courseId, schedules.get(0));
-			}
+            List<CourseResource> resources = courseResourceService.getResourcesByCourse(courseId);
+            course.setResources(resources);
+            resources.forEach(resource -> {
+                Optional<CourseProgress> progressOpt = courseProgressService.getProgress(
+                        student.getUserId(), courseId, resource.getId());
+                resource.setProgress(progressOpt.map(CourseProgress::getProgressPercentage).orElse(0.0));
+            });
 
-			// Calculate overall progress for each course
-			double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
-			progressMap.put(courseId, overallProgress);
+            List<CourseSchedule> schedules = courseScheduleService.getScheduleByCourseId(courseId);
+            if (!schedules.isEmpty()) {
+                scheduleMap.put(courseId, schedules.get(0));
+            }
 
-			// Calculate badge for the course
-			Badge badge = badgeService.calculateBadge(student, course);
-			badgeMap.put(courseId, badge);
+            double overallProgress = courseProgressService.calculateOverallProgress(
+                    student.getUserId(), courseId);
+            progressMap.put(courseId, overallProgress);
 
-			// Calculate overall weighted progress
-			double weightedProgress = badgeService.calculateOverallProgress(student, course);
-			overallProgressMap.put(courseId, weightedProgress);
-		});
+            Badge badge = badgeService.calculateBadge(student, course);
+            badgeMap.put(courseId, badge);
 
-		model.addAttribute("assignments", assignments);
-		model.addAttribute("scheduleMap", scheduleMap);
-		model.addAttribute("progressMap", progressMap);
-		model.addAttribute("badgeMap", badgeMap);
-		model.addAttribute("overallProgressMap", overallProgressMap);
-		return "student-dashboard";
-	}
+            double weightedProg = badgeService.calculateOverallProgress(student, course);
+            overallProgressMap.put(courseId, weightedProg);
+        });
 
-	@PostMapping("/student/update-progress")
-	@ResponseBody
-	public ResponseEntity<String> updateCourseProgress(@RequestBody Map<String, Object> payload, Authentication authentication) {
-		try {
-			User student = (User) authentication.getPrincipal();
-			Integer courseId = Integer.parseInt(payload.get("courseId").toString());
-			Integer resourceId = Integer.parseInt(payload.get("resourceId").toString());
-			Double progressPercentage = Double.parseDouble(payload.getOrDefault("progressPercentage", 0.0).toString());
-			Double lastWatchedPosition = Double.parseDouble(payload.getOrDefault("lastWatchedPosition", 0.0).toString());
+        model.addAttribute("assignments", assignments);
+        model.addAttribute("scheduleMap", scheduleMap);
+        model.addAttribute("progressMap", progressMap);
+        model.addAttribute("badgeMap", badgeMap);
+        model.addAttribute("overallProgressMap", overallProgressMap);
+        model.addAttribute("liveClassMap", liveClassMap);
+        return "student-dashboard";
+    }
 
-			if (courseId == null || resourceId == null) {
-				return ResponseEntity.badRequest().body("Error: Course ID और Resource ID ज़रूरी हैं!");
-			}
+    @PostMapping("/student/update-progress")
+    @ResponseBody
+    public ResponseEntity<String> updateCourseProgress(@RequestBody Map<String, Object> payload,
+            Authentication authentication) {
+        try {
+            User student = (User) authentication.getPrincipal();
+            Integer courseId = Integer.parseInt(payload.get("courseId").toString());
+            Integer resourceId = Integer.parseInt(payload.get("resourceId").toString());
+            Double progressPercentage = Double.parseDouble(
+                    payload.getOrDefault("progressPercentage", 0.0).toString());
+            Double lastWatchedPosition = Double.parseDouble(
+                    payload.getOrDefault("lastWatchedPosition", 0.0).toString());
 
-			CourseProgress courseProgress = courseProgressService.getProgress(student.getUserId(), courseId, resourceId)
-					.orElse(new CourseProgress(student.getUserId(), courseId, resourceId));
+            if (courseId == null || resourceId == null) {
+                return ResponseEntity.badRequest().body("Error: Course ID and Resource ID need!");
+            }
 
-			courseProgress.setProgressPercentage(progressPercentage);
-			courseProgress.setLastWatchedPosition(lastWatchedPosition);
-			courseProgressService.saveProgress(courseProgress);
+            CourseProgress courseProgress = courseProgressService.getProgress(
+                    student.getUserId(), courseId, resourceId)
+                    .orElse(new CourseProgress(student.getUserId(), courseId, resourceId));
 
-			return ResponseEntity.ok("Progress updated successfully!");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error: " + e.getMessage());
-		}
-	}
+            courseProgress.setProgressPercentage(progressPercentage);
+            courseProgress.setLastWatchedPosition(lastWatchedPosition);
+            courseProgressService.saveProgress(courseProgress);
 
-	@GetMapping("/student/get-progress")
-	@ResponseBody
-	public CourseProgress getProgress(@RequestParam("courseId") Integer courseId,
-			@RequestParam("resourceId") Integer resourceId,
-			Authentication authentication) {
-		User student = (User) authentication.getPrincipal();
-		return courseProgressService.getProgress(student.getUserId(), courseId, resourceId)
-				.orElseGet(() -> new CourseProgress(student.getUserId(), courseId, resourceId, 0.0, 0.0));
-	}
+            return ResponseEntity.ok("Progress updated successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
+    }
 
-	@GetMapping("/student/course-syllabus/{courseId}")
-	public String showStudentCourseSyllabus(@PathVariable Integer courseId, Model model,
-			Authentication authentication) {
-		User student = (User) authentication.getPrincipal();
-		if (!student.hasRole("STUDENT")) {
-			return "redirect:/user/dashboard";
-		}
+    @GetMapping("/student/get-progress")
+    @ResponseBody
+    public CourseProgress getProgress(@RequestParam("courseId") Integer courseId,
+            @RequestParam("resourceId") Integer resourceId,
+            Authentication authentication) {
+        User student = (User) authentication.getPrincipal();
+        return courseProgressService.getProgress(student.getUserId(), courseId, resourceId)
+                .orElseGet(() -> new CourseProgress(student.getUserId(), courseId, resourceId, 0.0, 0.0));
+    }
 
-		// Fetch the course
-		Course course = courseService.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+    @GetMapping("/student/course-syllabus/{courseId}")
+    public String showStudentCourseSyllabus(@PathVariable Integer courseId, Model model,
+            Authentication authentication) {
+        User student = (User) authentication.getPrincipal();
+        if (!student.hasRole("STUDENT")) {
+            return "redirect:/user/dashboard";
+        }
 
-		// Load modules and their topics for the course
-		List<CourseModule> modules = courseModuleService.getModulesByCourseId(courseId);
-		
-		// Get course-level quiz assignment (where module and topic are null)
-		QuizAssignment courseQuizAssignment = null;
-		List<QuizAssignment> courseQuizAssignments = quizAssignmentService.getAssignmentByCourse(course);
-		if (courseQuizAssignments != null && !courseQuizAssignments.isEmpty()) {
-			for (QuizAssignment assignment : courseQuizAssignments) {
-				if (assignment.getModule() == null && assignment.getTopic() == null) {
-					courseQuizAssignment = assignment;
-					break;
-				}
-			}
-		}
+        Course course = courseService.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
-		if (modules != null) {
-			for (CourseModule module : modules) {
-				List<CourseTopic> topics = courseTopicService.getTopicsByModule(module.getId());
-				module.setTopics(topics != null ? topics : new ArrayList<>());
+        List<CourseModule> modules = courseModuleService.getModulesByCourseId(courseId);
 
-				// Get module-level quiz assignment (where topic is null)
-				QuizAssignment moduleQuizAssignment = quizAssignmentService.getAssignmentByCourseAndModule(course, module);
-				module.setQuizAssignment(moduleQuizAssignment);
-				
-				// Fetch and set the quiz assignment for each topic
-				if (topics != null) {
-					for (CourseTopic topic : topics) {
-						// Get topic-level quiz assignment
-						QuizAssignment topicQuizAssignment = quizAssignmentService.getAssignmentByTopic(topic);
-						topic.setQuizAssignment(topicQuizAssignment);
+        QuizAssignment courseQuizAssignment = null;
+        List<QuizAssignment> courseQuizAssignments = quizAssignmentService.getAssignmentByCourse(course);
+        if (courseQuizAssignments != null && !courseQuizAssignments.isEmpty()) {
+            for (QuizAssignment qa : courseQuizAssignments) {
+                if (qa.getModule() == null && qa.getTopic() == null) {
+                    courseQuizAssignment = qa;
+                    break;
+                }
+            }
+        }
 
-						// Load progress for each resource in the topic
-						if (topic.getResources() != null) {
-							topic.getResources().forEach(resource -> {
-								courseProgressService.getProgress(student.getUserId(), course.getId(), resource.getId())
-										.ifPresent(progress -> resource.setProgress(progress.getProgressPercentage()));
-							});
-						}
-					}
-				}
-			}
-			course.setModules(modules);
-		} else {
-			course.setModules(new ArrayList<>());
-		}
-		
-		// Calculate and add overall course progress
-		double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
-		model.addAttribute("overallProgress", overallProgress);
-		model.addAttribute("course", course);
-		model.addAttribute("courseQuizAssignment", courseQuizAssignment);
-		model.addAttribute("courseQuizAssignments", courseQuizAssignments);
-		return "resource-center/course-syllabus";
-	}
+        if (modules != null) {
+            for (CourseModule mod : modules) {
+                List<CourseTopic> topics = courseTopicService.getTopicsByModule(mod.getId());
+                mod.setTopics(topics != null ? topics : new ArrayList<>());
+                QuizAssignment modQuiz = quizAssignmentService.getAssignmentByCourseAndModule(course, mod);
+                mod.setQuizAssignment(modQuiz);
+                if (topics != null) {
+                    for (CourseTopic topic : topics) {
+                        QuizAssignment topQuiz = quizAssignmentService.getAssignmentByTopic(topic);
+                        topic.setQuizAssignment(topQuiz);
+                        if (topic.getResources() != null) {
+                            topic.getResources().forEach(res -> {
+                                courseProgressService.getProgress(
+                                        student.getUserId(), courseId, res.getId())
+                                        .ifPresent(p -> res.setProgress(p.getProgressPercentage()));
+                            });
+                        }
+                    }
+                }
+            }
+            course.setModules(modules);
+        } else {
+            course.setModules(new ArrayList<>());
+        }
 
-	@GetMapping("/admin/course-progress")
-	public String showAllProgress(Model model) {
-		List<CourseProgress> allProgress = courseProgressService.getAllCourseProgress();
-		model.addAttribute("progressList", allProgress);
-		return "course_progress_dashboard";
-	}
+        double overallProgress = courseProgressService.calculateOverallProgress(student.getUserId(), courseId);
+        model.addAttribute("overallProgress", overallProgress);
+        model.addAttribute("course", course);
+        model.addAttribute("courseQuizAssignment", courseQuizAssignment);
+        model.addAttribute("courseQuizAssignments", courseQuizAssignments);
+
+        // Use existing service method for single-course lookup
+        List<LiveClassSchedule> upcomingLiveClasses =
+        	    liveClassScheduleService.getActiveOrUpcomingLiveClassesByCourseId(courseId);
+        	model.addAttribute("upcomingLiveClasses", upcomingLiveClasses);
+
+               // model.addAttribute("upcomingLiveClasses", upcomingLiveClasses);
+        model.addAttribute("currentTime", LocalDateTime.now());
+
+
+        return "resource-center/course-syllabus";
+    }
+
+    @GetMapping("/admin/course-progress")
+    public String showAllProgress(Model model) {
+        List<CourseProgress> allProgress = courseProgressService.getAllCourseProgress();
+        model.addAttribute("progressList", allProgress);
+        return "course_progress_dashboard";
+    }
 }
