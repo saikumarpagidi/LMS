@@ -85,6 +85,51 @@
                     </div>
                 </div>
             </header>
+			
+			<section class="mb-8">
+			      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+			        <h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming & Live Classes</h2>
+
+			        <div th:if="${#lists.isEmpty(upcomingLiveClasses)}" class="text-gray-500">
+			          No upcoming live classes scheduled.
+			        </div>
+
+			        <ul th:if="${!#lists.isEmpty(upcomingLiveClasses)}" class="space-y-4">
+			          <li th:each="lc : ${upcomingLiveClasses}"
+			              class="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+
+			            <div>
+			              <p class="font-medium text-gray-800" th:text="${lc.topic}">Live Class Topic</p>
+			              <p class="text-sm text-gray-600">
+			                <span th:text="${lc.formattedStartTime}">Start</span>
+			                &nbsp;to&nbsp;
+			                <span th:text="${lc.formattedEndTime}">End</span>
+			              </p>
+			            </div>
+
+			            <div>
+			              
+			              <a th:if="${currentTime.isAfter(lc.startTime) and currentTime.isBefore(lc.endTime)}"
+			                 th:href="${lc.liveClassLink}"
+			                 target="_blank" rel="noopener noreferrer"
+			                 class="inline-flex items-center px-4 py-2 text-sm font-medium
+			                        bg-green-600 text-white rounded-lg hover:bg-green-700">
+			                Join Now
+			              </a>
+
+			              <
+			              <button th:if="${currentTime.isBefore(lc.startTime)}"
+			                      disabled
+			                      class="inline-flex items-center px-4 py-2 text-sm font-medium
+			                             bg-gray-400 text-white rounded-lg cursor-not-allowed">
+			                Starts at <span th:text="${lc.formattedStartTime}"></span>
+			              </button>
+			            </div>
+
+			          </li>
+			        </ul>
+			      </div>
+			    </section>
 
             <!-- Modules Section -->
             <div class="space-y-5">

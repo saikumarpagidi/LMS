@@ -11,24 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
 //TODO:
 function changeTheme() {
   //set to web page
-
   changePageTheme(currentTheme, "");
+  
   //set the listener to change theme button
   const changeThemeButton = document.querySelector("#theme_change_button");
-
-  changeThemeButton.addEventListener("click", (event) => {
-    let oldTheme = currentTheme;
-    console.log("change theme button clicked");
-    if (currentTheme === "dark") {
-      //theme ko light
-      currentTheme = "light";
-    } else {
-      //theme ko dark
-      currentTheme = "dark";
-    }
-    console.log(currentTheme);
-    changePageTheme(currentTheme, oldTheme);
-  });
+  
+  // Only add listener if button exists
+  if (changeThemeButton) {
+    changeThemeButton.addEventListener("click", (event) => {
+      let oldTheme = currentTheme;
+      console.log("change theme button clicked");
+      if (currentTheme === "dark") {
+        //theme ko light
+        currentTheme = "light";
+      } else {
+        //theme ko dark
+        currentTheme = "dark";
+      }
+      console.log(currentTheme);
+      changePageTheme(currentTheme, oldTheme);
+    });
+  }
 }
 
 //set theme to localstorage
@@ -44,20 +47,29 @@ function getTheme() {
 
 //change current page theme
 function changePageTheme(theme, oldTheme) {
-  //localstorage  update
+  //localstorage update
   setTheme(currentTheme);
+  
+  // Get the html element
+  const htmlElement = document.querySelector("html");
+  if (!htmlElement) return;
+  
   //remove the current theme
-
   if (oldTheme) {
-    document.querySelector("html").classList.remove(oldTheme);
+    htmlElement.classList.remove(oldTheme);
   }
+  
   //set the current theme
-  document.querySelector("html").classList.add(theme);
+  htmlElement.classList.add(theme);
 
-  // change the text of button
-  document
-    .querySelector("#theme_change_button")
-    .querySelector("span").textContent = theme == "light" ? "Dark" : "Light";
+  // Change the text of button
+  const themeButton = document.querySelector("#theme_change_button");
+  if (themeButton) {
+    const spanElement = themeButton.querySelector("span");
+    if (spanElement) {
+      spanElement.textContent = theme == "light" ? "Dark" : "Light";
+    }
+  }
 }
 
 //change page change theme

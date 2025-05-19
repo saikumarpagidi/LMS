@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                        "/home/test", "/home/about", "/home/oneDayProgram", "/home/course/ai-healthcare-intro", "/home/register", "/home/services", "/home/do-register",
+                        "/home/test", "home/courses", "/home/about", "/home/oneDayProgram", "/home/course/ai-healthcare-intro", "/home/register", "/home/services", "/home/do-register",
                         "/home/login", "/home/authenticate",
                         "/static/**", "/templates/**", "/css/**", "/js/**", "/images/**",
                         "/home/access-denied",  // fixed path for access-denied
@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers("/class-attendance/**").hasRole("FACULTY")
                 .requestMatchers("/admin/**", "/assign", "/course/create/**").hasRole("ADMIN")
                 .requestMatchers("/assign/assignrole").hasRole("ADMIN")
+                .requestMatchers("/live-classes/**").hasRole("ADMIN")
                 .requestMatchers("/faculty/**").hasRole("FACULTY")
                 .requestMatchers("/meity/**").hasRole("MEITY")
                 .requestMatchers("/pmu/**").hasAnyRole("PMU_MOHALI", "PMU_NOIDA", "ADMIN")

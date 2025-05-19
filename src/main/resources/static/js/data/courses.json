@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "title": "Introduction to AI in Healthcare",
+    "instructors": "Mr. ABC, Ms. DEF",
+    "category": "Artificial Intelligence",
+    "duration": "1-Day Program",
+    "provider": "C-DAC Noida",
+    "image": "images/Picture2.jpg",
+    "description": "Learn the fundamentals of AI applications in healthcare systems",
+    "date_added": "2023-07-15"
+  },
+  {
+    "id": 2,
+    "title": "Prescription Mgmt. using AI",
+    "instructors": "Mr. ABC, Ms. DEF",
+    "category": "Artificial Intelligence",
+    "duration": "1-Day Program",
+    "provider": "C-DAC Noida",
+    "image": "images/Picture3.jpg",
+    "description": "Learn how AI can streamline and improve prescription management systems",
+    "date_added": "2023-08-10"
+  },
+  {
+    "id": 3,
+    "title": "Future of AI in Healthcare",
+    "instructors": "Mr. ABC, Ms. DEF",
+    "category": "Artificial Intelligence",
+    "duration": "2-Day Program",
+    "provider": "C-DAC Mohali",
+    "image": "images/Picture2.jpg",
+    "description": "Explore emerging trends and future applications of AI in healthcare",
+    "date_added": "2023-09-05"
+  },
+  {
+    "id": 4,
+    "title": "AI Case Studies",
+    "instructors": "Mr. ABC, Ms. DEF",
+    "category": "Artificial Intelligence",
+    "duration": "3-Day Program",
+    "provider": "C-DAC Noida",
+    "image": "images/Picture4.jpg",
+    "description": "Analyze real-world applications and case studies of AI implementation",
+    "date_added": "2023-06-20"
+  },
+  {
+    "id": 5,
+    "title": "Cybersecurity Fundamentals",
+    "instructors": "Dr. GHI, Prof. JKL",
+    "category": "Cyber Security",
+    "duration": "1-Day Program",
+    "provider": "C-DAC Mohali",
+    "image": "images/Picture5.png",
+    "description": "Introduction to core concepts and practices in cybersecurity",
+    "date_added": "2023-10-15"
+  },
+  {
+    "id": 6,
+    "title": "Network Security Essentials",
+    "instructors": "Dr. GHI, Prof. JKL",
+    "category": "Cyber Security",
+    "duration": "2-Day Program",
+    "provider": "C-DAC Noida",
+    "image": "images/Picture6.png",
+    "description": "Learn principles and practices for securing network infrastructure",
+    "date_added": "2023-11-10"
+  },
+  {
+    "id": 7,
+    "title": "Ethical Hacking Workshop",
+    "instructors": "Dr. MNO, Prof. PQR",
+    "category": "Cyber Security",
+    "duration": "5-Day Program",
+    "provider": "C-DAC Mohali",
+    "image": "images/Picture3.jpg",
+    "description": "Hands-on training in ethical hacking methodologies and tools",
+    "date_added": "2023-12-05"
+  },
+  {
+    "id": 8,
+    "title": "Advanced Threat Intelligence",
+    "instructors": "Dr. MNO, Prof. PQR",
+    "category": "Cyber Security",
+    "duration": "10-Day Program",
+    "provider": "C-DAC Noida",
+    "image": "images/Picture4.jpg",
+    "description": "Advanced techniques for identifying and mitigating cyber threats",
+    "date_added": "2024-01-20"
+  }
+] 

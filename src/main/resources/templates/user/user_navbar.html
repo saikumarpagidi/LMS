@@ -46,7 +46,7 @@
                 </li>
                 <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'PMU_NOIDA')">
                   <a th:href="@{/pmu/pmu-noida}" class="block px-4 py-2 hover:bg-gray-100 text-left">
-                    <i class="fa-solid fa-building mr-2 text-sm"></i>PMU Noida
+                    <i class="fa-solid fa-building mr-2 text-sm"></i>Co-PMU Noida
                   </a>
                 </li>
               </ul>
@@ -134,6 +134,11 @@
                     <i class="fa-solid fa-book mr-2 text-sm"></i>Course Details
                   </a>
                 </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+				                  <a th:href="@{/live-classes/create}" class="block px-4 py-2 hover:bg-gray-100 text-left">
+				                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Live Class Shedule
+				                  </a>
+				                </li>
                 <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
                   <a th:href="@{/center/assign-course}" class="block px-4 py-2 hover:bg-gray-100 text-left">
                     <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Assign Course

@@ -37,11 +37,11 @@
             <i :class="showAbout ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="ml-1 text-xs"></i>
           </button>
           <ul x-show="showAbout" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-            <li><a th:href="@{/home/about}" class="block px-4 py-2 hover:bg-gray-100 text-left">About Us</a></li>
-            <li><a th:href="@{/home/why-program}" class="block px-4 py-2 hover:bg-gray-100 text-left">Why this Program?</a></li>
-            <li><a th:href="@{/home/what-achieve}" class="block px-4 py-2 hover:bg-gray-100 text-left">What do you achieve?</a></li>
-            <li><a th:href="@{/home/who-intended}" class="block px-4 py-2 hover:bg-gray-100 text-left">Who is this intended for?</a></li>
-            <li><a th:href="@{/home/what-acquire}" class="block px-4 py-2 hover:bg-gray-100 text-left">What can you acquire?</a></li>
+            <li><a th:href="@{/home/about}" class="block px-4 py-2 text-left text-black bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">About Us</a></li>
+            <li><a th:href="@{/home/why-program}" class="block px-4 py-2 text-left text-black bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">Why this Program?</a></li>
+            <li><a th:href="@{/home/what-achieve}" class="block px-4 py-2 text-left text-black bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">What do you achieve?</a></li>
+            <li><a th:href="@{/home/who-intended}" class="block px-4 py-2 text-left text-black bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">Who is this intended for?</a></li>
+            <li><a th:href="@{/home/what-acquire}" class="block px-4 py-2 text-left text-black bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">What can you acquire?</a></li>
           </ul>
         </li>
         <!-- Courses -->
@@ -53,31 +53,31 @@
           <!-- Level 1 Dropdown -->
           <ul x-show="showCourses" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
             <li class="relative group">
-              <button @click.prevent="subCourse = subCourse === 'ai' ? null : 'ai'" class="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between">
+              <button @click.prevent="subCourse = subCourse === 'ai' ? null : 'ai'" class="block w-full text-left px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 flex items-center justify-between">
                 Artificial Intelligence 
                 <i :class="subCourse === 'ai' ? 'fas fa-chevron-down' : 'fas fa-chevron-right'" class="text-xs ml-2"></i>
               </button>
               <!-- Level 2 Dropdown -->
               <ul x-show="subCourse === 'ai'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-                <li><a th:href="@{/home/oneDayProgram}" class="block px-4 py-2 hover:bg-gray-100">1-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/2-day}" class="block px-4 py-2 hover:bg-gray-100">2-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/3-day}" class="block px-4 py-2 hover:bg-gray-100">3-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/5-day}" class="block px-4 py-2 hover:bg-gray-100">5-Day Program</a></li>
-                <li><a th:href="@{/courses/ai/10-day}" class="block px-4 py-2 hover:bg-gray-100">10-Day Program</a></li>
+                <li><a th:href="@{/home/oneDayProgram}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">1-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/2-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">2-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/3-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">3-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/5-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">5-Day Program</a></li>
+                <li><a th:href="@{/courses/ai/10-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">10-Day Program</a></li>
               </ul>
             </li>
             <li class="relative group">
-              <button @click.prevent="subCourse = subCourse === 'cyber' ? null : 'cyber'" class="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between">
+              <button @click.prevent="subCourse = subCourse === 'cyber' ? null : 'cyber'" class="block w-full text-left px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 flex items-center justify-between">
                 Cyber Security
                 <i :class="subCourse === 'cyber' ? 'fas fa-chevron-down' : 'fas fa-chevron-right'" class="text-xs ml-2"></i>
               </button>
               <!-- Level 2 Dropdown -->
               <ul x-show="subCourse === 'cyber'" x-cloak class="absolute left-full top-0 ml-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-                <li><a th:href="@{/courses/cyber/1-day}" class="block px-4 py-2 hover:bg-gray-100">1-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/2-day}" class="block px-4 py-2 hover:bg-gray-100">2-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/3-day}" class="block px-4 py-2 hover:bg-gray-100">3-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/5-day}" class="block px-4 py-2 hover:bg-gray-100">5-Day Program</a></li>
-                <li><a th:href="@{/courses/cyber/10-day}" class="block px-4 py-2 hover:bg-gray-100">10-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/1-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">1-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/2-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">2-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/3-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">3-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/5-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">5-Day Program</a></li>
+                <li><a th:href="@{/courses/cyber/10-day}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200">10-Day Program</a></li>
               </ul>
             </li>
           </ul>
@@ -89,13 +89,13 @@
             <i :class="showBulletin ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="ml-1 text-xs"></i>
           </button>
           <ul x-show="showBulletin" x-cloak class="absolute left-0 top-full mt-1 w-56 bg-white text-black rounded shadow-lg border border-gray-200 z-50">
-            <li><a th:href="@{/bulletin}" class="block px-4 py-2 hover:bg-gray-100 text-left">News Room</a></li>
-            <li><a th:href="@{/newsroom}" class="block px-4 py-2 hover:bg-gray-100 text-left">Events</a></li>
-            <li><a th:href="@{/internship}" class="block px-4 py-2 hover:bg-gray-100 text-left">Internship</a></li>
-            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Blogs</a></li>
-            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Research Work</a></li>
-            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Board of Studies</a></li>
-            <li><a th:href="@{/blogs}" class="block px-4 py-2 hover:bg-gray-100 text-left">Technical Expert Committee</a></li>
+            <li><a th:href="@{/bulletin}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">News Room</a></li>
+            <li><a th:href="@{/newsroom}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Events</a></li>
+            <li><a th:href="@{/internship}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Internship</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Blogs</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Research Work</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Board of Studies</a></li>
+            <li><a th:href="@{/blogs}" class="block px-4 py-2 bg-[#cad7d7] border-b border-white hover:bg-[#a8b5b5] transition-all duration-200 text-left">Technical Expert Committee</a></li>
           </ul>
         </li>
       </ul>

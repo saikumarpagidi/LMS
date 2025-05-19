@@ -22,7 +22,7 @@
            
             <!-- Right Side: Course Details -->
 <div class="w-full md:w-2/3">
-    <div class="bg-[#cfe2f3] rounded-lg p-6">
+    <div class="bg-[#14b9d5] rounded-lg p-6">
         <h2 class="text-xl font-semibold mb-4 text-left pl-2">Course Details</h2>
         <div class="grid grid-cols-2 gap-x-2 gap-y-3 pl-4">
             <div class="font-medium text-left">Enrolment Start Date:</div>
@@ -49,7 +49,7 @@
 
         <!-- Tabs Section -->
         <div class="max-w-7xl mx-auto px-4 mt-8" x-data="{ activeTab: 'overview' }">
-            <div class="border-b border-gray-200 bg-[#dae6f3]">
+            <div class="border-b border-gray-200 bg-[#14b9d5]">
                 <nav class="flex -mb-px">
                     <a href="#" 
                        @click.prevent="activeTab = 'overview'" 
@@ -60,13 +60,13 @@
                     <a href="#" 
                        @click.prevent="activeTab = 'structure'" 
                        :class="{ 'bg-white border-b-2 border-blue-500 text-blue-600': activeTab === 'structure' }"
-                       class="w-1/4 py-4 px-1 text-center text-gray-500 hover:text-gray-700">
+                       class="w-1/4 py-4 px-1 text-center  hover:text-gray-700">
                         Course Structure
                     </a>
                     <a href="#" 
                        @click.prevent="activeTab = 'instructor'" 
                        :class="{ 'bg-white border-b-2 border-blue-500 text-blue-600': activeTab === 'instructor' }"
-                       class="w-1/4 py-4 px-1 text-center text-gray-500 hover:text-gray-700">
+                       class="w-1/4 py-4 px-1 text-center  hover:text-gray-700">
                         Instructor
                     </a>
                     <a href="#" 

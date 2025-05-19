@@ -61,6 +61,12 @@ public class PageController {
         System.out.println("Contact Page handler");
         return "contact"; // Returns the view name for contact page
     }
+    
+    @GetMapping("/courses")
+    public String coursesPage() {
+        System.out.println("Courses Page handler");
+        return "courses"; // Returns the view name for courses page
+    }
 
     @GetMapping("/login")
     public String loginPage() {

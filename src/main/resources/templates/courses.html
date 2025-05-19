@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::#custom-scripts})}">
+<head>
+    <title>Courses - e-Adhyan</title>
+</head>
+<body>
+    <div id="content" class="mt-24">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <!-- Main Container with Sidebar and Content -->
+            <div class="flex flex-col md:flex-row">
+                <!-- Filters Sidebar -->
+                <div class="w-full md:w-1/4 pr-0 md:pr-6 mb-6 md:mb-0">
+                    <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Filter By</h2>
+                        
+                        <!-- Course Category -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-800 mb-2">Course Category</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="ai" name="category" value="Artificial Intelligence" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="ai" class="ml-2 text-sm text-gray-700">Artificial Intelligence</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="cyber" name="category" value="Cyber Security" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="cyber" class="ml-2 text-sm text-gray-700">Cyber Security</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Duration -->
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-gray-800 mb-2">Duration</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="1day" name="duration" value="1-Day Program" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="1day" class="ml-2 text-sm text-gray-700">1-Day Program</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="2day" name="duration" value="2-Day Program" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="2day" class="ml-2 text-sm text-gray-700">2-Day Program</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="3day" name="duration" value="3-Day Program" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="3day" class="ml-2 text-sm text-gray-700">3-Day Program</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="5day" name="duration" value="5-Day Program" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="5day" class="ml-2 text-sm text-gray-700">5-Day Program</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="10day" name="duration" value="10-Day Program" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="10day" class="ml-2 text-sm text-gray-700">10-Day Program</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Provider -->
+                        <div class="mb-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Content provider</h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="noida" name="provider" value="C-DAC Noida" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="noida" class="ml-2 text-sm text-gray-700">C-DAC Noida</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="mohali" name="provider" value="C-DAC Mohali" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                    <label for="mohali" class="ml-2 text-sm text-gray-700">C-DAC Mohali</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Main Content Area -->
+                <div class="w-full md:w-3/4">
+                    <!-- Search and Sort Bar -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <!-- Search input -->
+                        <div class="w-full md:w-1/2 mb-4 md:mb-0 flex">
+                            <input type="text" id="courseSearch" placeholder="Search a Course" class="px-4 py-2 border border-gray-300 rounded-l w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="searchButton" class="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 transition">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Sort dropdown -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-700">Sort By</span>
+                            <select id="sortSelect" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Latest Up">Latest Up</option>
+                                <option value="Latest Down">Latest Down</option>
+                                <option value="Relevance">Relevance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtered By Section -->
+                    <div class="mb-4 flex justify-between items-center">
+                        <div id="filtered-label" class="text-sm text-gray-600"></div>
+                        <button id="clearAll" class="text-blue-600 hover:text-blue-800 text-sm">Clear All</button>
+                    </div>
+                    
+                    <!-- Courses Title -->
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Courses</h2>
+                    
+                    <!-- Course Cards Grid -->
+                    <div id="courseContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Loading indicator -->
+                        <div class="loading-indicator text-center col-span-full py-8">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+                            <p class="text-gray-500">Loading courses...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="custom-scripts">
+        <script th:src="@{/js/courses.js}"></script>
+        <script>
+            // Global Debugging Function
+            window.courseDebug = function(message) {
+                console.log('Course Debug:', message);
+            };
+            
+            // Create a global variable with the correct base URL for images
+            window.baseImageUrl = /*[[@{/}]]*/ '/';
+            console.log('Base URL for images:', window.baseImageUrl);
+            
+            // Make sure the functions are available in global scope
+            function removeFilter(type, value) {
+                if (window.removeFilter) {
+                    window.removeFilter(type, value);
+                } else {
+                    console.error('removeFilter function not available');
+                }
+            }
+            
+            function clearSearch() {
+                if (window.clearSearch) {
+                    window.clearSearch();
+                } else {
+                    console.error('clearSearch function not available');
+                }
+            }
+            
+            // Verify DOM loaded and JS execution
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Course page DOM loaded - HTML script block');
+                courseDebug('HTML inline script executed');
+                
+                // Additional check for image loading issues
+                setTimeout(function() {
+                    // Check all images on the page
+                    const images = document.querySelectorAll('img');
+                    console.log('Total images on page:', images.length);
+                    
+                    // Count broken images
+                    let brokenCount = 0;
+                    images.forEach(img => {
+                        if (!img.complete || img.naturalWidth === 0) {
+                            brokenCount++;
+                            console.error('Broken image:', img.src);
+                        }
+                    });
+                    
+                    console.log('Broken images found:', brokenCount);
+                }, 3000); // Check after 3 seconds
+            });
+        </script>
+    </div>
+</body>
+</html> 
