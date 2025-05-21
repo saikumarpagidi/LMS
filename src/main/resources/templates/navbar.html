@@ -1,4 +1,4 @@
-<!-- Navbar fragment: सिर्फ nav -->
+<!-- Navbar fragment:  nav -->
 <nav th:fragment="navbar" class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0" x-data="{ showAbout:false, showCourses:false, showBulletin:false, subCourse:null }" @click.away="showAbout=false; showCourses=false; showBulletin=false; subCourse=null">
   <!-- Header Top Bar -->
   <div class="w-full border-b border-gray-200 bg-white m-0 p-0">
@@ -13,12 +13,16 @@
       <div class="flex-1 flex justify-center">
         <!-- Optionally add branding here if needed -->
       </div>
-      <!-- Right: Support, Login, Signup -->
-      <div class="flex items-center space-x-2">
+      <!-- Right: Support, Time, Login, Signup -->
+      <div class="flex items-center space-x-3">
+        <!-- Support Email -->
         <a th:href="@{mailto:eadhyan-support@cdac.in}" class="flex items-center text-blue-900 hover:text-blue-600 text-sm mr-2">
           <i class="fas fa-envelope mr-1"></i>
           <span>eadhyan-support@cdac.in</span>
         </a>
+        <!-- 🔴 Live Time -->
+        <div id="liveTime" class="text-blue-900 font-semibold text-sm hidden sm:inline-block"></div>
+        <!-- Login & Signup -->
         <a th:href="@{/home/login}" class="text-green-700 font-semibold hover:underline text-base">Login</a>
         <a th:href="@{/home/register}" class="ml-1 px-3 py-1 bg-green-500 text-white font-semibold rounded shadow hover:bg-green-600 transition text-base">Signup</a>
       </div>
@@ -106,4 +110,21 @@
       </form>
     </div>
   </div>
+
+  <!-- 🕒 Live Time Script -->
+  <script>
+    function updateLiveTime() {
+      const now = new Date();
+      const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      };
+      document.getElementById('liveTime').textContent = now.toLocaleTimeString('en-US', options);
+    }
+    updateLiveTime();
+    setInterval(updateLiveTime, 1000);
+  </script>
 </nav>
+ 

@@ -56,6 +56,7 @@ public interface UserService {
 	User findByEmail(String email);
 	
 	List<String> getAllResourceCenters();
+	void enableUser(String userId);
 
 	//
 }

@@ -1,153 +1,214 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+
 <head>
     <title>Sign Up</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-12">
-    <div id="content" class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-6rem)]">
-        <div class="w-full max-w-lg bg-white p-10 shadow-2xl rounded-2xl border border-gray-200">
-            <h2 class="text-3xl font-bold text-center text-gray-900">Create Your Account</h2>
-            <p class="text-center text-gray-500 mb-6">Join our community today!</p>
-            
-            <form th:action="@{/home/do-register}" method="post" th:object="${userForm}" novalidate>
+<div id="content" class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-6rem)]">
+    <div class="w-full max-w-lg bg-white p-10 shadow-2xl rounded-2xl border border-gray-200">
+        <h2 class="text-3xl font-bold text-center text-gray-900">Create Your Account</h2>
+        <p class="text-center text-gray-500 mb-6">Join our community today!</p>
 
-                <!-- Name -->
-                <div class="mb-4">
-                    <label for="name" class="block text-md font-medium text-gray-700">Full Name</label>
-                    <input type="text" id="name" th:field="*{name}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-                        placeholder="John Doe" required />
-                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500 text-sm"></div>
-                </div>
+        <form th:action="@{/home/do-register}" method="post" th:object="${userForm}" novalidate autocomplete="off">
 
-                <!-- Email -->
-                <div class="mb-4">
-                    <label for="email" class="block text-md font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" th:field="*{email}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-                        placeholder="example@domain.com" required />
-                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-sm"></div>
-                </div>
+            <!-- Global Error Message -->
+            <div th:if="${errorMessage}" class="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">
+                <i class="fas fa-exclamation-circle mr-1"></i> <span th:text="${errorMessage}"></span>
+            </div>
+            <div th:if="${successMessage}" class="bg-green-100 text-green-700 p-2 rounded mb-4 text-sm">
+                <i class="fas fa-check-circle mr-1"></i> <span th:text="${successMessage}"></span>
+            </div>
 
-                <!-- Password -->
-                <div class="mb-4">
-                    <label for="password" class="block text-md font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" th:field="*{password}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-                        placeholder="••••••••" required />
-                    <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-sm"></div>
-                </div>
+            <!-- Name -->
+            <div class="mb-4">
+                <label for="name" class="block text-md font-medium text-gray-700">Full Name</label>
+                <input type="text" id="name" th:field="*{name}" autocomplete="name" aria-label="Full Name"
+                       class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                       placeholder="John Doe" required/>
+                <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500 text-sm"></div>
+            </div>
 
-                <!-- Phone -->
-                <div class="mb-4">
-                    <label for="phoneNumber" class="block text-md font-medium text-gray-700">Phone Number</label>
-                    <input type="text" id="phoneNumber" th:field="*{phoneNumber}" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" 
-                        placeholder="123-456-7890" required />
-                    <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-red-500 text-sm"></div>
-                </div>
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-md font-medium text-gray-700">Email</label>
+                <input type="email" id="email" th:field="*{email}" autocomplete="email" aria-label="Email"
+                       class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                       placeholder="example@domain.com" required/>
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-sm"></div>
+            </div>
 
-                <!-- Resource Center -->
-                <div class="mb-4">
-                    <label for="resourceCenter" class="block text-md font-medium text-gray-700">Resource Center</label>
-                    <select id="resourceCenter" name="resourceCenter" 
+            <!-- Password with Toggle + Strength Meter -->
+            <div class="mb-4 relative">
+                <label for="password" class="block text-md font-medium text-gray-700">Password</label>
+                <input type="password" id="password" th:field="*{password}" autocomplete="new-password"
+                       class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                       placeholder="••••••••" required oninput="checkPasswordStrength(this.value)"/>
+                <i class="fas fa-eye absolute top-10 right-3 text-gray-500 cursor-pointer"
+                   onclick="togglePassword()"></i>
+                <div id="password-strength" class="mt-2 text-sm"></div>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-sm"></div>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-4">
+                <label for="phoneNumber" class="block text-md font-medium text-gray-700">Phone Number</label>
+                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" inputmode="numeric" pattern="[0-9]{10}"
+                       maxlength="10" minlength="10"
+                       class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                       placeholder="10-digit mobile no." required/>
+                <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"
+                     class="text-red-500 text-sm"></div>
+            </div>
+
+            <!-- Resource Center -->
+            <div class="mb-4">
+                <label for="resourceCenter" class="block text-md font-medium text-gray-700">Resource Center</label>
+                <select id="resourceCenter" name="resourceCenter"
                         class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        onchange="loadColleges(this.value)" th:field="*{resourceCenter}">
-                        <option value="">Select Resource Center</option>
-                        <option th:each="center : ${resourceCenters}" 
-                                th:value="${center.resourceCenter}"
-                                th:text="${center.resourceCenter}">
-                        </option>
-                    </select>
-                    <div th:if="${#fields.hasErrors('resourceCenter')}" th:errors="*{resourceCenter}" class="text-red-500 text-sm"></div>
-                </div>
+                        onchange="loadColleges(this.value)" th:field="*{resourceCenter}" required>
+                    <option value="">Select Resource Center</option>
+                    <option th:each="center : ${resourceCenters}"
+                            th:value="${center.resourceCenter}" th:text="${center.resourceCenter}">
+                    </option>
+                </select>
+                <div th:if="${#fields.hasErrors('resourceCenter')}" th:errors="*{resourceCenter}"
+                     class="text-red-500 text-sm"></div>
+            </div>
 
-                <!-- College -->
-                <div class="mb-4">
-                    <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
-                    <select id="college" name="college" 
-                        class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        disabled th:field="*{college}">
+            <!-- College -->
+            <div class="mb-4">
+                <label for="college" class="block text-md font-medium text-gray-700">College/Institution</label>
+                <div class="relative">
+                    <select id="college" name="college"
+                            class="w-full p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            disabled th:field="*{college}" required>
                         <option value="">Select College</option>
                     </select>
-                    <div id="noCollegesMessage" class="hidden mt-2 text-sm text-red-600">
-                        No colleges available for the selected resource center
+                    <div id="loadingSpinner" class="absolute top-3 right-3 hidden">
+                        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                             viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
                     </div>
-                    <div th:if="${#fields.hasErrors('college')}" th:errors="*{college}" class="text-red-500 text-sm"></div>
                 </div>
-
-                <!-- Buttons -->
-                <div class="mt-6 flex flex-col space-y-3">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
-                        Sign Up
-                    </button>
-                    <button type="reset" class="w-full bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition">
-                        Reset
-                    </button>
+                <div id="noCollegesMessage"
+                     class="hidden mt-2 text-sm text-red-600 bg-red-100 border border-red-300 p-2 rounded">
+                    <i class="fas fa-exclamation-circle mr-1"></i> No colleges available for the selected resource center.
                 </div>
+                <div th:if="${#fields.hasErrors('college')}" th:errors="*{college}" class="text-red-500 text-sm"></div>
+            </div>
 
-                <p class="text-center text-sm text-gray-600 mt-4">
-                    Already have an account? <a href="@{/login}" class="text-blue-600 font-semibold hover:underline">Login here</a>
-                </p>
-            </form>
-        </div>
+            <!-- Buttons -->
+            <div class="mt-6 flex flex-col space-y-3">
+                <button type="submit"
+                        class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+                    Sign Up
+                </button>
+                <button type="reset"
+                        onclick="return confirm('Are you sure you want to clear the form?')"
+                        class="w-full bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition">
+                    Reset
+                </button>
+            </div>
+
+            <p class="text-center text-sm text-gray-600 mt-4">
+                Already have an account? <a th:href="@{/home/login}"
+                                            class="text-blue-600 font-semibold hover:underline">Login here</a>
+            </p>
+        </form>
     </div>
+</div>
 
-    <script>
-        const collegeSelect = document.getElementById('college');
-        const noCollegesMessage = document.getElementById('noCollegesMessage');
+<!-- JS Section -->
+<script th:inline="javascript">
+    const collegeSelect = document.getElementById('college');
+    const noCollegesMessage = document.getElementById('noCollegesMessage');
+    const spinner = document.getElementById('loadingSpinner');
 
-        function loadColleges(resourceCenterName) {
-            console.log('Loading colleges for resource center:', resourceCenterName);
-            
-            if (!resourceCenterName) {
-                console.log('No resource center selected');
-                collegeSelect.disabled = true;
-                collegeSelect.innerHTML = '<option value="">Select College</option>';
-                noCollegesMessage.style.display = 'none';
-                return;
-            }
+    function loadColleges(resourceCenterName) {
+        collegeSelect.disabled = true;
+        collegeSelect.innerHTML = '<option value="">Select College</option>';
+        noCollegesMessage.classList.add('hidden');
+        spinner.classList.remove('hidden');
 
-            collegeSelect.disabled = true;
-            collegeSelect.innerHTML = '<option value="">Loading colleges...</option>';
-            noCollegesMessage.style.display = 'none';
-
-            fetch(`[[@{/api/college/by-resource-center-name/}]]${encodeURIComponent(resourceCenterName)}`)
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Received colleges:', data);
-                    
-                    if (Array.isArray(data) && data.length > 0) {
-                        collegeSelect.innerHTML = '<option value="">Select College</option>';
-                        data.forEach(college => {
-                            const option = document.createElement('option');
-                            option.value = college.collegeName;
-                            option.textContent = college.collegeName;
-                            collegeSelect.appendChild(option);
-                        });
-                        collegeSelect.disabled = false;
-                        noCollegesMessage.style.display = 'none';
-                    } else {
-                        collegeSelect.innerHTML = '<option value="">No colleges available</option>';
-                        collegeSelect.disabled = true;
-                        noCollegesMessage.style.display = 'block';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading colleges:', error);
-                    collegeSelect.innerHTML = '<option value="">Error loading colleges</option>';
-                    collegeSelect.disabled = true;
-                    noCollegesMessage.style.display = 'none';
-                });
+        if (!resourceCenterName) {
+            spinner.classList.add('hidden');
+            return;
         }
-    </script>
+
+        const baseUrl = /*[[@{/api/college/by-resource-center-name/}]]*/ '';
+        fetch(baseUrl + encodeURIComponent(resourceCenterName))
+            .then(response => {
+                if (!response.ok) throw new Error("Network response not ok");
+                return response.json();
+            })
+            .then(data => {
+                spinner.classList.add('hidden');
+                if (Array.isArray(data) && data.length > 0) {
+                    data.forEach(college => {
+                        const option = document.createElement('option');
+                        option.value = college.collegeName;
+                        option.textContent = college.collegeName;
+                        collegeSelect.appendChild(option);
+                    });
+                    collegeSelect.disabled = false;
+                } else {
+                    noCollegesMessage.classList.remove('hidden');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading colleges:', error);
+                spinner.classList.add('hidden');
+                noCollegesMessage.textContent = "\u26A0\uFE0F Error loading colleges. Please try again.";
+                noCollegesMessage.classList.remove('hidden');
+            });
+    }
+
+    function togglePassword() {
+        const pwd = document.getElementById('password');
+        pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    }
+
+    function checkPasswordStrength(password) {
+        const strengthText = document.getElementById('password-strength');
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        let message = "";
+        let color = "";
+        switch (strength) {
+            case 0:
+            case 1:
+                message = "Weak";
+                color = "text-red-600";
+                break;
+            case 2:
+                message = "Fair";
+                color = "text-yellow-600";
+                break;
+            case 3:
+                message = "Good";
+                color = "text-blue-600";
+                break;
+            case 4:
+                message = "Strong";
+                color = "text-green-600";
+                break;
+        }
+        strengthText.textContent = `Password Strength: ${message}`;
+        strengthText.className = `mt-2 text-sm font-semibold ${color}`;
+    }
+</script>
 </body>
 </html>

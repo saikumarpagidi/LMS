@@ -79,4 +79,17 @@
         </div>
     </div>
 </body>
+
+<script>
+        history.pushState(null, null, location.href);
+
+        window.onpopstate = function(event) {
+            if (confirm("Do you want to logout?")) {
+                window.location.href = '/do-logout';
+            } else {
+                history.pushState(null, null, location.href);
+            }
+        };
+    </script>
+
 </html> 

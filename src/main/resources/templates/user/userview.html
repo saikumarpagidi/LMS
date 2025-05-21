@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
 <head>
     <title>User Management</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
-    
 </head>
 <body class="bg-gray-50">
 
@@ -18,24 +18,24 @@
             <p class="text-lg text-gray-600">Manage all system users and their permissions</p>
         </div>
 
-        <!-- User Table Section -->
         <div class="assign-container bg-white rounded-xl shadow-lg border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">User Details</h2>
             </div>
 
             <!-- Empty State -->
-            <div th:if="${users == null || users.size() == 0}" class="p-12 text-center">
+            <div th:if="${users == null or #lists.isEmpty(users)}" class="p-12 text-center">
                 <div class="text-gray-400 mb-4">
                     <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                 </div>
                 <p class="text-gray-500">No users found in the system</p>
             </div>
 
             <!-- User Table -->
-            <div th:if="${users != null && users.size() > 0}" class="overflow-x-auto">
+            <div th:if="${users != null and !#lists.isEmpty(users)}" class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -57,8 +57,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${user.college}"></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" th:text="${user.resourceCenter}"></td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span th:classappend="${user.enabled} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" 
-                                      class="px-3 py-1 rounded-full text-xs font-semibold" 
+                                <span th:classappend="${user.enabled} ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                      class="px-3 py-1 rounded-full text-xs font-semibold"
                                       th:text="${user.enabled ? 'Active' : 'Inactive'}"></span>
                             </td>
                         </tr>
@@ -67,45 +67,59 @@
             </div>
 
             <!-- Pagination Controls -->
-            <div th:if="${users != null && users.size() > 0}" class="px-6 py-4 border-t border-gray-200">
+            <div th:if="${users != null and totalPages > 1}" class="px-6 py-4 border-t border-gray-200">
                 <nav class="flex items-center justify-between">
+                    <!-- Mobile -->
                     <div class="flex-1 flex justify-between sm:hidden">
-                        <a th:href="@{/user/users(page=${currentPage - 1}, size=${size})}" 
-                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <a th:classappend="${currentPage == 0} ? 'opacity-50 pointer-events-none' : ''"
+                           th:href="@{/user/users(page=${currentPage-1},size=${size})}"
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md">
                             Previous
                         </a>
-                        <a th:href="@{/user/users(page=${currentPage + 1}, size=${size})}" 
-                           class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <a th:classappend="${currentPage+1 == totalPages} ? 'opacity-50 pointer-events-none' : ''"
+                           th:href="@{/user/users(page=${currentPage+1},size=${size})}"
+                           class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md">
                             Next
                         </a>
                     </div>
+                    <!-- Desktop -->
                     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <p class="text-sm text-gray-700">
+                            Showing page <span class="font-medium" th:text="${currentPage+1}"></span>
+                            of <span class="font-medium" th:text="${totalPages}"></span>
+                        </p>
                         <div>
-                            <p class="text-sm text-gray-700">
-                                Showing page <span class="font-medium" th:text="${currentPage + 1}"></span> of 
-                                <span class="font-medium" th:text="${totalPages}"></span>
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                                <a th:href="@{/user/users(page=${currentPage - 1}, size=${size})}" 
-                                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <nav class="relative z-0 inline-flex shadow-sm -space-x-px">
+                                <!-- Prev button -->
+                                <a th:classappend="${currentPage == 0} ? 'opacity-50 pointer-events-none' : ''"
+                                   th:href="@{/user/users(page=${currentPage-1},size=${size})}"
+                                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border bg-white text-sm font-medium">
                                     <span class="sr-only">Previous</span>
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                              clip-rule="evenodd"/>
                                     </svg>
                                 </a>
-                                <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                                    <a th:href="@{/user/users(page=${i}, size=${size})}" 
-                                       th:text="${i + 1}"
-                                       th:classappend="${i == currentPage} ? 'bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'"
-                                       class="relative inline-flex items-center px-4 py-2 border text-sm font-medium"></a>
+                                <!-- Page numbers -->
+                                <th:block th:each="i : ${#numbers.sequence(0, totalPages-1)}">
+                                    <a th:href="@{/user/users(page=${i},size=${size})}"
+                                       th:text="${i+1}"
+                                       th:classappend="${i == currentPage} ?
+                                           'bg-indigo-50 border-indigo-500 text-indigo-600' :
+                                           'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'"
+                                       class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                    </a>
                                 </th:block>
-                                <a th:href="@{/user/users(page=${currentPage + 1}, size=${size})}" 
-                                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <!-- Next button -->
+                                <a th:classappend="${currentPage+1 == totalPages} ? 'opacity-50 pointer-events-none' : ''"
+                                   th:href="@{/user/users(page=${currentPage+1},size=${size})}"
+                                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border bg-white text-sm font-medium">
                                     <span class="sr-only">Next</span>
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                              clip-rule="evenodd"/>
                                     </svg>
                                 </a>
                             </nav>
@@ -116,7 +130,7 @@
         </div>
     </div>
 
-    <script>
+    <script th:fragment="script">
         console.log("User Management Page Loaded");
     </script>
 </body>

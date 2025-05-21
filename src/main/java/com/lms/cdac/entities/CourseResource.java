@@ -19,6 +19,8 @@ public class CourseResource {
     private String fileUrl;
     private Long fileSize;
     private int sequence;
+    
+
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime uploadedAt;

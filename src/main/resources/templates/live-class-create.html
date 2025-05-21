@@ -1,120 +1,127 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: parent(
+          ~{live-class-create :: content},
+          'Create Live Class Schedule',
+          ~{live-class-create :: script}
+      )}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Create Live Class</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const loc = document.getElementById("location");
-      const rc = document.getElementById("resourceCenterName");
-      loc.addEventListener("change", () => {
-        const sel = loc.value;
-        Array.from(rc.options).forEach(o =>
-          o.hidden = o.value && o.getAttribute("data-location") !== sel
-        );
-        rc.value = "";
-      });
-
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      const iso = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-      document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
-        input.min = iso;
-      });
-    });
-  </script>
+    <title>Create Live Class Schedule</title>
 </head>
-<body class="bg-gray-50 p-6">
-  <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
+<body>
+    <!-- Content Fragment: wrap in main so base can insert correctly -->
+    <div th:fragment="content">
+      <main class="pt-16 bg-gray-50 p-6 min-h-screen">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow">
 
-    <h1 class="text-2xl font-bold mb-6 text-center">Create Live Class Schedule</h1>
+          <h1 class="text-2xl font-bold mb-6 text-center">Create Live Class Schedule</h1>
 
-    <!-- ✅ Success Message -->
-    <div th:if="${successMessage}" id="successMessage"
-         class="mb-4 p-4 bg-green-100 text-green-800 border border-green-300 rounded">
-      <p th:text="${successMessage}"></p>
+          <!-- ✅ Success Message -->
+          <div th:if="${successMessage}" id="successMessage"
+               class="mb-4 p-4 bg-green-100 text-green-800 border border-green-300 rounded">
+            <p th:text="${successMessage}"></p>
+          </div>
+
+          <form th:action="@{/live-classes/create}"
+                th:object="${liveClassSchedule}"
+                method="post"
+                class="space-y-4">
+
+            <div>
+              <label class="block font-medium mb-1">Select Course</label>
+              <select th:field="*{course.id}" class="w-full border rounded p-2" required>
+                <option value="" disabled selected>-- Select Course --</option>
+                <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.courseName}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Select Location</label>
+              <select th:field="*{location}" id="location" class="w-full border rounded p-2" required>
+                <option value="" disabled selected>-- Select Location --</option>
+                <option value="PMU Noida">PMU Noida</option>
+                <option value="PMU Mohali">PMU Mohali</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Select Resource Center</label>
+              <select th:field="*{resourceCenterName}" id="resourceCenterName" class="w-full border rounded p-2" required>
+                <option value="" disabled selected>-- Select Resource Center --</option>
+                <option th:each="rc : ${resourceCenters}"
+                        th:value="${rc.resourceCenter}"
+                        th:text="${rc.resourceCenter}"
+                        th:attr="data-location=${rc.location}"></option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Topic</label>
+              <input type="text" th:field="*{topic}" class="w-full border rounded p-2" placeholder="Enter topic" required>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Description</label>
+              <textarea th:field="*{description}" class="w-full border rounded p-2" placeholder="Brief description" required></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block font-medium mb-1">Start Time</label>
+                <input type="datetime-local" th:field="*{startTime}" class="w-full border rounded p-2" required>
+              </div>
+              <div>
+                <label class="block font-medium mb-1">End Time</label>
+                <input type="datetime-local" th:field="*{endTime}" class="w-full border rounded p-2" required>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Timezone</label>
+              <input type="text" th:field="*{timezone}" class="w-full border rounded p-2" placeholder="Asia/Kolkata" required>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1">Google Meet Link</label>
+              <input type="url" th:field="*{liveClassLink}" class="w-full border rounded p-2"
+                     placeholder="https://meet.google.com/xxx-xxxx-xxx" required>
+            </div>
+
+            <div class="text-center">
+              <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Create Live Class
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </div>
 
-    <form th:action="@{/live-classes/create}"
-          th:object="${liveClassSchedule}"
-          method="post"
-          class="space-y-4">
+    <!-- JavaScript for dynamic behavior -->
+    <script th:fragment="script">
+      document.addEventListener("DOMContentLoaded", () => {
+        const loc = document.getElementById("location");
+        const rc = document.getElementById("resourceCenterName");
+        loc.addEventListener("change", () => {
+          const sel = loc.value;
+          Array.from(rc.options).forEach(o =>
+            o.hidden = o.value && o.getAttribute("data-location") !== sel
+          );
+          rc.value = "";
+        });
 
-      <div>
-        <label class="block font-medium mb-1">Select Course</label>
-        <select th:field="*{course.id}" class="w-full border rounded p-2" required>
-          <option value="" disabled selected>-- Select Course --</option>
-          <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.courseName}"></option>
-        </select>
-      </div>
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const iso = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
+          input.min = iso;
+        });
+      });
 
-      <div>
-        <label class="block font-medium mb-1">Select Location</label>
-        <select th:field="*{location}" id="location" class="w-full border rounded p-2" required>
-          <option value="" disabled selected>-- Select Location --</option>
-          <option value="PMU Noida">PMU Noida</option>
-          <option value="PMU Mohali">PMU Mohali</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">Select Resource Center</label>
-        <select th:field="*{resourceCenterName}" id="resourceCenterName" class="w-full border rounded p-2" required>
-          <option value="" disabled selected>-- Select Resource Center --</option>
-          <option th:each="rc : ${resourceCenters}"
-                  th:value="${rc.resourceCenter}"
-                  th:text="${rc.resourceCenter}"
-                  th:attr="data-location=${rc.location}"></option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">Topic</label>
-        <input type="text" th:field="*{topic}" class="w-full border rounded p-2" placeholder="Enter topic" required>
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">Description</label>
-        <textarea th:field="*{description}" class="w-full border rounded p-2" placeholder="Brief description" required></textarea>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block font-medium mb-1">Start Time</label>
-          <input type="datetime-local" th:field="*{startTime}" class="w-full border rounded p-2" required>
-        </div>
-        <div>
-          <label class="block font-medium mb-1">End Time</label>
-          <input type="datetime-local" th:field="*{endTime}" class="w-full border rounded p-2" required>
-        </div>
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">Timezone</label>
-        <input type="text" th:field="*{timezone}" class="w-full border rounded p-2" placeholder="Asia/Kolkata" required>
-      </div>
-
-      <div>
-        <label class="block font-medium mb-1">Google Meet Link</label>
-        <input type="url" th:field="*{liveClassLink}" class="w-full border rounded p-2"
-               placeholder="https://meet.google.com/xxx-xxxx-xxx" required>
-      </div>
-
-      <div class="text-center">
-        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Create Live Class
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    setTimeout(() => {
-      const msg = document.getElementById("successMessage");
-      if (msg) msg.style.display = "none";
-    }, 5000);
-  </script>
+      setTimeout(() => {
+        const msg = document.getElementById("successMessage");
+        if (msg) msg.style.display = "none";
+      }, 5000);
+    </script>
 </body>
 </html>
