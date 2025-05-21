@@ -370,4 +370,16 @@ nav div.text-left {
             box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.2);
         }
     
-        
+       
+    
+    
+    /* Preserve hover-open behavior */
+  .group:hover .group-hover\:block { display: block !important; }
+  .group\/sub:hover .group-hover\/sub\:block { display: block !important; }
+
+  /* Clip-path helper classes */
+  .bevel-left  { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+  .bevel-right { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+  
+  
+  

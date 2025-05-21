@@ -3,6 +3,8 @@ package com.lms.cdac.services.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lms.cdac.entities.RoleUser;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.entities.AssignRole;
 import com.lms.cdac.helper.ResourceNotFoundException;
 import com.lms.cdac.repsitories.RoleRepo;
 import com.lms.cdac.repsitories.UserRepositories;
@@ -43,6 +46,48 @@ public class UserServiceImpl implements UserService {
         emailService.sendEmail(user.getEmail(),
                 "Welcome to LMS",
                 "Your account has been created successfully.");
+        return savedUser;
+    }
+
+    @Override
+    @Transactional
+    public User saveUserAndAssignRole(User user, String roleName) {
+        // Encode password
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
+        // Save user
+        User savedUser = userRepo.save(user);
+        
+        // Get role
+        RoleUser roleUser = roleRepo.findByRoleName(roleName)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
+        
+        // Directly assign role without checking (since we know it's a new user)
+        // This avoids NullPointerException from hasRole() when assignedRoles is null
+        if (savedUser.getAssignedRoles() == null) {
+            savedUser.setAssignedRoles(new HashSet<>());
+        }
+        
+        // Create and configure new AssignRole entity
+        AssignRole assignRole = new AssignRole();
+        assignRole.setUser(savedUser);
+        assignRole.setRoleUser(roleUser);
+        assignRole.setResourceCenter(savedUser.getResourceCenter());
+        
+        // Add to user's roles collection
+        savedUser.getAssignedRoles().add(assignRole);
+        
+        // Save the updated user
+        savedUser = userRepo.save(savedUser);
+        log.info("Assigned role {} to user with ID: {} in the same transaction", roleName, savedUser.getUserId());
+        
+        // Send welcome email asynchronously
+        emailService.sendEmail(user.getEmail(),
+                "Welcome to LMS",
+                "Your account has been created successfully.");
+                
         return savedUser;
     }
 

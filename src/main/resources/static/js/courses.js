@@ -426,24 +426,48 @@ function displayCourses() {
     
     // Create course cards
     filteredCourses.forEach(course => {
-        // No need for image path code since we're removing images
         const courseCard = document.createElement('div');
-        courseCard.className = 'bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex flex-col';
+        courseCard.className = 'relative bg-white border border-black flex flex-col w-full min-w-[270px] max-w-[350px] mx-auto';
+        courseCard.style.borderRadius = '0';
         
+        // Get the base URL for the application
+        // Attempt to create proper image URL
+        let imagePath = course.image;
+        if (!imagePath.startsWith('http') && !imagePath.startsWith('/')) {
+            // If path is relative, add a leading slash
+            imagePath = '/' + imagePath;
+        }
+        
+        // Create the full URL if window.baseImageUrl is available
+        if (window.baseImageUrl && !imagePath.startsWith('http')) {
+            imagePath = window.baseImageUrl + (imagePath.startsWith('/') ? imagePath.substring(1) : imagePath);
+        }
+
+        // Create context-aware URL
+        let contextPath = '';
+        // Check if we're running in a context path
+        if (window.location.pathname.includes('/mis/')) {
+            contextPath = '/mis';
+        }
+        
+        // Construct the HTML for the card
         courseCard.innerHTML = `
-            <div class="p-6 flex-1 flex flex-col">
+            <img src="${contextPath}${imagePath}" alt="${course.title}" class="w-full h-12 object-cover" style="border-radius:0;"/>
+            <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
                 <div class="text-left flex-1">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2 text-left">${course.title}</h3>
-                    <p class="text-gray-600 mb-4 text-left">${course.instructors}</p>
-                    <p class="text-sm text-gray-500 mb-4 text-left">Category: ${course.category}</p>
-                    <p class="text-sm text-gray-500 mb-4 text-left">Duration: ${course.duration}</p>
-                    <p class="text-sm text-gray-500 mb-4 text-left">Provider: ${course.provider}</p>
+                    <h3 class="text-2xl font-bold text-black mb-2">${course.title}</h3>
+                    <p class="text-black mb-2">${course.instructors}</p>
+                    <p class="text-black mb-2">Category: ${course.category}</p>
+                    <p class="text-black mb-2">Duration: ${course.duration}</p>
+                    <p class="text-black mb-8">Provider: ${course.provider}</p>
                 </div>
-                <a href="#" class="w-full">
-                    <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                        Explore
-                    </button>
-                </a>
+                <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                    <a href="#" onclick="viewCourseDetails(${course.id}); return false;">
+                        <button class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80]">
+                            Explore
+                        </button>
+                    </a>
+                </div>
             </div>
         `;
         
@@ -583,4 +607,15 @@ function clearAllFilters() {
     }
     
     console.log('Filters cleared, no courses displayed');
-} 
+}
+
+// Function to view course details
+window.viewCourseDetails = function(courseId) {
+    console.log('Viewing course with ID:', courseId);
+    
+    // Get the context path from the current URL
+    const contextPath = window.location.pathname.includes('/mis/') ? '/mis' : '';
+    
+    // Navigate to the course detail page
+    window.location.href = `${contextPath}/home/course/ai-healthcare-intro?id=${courseId}`;
+}; 

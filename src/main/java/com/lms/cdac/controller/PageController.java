@@ -161,11 +161,8 @@ public class PageController {
                 .enabled(true) // Enable the user by default
                 .build();
 
-        // Save the user first
-        User savedUser = userService.saveUser(user);
-        
-        // Assign STUDENT role to the new user
-        userService.assignRole(savedUser.getUserId(), "STUDENT");
+        // Save the user AND assign STUDENT role in one transaction
+        userService.saveUserAndAssignRole(user, "STUDENT");
         
         // Add a success message to the session
         Message message = Message.builder()

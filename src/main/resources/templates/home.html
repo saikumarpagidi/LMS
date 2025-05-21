@@ -3,27 +3,294 @@
       th:replace="~{base::parent(~{::#content},~{::title},~{::script})}">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <title>e-Adhyan - Learning Management System | C-DAC</title>
 </head>
 <body>
-    <div th:replace="~{navbar :: navbar}"></div>
-    
-    <div class="container mt-4">
-        <div class="jumbotron">
-            <h1 class="display-4">Welcome to LMS</h1>
-            <p class="lead">Your one-stop solution for learning management</p>
-            <hr class="my-4">
-            <p>Get started with our comprehensive learning platform</p>
-            <div class="mt-4">
-                <a class="btn btn-primary btn-lg" th:href="@{/register}" role="button">Register</a>
-                <a class="btn btn-secondary btn-lg" th:href="@{/login}" role="button">Login</a>
+    <div id="content" class="flex flex-col min-h-screen">
+        <!-- Hero Section with Background Image -->
+        <div class="relative bg-gradient-to-r from-blue-900 to-blue-800 overflow-hidden">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');">
+                </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <!-- Left side: Logo and Hero Text -->
+                    <div class="w-full md:w-7/12 text-white mb-10 md:mb-0">
+                        <h1  class="text-4xl md:text-5xl font-bold leading-tight mb-6 tracking-tight text-left">Transforming Education with <span class="text-yellow-300">Advanced Technology</span></h1>
+                        <p class="text-xl md:text-2xl text-blue-100 mb-10 max-w-xl leading-relaxed text-left">An initiative by C-DAC to revolutionize learning with Artificial Intelligence</p>
+                        
+                        <div class="flex flex-col sm:flex-row gap-5">
+                            <a th:href="@{/home/courses}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 md:py-4 md:text-lg md:px-10 transition-all shadow-lg transform hover:-translate-y-1">
+                                Explore Courses
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                            <a th:href="@{/home/register}" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-base font-medium rounded-md text-white bg-transparent hover:bg-white hover:text-blue-800 md:py-4 md:text-lg md:px-10 transition-all shadow-lg transform hover:-translate-y-1">
+                                Register Now
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Right side: Hero Image -->
+                    <div class="w-full md:w-5/12">
+                        <div class="relative">
+                            <div class="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-lg blur opacity-40"></div>
+                            <img th:src="@{/images/Picture6.png}" alt="AI Education" class="relative rounded-lg shadow-2xl w-full h-auto object-cover border border-blue-900/20"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Wave SVG -->
+            <div class="absolute bottom-0 left-0 right-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" class="w-full">
+                    <path fill="#ffffff" fill-opacity="1" d="M0,64L80,58.7C160,53,320,43,480,48C640,53,800,75,960,75C1120,75,1280,53,1360,42.7L1440,32L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+                </svg>
             </div>
         </div>
+        
+        <!-- Initiative Badges - Redesigned to be more professional -->
+        <div class="bg-white py-12 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap justify-center items-center gap-10 md:gap-20">
+                    <div class="flex items-center">
+                        <img th:src="@{/images/ministry.png}" alt="Ministry of Electronics & IT" class="h-16"/>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="text-center">
+                            <span class="block text-lg font-bold text-gray-900">An initiative under</span>
+                            <span class="block text-sm text-gray-600">Digital India Programme</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Featured Courses Section - Enhanced -->
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Featured Courses</h2>
+                    
+                    <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-600">Discover our specialized courses in emerging technologies</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-16 pb-12">
+                    <!-- Course Card 1 - Improved styling -->
+                    <div class="relative bg-white border border-black group transition-all duration-300 hover:shadow-xl" style="border-radius:0;">
+                        <div class="absolute -top-3 -right-3 bg-yellow-500 text-white px-3 py-1 text-sm font-bold shadow-md z-10">
+                            Popular
+                        </div>
+                        <div class="h-12 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <img th:src="@{/images/Picture2.jpg}" alt="AI in Healthcare" class="w-full h-full object-cover opacity-80"/>
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-4 text-white">
+                                <span class="px-2 py-1 bg-blue-700 text-xs font-bold rounded">Artificial Intelligence</span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
+                            <div class="text-left flex-1">
+                                <h3 class="text-2xl font-bold text-black mb-2">Introduction to AI in Healthcare</h3>
+                                <p class="text-black mb-2">Mr. ABC, Ms. DEF</p>
+                                <p class="text-black mb-2">Category: Artificial Intelligence</p>
+                                <p class="text-black mb-2">Duration: 1-Day Program</p>
+                                <p class="text-black mb-4">Provider: C-DAC Noida</p>
+                            </div>
+                            <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                                <a th:href="@{/home/course/ai-healthcare-intro}" class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80] inline-block">
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course Card 2 - Improved styling -->
+                    <div class="relative bg-white border border-black group transition-all duration-300 hover:shadow-xl" style="border-radius:0;">
+                        <div class="h-12 bg-gradient-to-r from-red-600 to-pink-700 relative overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <img th:src="@{/images/Picture3.jpg}" alt="Cyber Security" class="w-full h-full object-cover opacity-80"/>
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-4 text-white">
+                                <span class="px-2 py-1 bg-red-700 text-xs font-bold rounded">Cyber Security</span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
+                            <div class="text-left flex-1">
+                                <h3 class="text-2xl font-bold text-black mb-2">Cyber Security Fundamentals</h3>
+                                <p class="text-black mb-2">Dr. GHI, Prof. JKL</p>
+                                <p class="text-black mb-2">Category: Cyber Security</p>
+                                <p class="text-black mb-2">Duration: 2-Day Program</p>
+                                <p class="text-black mb-4">Provider: C-DAC Mohali</p>
+                            </div>
+                            <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                                <a th:href="@{/home/courses}" class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80] inline-block">
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Course Card 3 - Improved styling -->
+                    <div class="relative bg-white border border-black group transition-all duration-300 hover:shadow-xl" style="border-radius:0;">
+                        <div class="absolute -top-3 -right-3 bg-green-500 text-white px-3 py-1 text-sm font-bold shadow-md z-10">
+                            New
+                        </div>
+                        <div class="h-12 bg-gradient-to-r from-indigo-600 to-purple-700 relative overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <img th:src="@{/images/Picture4.jpg}" alt="AI Case Studies" class="w-full h-full object-cover opacity-80"/>
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-4 text-white">
+                                <span class="px-2 py-1 bg-indigo-700 text-xs font-bold rounded">Case Studies</span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
+                            <div class="text-left flex-1">
+                                <h3 class="text-2xl font-bold text-black mb-2">AI Case Studies</h3>
+                                <p class="text-black mb-2">Dr. MNO, Prof. PQR</p>
+                                <p class="text-black mb-2">Category: Artificial Intelligence</p>
+                                <p class="text-black mb-2">Duration: 3-Day Program</p>
+                                <p class="text-black mb-4">Provider: C-DAC Noida</p>
+                            </div>
+                            <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                                <a th:href="@{/home/courses}" class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80] inline-block">
+                                    Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-16">
+                    <a th:href="@{/home/courses}" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all inline-flex items-center shadow-lg transform hover:-translate-y-1">
+                        View All Courses
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Key Features Section - Enhanced -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Why Choose e-Adhyan</h2>
+                    
+                    <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-600">Advanced learning platform designed for the future</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Feature 1 - Enhanced -->
+                    <div class="bg-gray-50 p-10 rounded-lg hover:shadow-xl transition-all border border-gray-100 hover:border-transparent">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full mb-6 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 text-left">Expert Faculty</h3>
+                        <p class="text-gray-600 leading-relaxed text-left">Learn from industry experts and researchers with extensive experience in emerging technologies.</p>
+                    </div>
+                    
+                    <!-- Feature 2 - Enhanced -->
+                    <div class="bg-gray-50 p-10 rounded-lg hover:shadow-xl transition-all border border-gray-100 hover:border-transparent">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full mb-6 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 text-left">Cutting-edge Curriculum</h3>
+                        <p class="text-gray-600 leading-relaxed text-left">Courses designed to match industry requirements with latest technological advancements.</p>
+                    </div>
+                    
+                    <!-- Feature 3 - Enhanced -->
+                    <div class="bg-gray-50 p-10 rounded-lg hover:shadow-xl transition-all border border-gray-100 hover:border-transparent">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full mb-6 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 text-left">Interactive Learning</h3>
+                        <p class="text-gray-600 leading-relaxed text-left">Engage with practical exercises, real-world case studies, and interactive assignments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About CDAC Section - Enhanced -->
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="w-full md:w-1/2 mb-10 md:mb-0 md:pr-12">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">About C-DAC</h2>
+                        
+                        <p class="text-lg text-gray-700 mb-5 leading-relaxed text-left">
+                            Centre for Development of Advanced Computing (C-DAC) is the premier R&D organization of the Ministry of Electronics and Information Technology (MeitY) for carrying out R&D in IT, Electronics, and associated areas.
+                        </p>
+                        <p class="text-lg text-gray-700 mb-8 leading-relaxed text-left">
+                            Through e-Adhyan, C-DAC aims to provide quality education in emerging technologies to help build a skilled workforce ready for the future.
+                        </p>
+                        <a th:href="@{/home/about}" class="inline-flex items-center text-blue-600 font-bold hover:text-blue-800 transition-all group">
+                            Learn more about us
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <div class="relative">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg blur opacity-30"></div>
+                            <img th:src="@{/images/cdac-seal.png}" alt="C-DAC Seal" class="relative rounded-lg shadow-xl w-full max-w-md mx-auto border border-blue-900/10">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Partners Section - Enhanced -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Our Key Partners</h2>
+                    
+                    <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-600">Collaborating with leading institutions across India</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+                    <img th:src="@{/images/aiims-delhi.jpg}" alt="AIIMS Delhi" class="h-20 w-auto grayscale hover:grayscale-0 transition-all duration-300"/>
+                    <img th:src="@{/images/aiims-bhopal.jpg}" alt="AIIMS Bhopal" class="h-20 w-auto grayscale hover:grayscale-0 transition-all duration-300"/>
+                    <img th:src="@{/images/aiims-jodhpur.jpg}" alt="AIIMS Jodhpur" class="h-20 w-auto grayscale hover:grayscale-0 transition-all duration-300"/>
+                    <img th:src="@{/images/pgi-chandigarh.jpg}" alt="PGI Chandigarh" class="h-20 w-auto grayscale hover:grayscale-0 transition-all duration-300"/>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Call to Action - Enhanced -->
+        <section class="py-20 bg-gradient-to-r from-blue-700 to-blue-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to enhance your skills?</h2>
+                <p class="text-xl text-blue-100 mb-10 max-w-3xl mx-auto">Join our platform today and gain access to premium courses in emerging technologies.</p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a th:href="@{/home/courses}" class="inline-flex items-center justify-center px-10 py-4 border border-transparent text-base font-medium rounded-lg text-blue-700 bg-white hover:bg-gray-100 md:text-lg transition-all shadow-lg transform hover:-translate-y-1">
+                        Explore Courses
+                    </a>
+                    <a th:href="@{/home/register}" class="inline-flex items-center justify-center px-10 py-4 border-2 border-white text-base font-medium rounded-lg text-white bg-transparent hover:bg-white/10 md:text-lg transition-all transform hover:-translate-y-1">
+                        Register Now
+                    </a>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <script>
+    <script th:fragment="script">
         console.log("Home page loaded");
     </script>
 </body>
