@@ -3,6 +3,8 @@ package com.lms.cdac.services.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lms.cdac.entities.RoleUser;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.entities.AssignRole;
 import com.lms.cdac.helper.ResourceNotFoundException;
 import com.lms.cdac.repsitories.RoleRepo;
 import com.lms.cdac.repsitories.UserRepositories;
@@ -40,36 +43,52 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepo.save(user);
-        // Welcome email (informs about verification)
-        emailService.sendEmail(
-            savedUser.getEmail(),
-            "Welcome to LMS",
-            "Your account has been created successfully. Please verify your email to activate your account."
-        );
+        emailService.sendEmail(user.getEmail(),
+                "Welcome to LMS",
+                "Your account has been created successfully.");
         return savedUser;
     }
 
     @Override
     @Transactional
-    public void enableUser(String userId) {
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-
-        user.setEnabled(true);
-        user.setEmailVerified(true);
-        // Clear verification token fields
-        user.setVerificationToken(null);
-        user.setVerificationTokenExpiry(null);
-
-        userRepo.save(user);
-        log.info("User {} enabled (email verified)", user.getEmail());
-
-        // Confirmation email after verification
-        emailService.sendEmail(
-            user.getEmail(),
-            "Email Verified - LMS",
-            "Your email has been verified successfully. You can now log in."
-        );
+    public User saveUserAndAssignRole(User user, String roleName) {
+        // Encode password
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
+        // Save user
+        User savedUser = userRepo.save(user);
+        
+        // Get role
+        RoleUser roleUser = roleRepo.findByRoleName(roleName)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
+        
+        // Directly assign role without checking (since we know it's a new user)
+        // This avoids NullPointerException from hasRole() when assignedRoles is null
+        if (savedUser.getAssignedRoles() == null) {
+            savedUser.setAssignedRoles(new HashSet<>());
+        }
+        
+        // Create and configure new AssignRole entity
+        AssignRole assignRole = new AssignRole();
+        assignRole.setUser(savedUser);
+        assignRole.setRoleUser(roleUser);
+        assignRole.setResourceCenter(savedUser.getResourceCenter());
+        
+        // Add to user's roles collection
+        savedUser.getAssignedRoles().add(assignRole);
+        
+        // Save the updated user
+        savedUser = userRepo.save(savedUser);
+        log.info("Assigned role {} to user with ID: {} in the same transaction", roleName, savedUser.getUserId());
+        
+        // Send welcome email asynchronously
+        emailService.sendEmail(user.getEmail(),
+                "Welcome to LMS",
+                "Your account has been created successfully.");
+                
+        return savedUser;
     }
 
     @Override
@@ -84,13 +103,15 @@ public class UserServiceImpl implements UserService {
         while (retryCount > 0) {
             try {
                 User existingUser = userRepo.findById(user.getUserId())
-                    .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with ID: " + user.getUserId())
-                    );
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("User not found with ID: " + user.getUserId())
+                        );
 
                 existingUser.setName(user.getName());
                 existingUser.setEmail(user.getEmail());
                 existingUser.setPhoneNumber(user.getPhoneNumber());
+
+                // ✅ Fixed: Set college and resource center
                 existingUser.setCollege(user.getCollege());
                 existingUser.setResourceCenter(user.getResourceCenter());
 
@@ -107,9 +128,7 @@ public class UserServiceImpl implements UserService {
                 retryCount--;
                 if (retryCount == 0) {
                     log.error("Optimistic locking failed after multiple attempts for User ID: {}", user.getUserId());
-                    throw new ResourceNotFoundException(
-                        "The user record has been updated by another process. Please retry the operation."
-                    );
+                    throw new ResourceNotFoundException("The user record has been updated by another process. Please retry the operation.");
                 }
                 log.warn("Optimistic locking failed, retrying... Attempt {}", 4 - retryCount);
             }
@@ -135,9 +154,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepo.findByEmail(email)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with email: " + email)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with email: " + email)
+                );
     }
 
     @Override
@@ -151,18 +170,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserByEmail(String email) {
         User user = userRepo.findByEmail(email)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with email: " + email)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with email: " + email)
+                );
         userRepo.delete(user);
     }
 
     @Override
     public User getUserByUsername(String username) {
         return userRepo.findByEmail(username)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with email: " + username)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with email: " + username)
+                );
     }
 
     @Override
@@ -184,13 +203,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void assignRole(String userId, String roleName) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with ID: " + userId)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with ID: " + userId)
+                );
         RoleUser roleUser = roleRepo.findByRoleName(roleName)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("RoleUser not found: " + roleName)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("RoleUser not found: " + roleName)
+                );
 
         if (!user.hasRole(roleName)) {
             user.addRole(roleUser);
@@ -204,35 +223,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> getUserRoles(String userId) {
         return userRepo.findById(userId)
-            .map(u -> u.getAssignedRoles().stream()
-                .map(ar -> ar.getRoleUser().getRoleName())
-                .collect(Collectors.toList()))
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with ID: " + userId)
-            );
+                .map(u -> u.getAssignedRoles().stream()
+                        .map(ar -> ar.getRoleUser().getRoleName())
+                        .collect(Collectors.toList()))
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with ID: " + userId)
+                );
     }
 
     @Override
     public boolean hasRole(String userId, String roleName) {
         return userRepo.findById(userId)
-            .map(u -> u.getAssignedRoles().stream()
-                .anyMatch(ar ->
-                    ar.getRoleUser().getRoleName().equalsIgnoreCase(roleName)
-                ))
-            .orElse(false);
+                .map(u -> u.getAssignedRoles().stream()
+                        .anyMatch(ar ->
+                                ar.getRoleUser().getRoleName().equalsIgnoreCase(roleName)
+                        ))
+                .orElse(false);
     }
 
     @Override
     @Transactional
     public void removeRole(String userId, String roleName) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("User not found with ID: " + userId)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with ID: " + userId)
+                );
         RoleUser roleUser = roleRepo.findByRoleName(roleName)
-            .orElseThrow(() ->
-                new ResourceNotFoundException("RoleUser not found: " + roleName)
-            );
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("RoleUser not found: " + roleName)
+                );
 
         if (user.hasRole(roleName)) {
             user.removeRole(roleUser);

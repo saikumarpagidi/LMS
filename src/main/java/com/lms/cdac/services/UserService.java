@@ -13,6 +13,8 @@ public interface UserService {
 	// 🔹 Basic User CRUD Methods
 	User saveUser(User user);
 
+	User saveUserAndAssignRole(User user, String roleName);
+
 	Optional<User> getUserById(String id);
 
 	Optional<User> updateUser(User user);
@@ -56,7 +58,6 @@ public interface UserService {
 	User findByEmail(String email);
 	
 	List<String> getAllResourceCenters();
-	void enableUser(String userId);
 
 	//
 }

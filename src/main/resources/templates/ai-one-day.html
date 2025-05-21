@@ -27,66 +27,74 @@
         <div class="max-w-7xl mx-auto px-0 py-12">
             <h2 class="text-2xl font-bold text-gray-900 mb-12 pl-2">Enhance your knowledge in domains leveraging the Emerging Technologies</h2>
             
-            <div class="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Course Card 1 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex flex-col">
-                    <img th:src="@{/images/Picture2.jpg}" alt="Introduction to AI in Healthcare" class="w-full h-12 object-cover"/>
-                    <div class="p-6 flex-1 flex flex-col">
+                <div class="relative bg-white border border-black flex flex-col w-full min-w-[270px] max-w-[350px] mx-auto" style="border-radius:0;">
+                    <img th:src="@{/images/Picture2.jpg}" alt="Introduction to AI in Healthcare" class="w-full h-12 object-cover" style="border-radius:0;"/>
+                    <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
                         <div class="text-left flex-1">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2 text-left">Introduction to AI in Healthcare</h3>
-                            <p class="text-gray-600 mb-4 text-left">Mr. ABC, Ms. DEF</p>
-                            <p class="text-sm text-gray-500 mb-4 text-left">Category: Artificial Intelligence</p>
+                            <h3 class="text-2xl font-bold text-black mb-2">Introduction to AI in Healthcare</h3>
+                            <p class="text-black mb-2">Mr. ABC, Ms. DEF</p>
+                            <p class="text-black mb-4">Category: Artificial Intelligence</p>
                         </div>
-                        <a th:href="@{/home/course/ai-healthcare-intro}" class="w-full">
-                            <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                                Explore
-                            </button>
-                        </a>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                            <a th:href="@{/home/course/ai-healthcare-intro}">
+                                <button class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80]">
+                                    Explore
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Course Card 2 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex flex-col">
-                    <img th:src="@{/images/Picture3.jpg}" alt="Prescription Model using AI" class="w-full h-12 object-cover"/>
-                    <div class="p-6 flex-1 flex flex-col">
+                <div class="relative bg-white border border-black flex flex-col w-full min-w-[270px] max-w-[350px] mx-auto" style="border-radius:0;">
+                    <img th:src="@{/images/Picture3.jpg}" alt="Prescription Model using AI" class="w-full h-12 object-cover" style="border-radius:0;"/>
+                    <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
                         <div class="text-left flex-1">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2 text-left">Prescription Model using AI</h3>
-                            <p class="text-gray-600 mb-4 text-left">Mr. ABC, Ms. DEF</p>
-                            <p class="text-sm text-gray-500 mb-4 text-left">Category: Artificial Intelligence</p>
+                            <h3 class="text-2xl font-bold text-black mb-2">Prescription Model using AI</h3>
+                            <p class="text-black mb-2">Mr. ABC, Ms. DEF</p>
+                            <p class="text-black mb-4">Category: Artificial Intelligence</p>
                         </div>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                            Explore
-                        </button>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                            <button class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80]">
+                                Explore
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Course Card 3 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex flex-col">
-                    <img th:src="@{/images/Picture2.jpg}" alt="Future of AI in Healthcare" class="w-full h-12 object-cover"/>
-                    <div class="p-6 flex-1 flex flex-col">
+                <div class="relative bg-white border border-black flex flex-col w-full min-w-[270px] max-w-[350px] mx-auto" style="border-radius:0;">
+                    <img th:src="@{/images/Picture2.jpg}" alt="Future of AI in Healthcare" class="w-full h-12 object-cover" style="border-radius:0;"/>
+                    <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
                         <div class="text-left flex-1">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2 text-left">Future of AI in Healthcare</h3>
-                            <p class="text-gray-600 mb-4 text-left">Mr. ABC, Ms. DEF</p>
-                            <p class="text-sm text-gray-500 mb-4 text-left">Category: Artificial Intelligence</p>
+                            <h3 class="text-2xl font-bold text-black mb-2">Future of AI in Healthcare</h3>
+                            <p class="text-black mb-2">Mr. ABC, Ms. DEF</p>
+                            <p class="text-black mb-4">Category: Artificial Intelligence</p>
                         </div>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                            Explore
-                        </button>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                            <button class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80]">
+                                Explore
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Course Card 4 -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 flex flex-col">
-                    <img th:src="@{/images/Picture4.jpg}" alt="AI Case Studies" class="w-full h-12 object-cover"/>
-                    <div class="p-6 flex-1 flex flex-col">
+                <div class="relative bg-white border border-black flex flex-col w-full min-w-[270px] max-w-[350px] mx-auto" style="border-radius:0;">
+                    <img th:src="@{/images/Picture4.jpg}" alt="AI Case Studies" class="w-full h-12 object-cover" style="border-radius:0;"/>
+                    <div class="p-4 flex-1 flex flex-col" style="border-radius:0;">
                         <div class="text-left flex-1">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2 text-left">AI Case Studies</h3>
-                            <p class="text-gray-600 mb-4 text-left">Mr. ABC, Ms. DEF</p>
-                            <p class="text-sm text-gray-500 mb-4 text-left">Category: Artificial Intelligence</p>
+                            <h3 class="text-2xl font-bold text-black mb-2">AI Case Studies</h3>
+                            <p class="text-black mb-2">Mr. ABC, Ms. DEF</p>
+                            <p class="text-black mb-4">Category: Artificial Intelligence</p>
                         </div>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-                            Explore
-                        </button>
+                        <div class="absolute left-1/2 transform -translate-x-1/2 translate-y-1/2 bottom-0 z-10">
+                            <button class="px-8 py-2 bg-[#2767AA] text-white text-xl rounded-bl-lg rounded-tr-lg shadow-md hover:bg-[#1d4e80] transition-all border-2 border-[#1d4e80]">
+                                Explore
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
