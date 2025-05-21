@@ -8,12 +8,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.lms.cdac.entities.Course;
-import com.lms.cdac.entities.CourseModule;
 import com.lms.cdac.entities.CourseResource;
 import com.lms.cdac.entities.CourseTopic;
 import com.lms.cdac.repsitories.CourseRepository;
@@ -24,16 +23,13 @@ import com.lms.cdac.services.CourseResourceService;
 @Service
 public class CourseResourceServiceImpl implements CourseResourceService {
 
-    @Autowired
-    private CourseResourceRepository courseResourceRepository;
+    private final CourseResourceRepository courseResourceRepository;
+    private final CourseTopicRepository courseTopicRepository;
+    private final CourseRepository courseRepository;
 
-    @Autowired
-    private CourseTopicRepository courseTopicRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
-    private static final String UPLOAD_DIR = "C:/lms/uploads/";
+    // Injected from application.properties (spring.servlet.multipart.location)
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadDir;
 
     private static final List<String> ALLOWED_TYPES = List.of(
             "application/pdf",
@@ -42,6 +38,14 @@ public class CourseResourceServiceImpl implements CourseResourceService {
             "image/jpeg",
             "video/mp4"
     );
+
+    public CourseResourceServiceImpl(CourseResourceRepository courseResourceRepository,
+                                     CourseTopicRepository courseTopicRepository,
+                                     CourseRepository courseRepository) {
+        this.courseResourceRepository = courseResourceRepository;
+        this.courseTopicRepository = courseTopicRepository;
+        this.courseRepository = courseRepository;
+    }
 
     @Override
     public List<CourseResource> getResourcesByCourse(Integer courseId) {
@@ -55,31 +59,23 @@ public class CourseResourceServiceImpl implements CourseResourceService {
 
     @Override
     public CourseResource saveResource(Integer topicId, MultipartFile file) {
-        // Validate file type
         String fileType = file.getContentType();
         if (!ALLOWED_TYPES.contains(fileType)) {
             throw new RuntimeException("❌ File type not allowed. Allowed types: PDF, PPT, PNG, JPEG, MP4");
         }
 
-        // Get course topic and course
         CourseTopic courseTopic = courseTopicRepository.findById(topicId)
                 .orElseThrow(() -> new RuntimeException("❌ Course topic not found"));
         Course course = courseTopic.getCourse();
 
         try {
-            // Generate a unique file name
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replace(" ", "_");
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            
-            // Create the directory if it doesn't exist
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            
+            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+            Files.createDirectories(uploadPath);
+
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Create the CourseResource entity
             CourseResource resource = new CourseResource();
             resource.setCourseTopic(courseTopic);
             resource.setCourse(course);
@@ -88,7 +84,6 @@ public class CourseResourceServiceImpl implements CourseResourceService {
             resource.setFileType(fileType);
             resource.setFileSize(file.getSize());
 
-            // Save the resource
             return courseResourceRepository.save(resource);
         } catch (IOException e) {
             throw new RuntimeException("❌ File upload failed: " + e.getMessage(), e);
@@ -101,17 +96,16 @@ public class CourseResourceServiceImpl implements CourseResourceService {
                 .map(Course::getCourseName)
                 .orElse(null);
     }
-    
+
     @Override
     public String getResourcePathById(Integer resourceId) {
         CourseResource resource = courseResourceRepository.findById(resourceId)
                 .orElseThrow(() -> new RuntimeException("Resource not found"));
-        
-        return resource.getFileUrl();  // Assuming `filePath` column stores the file path
+        return resource.getFileUrl();
     }
+
     @Override
     public Optional<CourseResource> getResourceById(Integer resourceId) {
         return courseResourceRepository.findById(resourceId);
     }
-
 }
