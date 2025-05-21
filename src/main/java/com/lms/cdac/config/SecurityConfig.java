@@ -48,7 +48,7 @@ public class SecurityConfig {
                         "/login/oauth2/code/google",
                         "/auth/forgot-password", "/auth/reset-password",
                         "/course-resources/upload/**",
-                        "/api/college/**"
+                        "/api/college/**","/auth/...  "
                 )
                 .permitAll()
 
