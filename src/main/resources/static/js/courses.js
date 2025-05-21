@@ -346,6 +346,13 @@ function applyFilters() {
         console.log('No filters applied, keeping courses empty');
         filteredCourses = [];
         clearAllUsed = true;
+        
+        // Make sure to clear the filtered-by text when no filters are applied
+        const filteredByElement = document.getElementById('filtered-label');
+        if (filteredByElement) {
+            filteredByElement.innerHTML = '';
+        }
+        
         displayCourses();
         return;
     }
@@ -479,38 +486,77 @@ function displayCourses() {
 
 // Update the "Filtered by" text
 function updateFilteredByText() {
+    console.log("updateFilteredByText called with filters:", JSON.stringify(filters));
     const filteredByElement = document.getElementById('filtered-label');
     if (!filteredByElement) {
         console.warn('Filtered by element not found');
         return;
     }
     
-    if (filters.categories.length === 0 && filters.searchTerm === '') {
+    // Check if we have any active filters
+    const hasFilters = filters.categories.length > 0 || 
+                       filters.durations.length > 0 || 
+                       filters.providers.length > 0 || 
+                       filters.searchTerm !== '';
+    
+    if (!hasFilters) {
         filteredByElement.innerHTML = '';
+        console.log("No filters active, clearing filtered-by text");
         return;
     }
     
-    let filteredByText = 'Filtered by: ';
-    if (filters.categories.length > 0) {
-        filteredByText += filters.categories.map(cat => {
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
-                      ${cat} <button class="ml-1 text-blue-500 hover:text-blue-700" onclick="removeFilter('category', '${cat}')">×</button>
-                    </span>`;
-        }).join('');
-    }
+    // Build HTML string with direct onclick handlers
+    let html = 'Filtered by: ';
     
+    // Category filters
+    filters.categories.forEach(cat => {
+        const safeCategory = cat.replace(/'/g, "\\'");
+        html += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+            ${cat} <button class="ml-1 text-blue-500 hover:text-blue-700" 
+            onclick="console.log('Category filter clicked: ${safeCategory}'); window.removeFilter('category', '${safeCategory}'); return false;">×</button>
+        </span>`;
+    });
+    
+    // Duration filters
+    filters.durations.forEach(dur => {
+        const safeDuration = dur.replace(/'/g, "\\'");
+        html += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mr-2">
+            ${dur} <button class="ml-1 text-purple-500 hover:text-purple-700" 
+            onclick="console.log('Duration filter clicked: ${safeDuration}'); window.removeFilter('duration', '${safeDuration}'); return false;">×</button>
+        </span>`;
+    });
+    
+    // Provider filters
+    filters.providers.forEach(prov => {
+        const safeProvider = prov.replace(/'/g, "\\'");
+        html += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 mr-2">
+            ${prov} <button class="ml-1 text-orange-500 hover:text-orange-700" 
+            onclick="console.log('Provider filter clicked: ${safeProvider}'); window.removeFilter('provider', '${safeProvider}'); return false;">×</button>
+        </span>`;
+    });
+    
+    // Search filter
     if (filters.searchTerm) {
-        filteredByText += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Search: "${filters.searchTerm}" <button class="ml-1 text-green-500 hover:text-green-700" onclick="clearSearch()">×</button>
-                          </span>`;
+        html += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+            Search: "${filters.searchTerm}" <button class="ml-1 text-green-500 hover:text-green-700" 
+            onclick="console.log('Search filter clicked'); window.clearSearch(); return false;">×</button>
+        </span>`;
     }
     
-    filteredByElement.innerHTML = filteredByText;
+    // Set the HTML
+    filteredByElement.innerHTML = html;
+    console.log("Updated filtered-by text with HTML:", html);
 }
 
-// Make these functions available globally
+// Redefine window.removeFilter with more debugging
 window.removeFilter = function(type, value) {
-    console.log('Removing filter:', type, value);
+    console.log(`removeFilter called: type=${type}, value=${value}`);
+    
+    // Debug the current state before changes
+    console.log('Before removal - Categories:', filters.categories);
+    console.log('Before removal - Durations:', filters.durations);
+    console.log('Before removal - Providers:', filters.providers);
+    
     switch(type) {
         case 'category':
             filters.categories = filters.categories.filter(cat => cat !== value);
@@ -518,6 +564,7 @@ window.removeFilter = function(type, value) {
             if (categoryCheckbox) {
                 categoryCheckbox.checked = false;
             }
+            console.log(`Removed category: ${value}`);
             break;
         case 'duration':
             filters.durations = filters.durations.filter(dur => dur !== value);
@@ -525,6 +572,7 @@ window.removeFilter = function(type, value) {
             if (durationCheckbox) {
                 durationCheckbox.checked = false;
             }
+            console.log(`Removed duration: ${value}`);
             break;
         case 'provider':
             filters.providers = filters.providers.filter(prov => prov !== value);
@@ -532,20 +580,41 @@ window.removeFilter = function(type, value) {
             if (providerCheckbox) {
                 providerCheckbox.checked = false;
             }
+            console.log(`Removed provider: ${value}`);
             break;
+        default:
+            console.warn(`Unknown filter type: ${type}`);
+            return;
     }
+    
+    // Debug the current state after changes
+    console.log('After removal - Categories:', filters.categories);
+    console.log('After removal - Durations:', filters.durations);
+    console.log('After removal - Providers:', filters.providers);
+    
+    // Update the UI
+    updateFilteredByText();
     applyFilters();
+    
+    // For debugging
+    return false;
 };
 
-// Make clearSearch globally available
+// Redefine window.clearSearch with more debugging
 window.clearSearch = function() {
-    console.log('Clearing search');
+    console.log('clearSearch called');
     filters.searchTerm = '';
     const searchInput = document.getElementById('courseSearch');
     if (searchInput) {
         searchInput.value = '';
     }
+    
+    // Update the UI
+    updateFilteredByText();
     applyFilters();
+    
+    // For debugging
+    return false;
 };
 
 // Apply sorting to filtered courses

@@ -126,30 +126,57 @@
             };
             
             // Create a global variable with the correct base URL for images
-            window        .baseImageUrl = /*[[@{/}]]*/ '/';
+            window.baseImageUrl = /*[[@{/}]]*/ '';
             console.log('Base URL for images:', window.baseImageUrl);
             
-            // Make sure the functions are available in global scope
-            function removeFilter(type, value) {
-                if (window.removeFilter) {
-                    window.removeFilter(type, value);
-                } else {
-                    console.error('removeFilter function not available');
-                }
+            // Test filter functions
+            console.log('Testing filter removal functions');
+            
+            // Ensure functions are available globally
+            if (typeof window.removeFilter !== 'function') {
+                console.error('CRITICAL ERROR: removeFilter function not properly defined in global scope');
+                
+                // Define a backup implementation
+                window.removeFilter = function(type, value) {
+                    console.log('BACKUP removeFilter called', type, value);
+                    alert('Removing filter: ' + type + ' - ' + value);
+                    
+                    // Refresh the page as a fallback
+                    window.location.reload();
+                };
+            } else {
+                console.log('removeFilter function properly defined');
             }
             
-            function clearSearch() {
-                if (window.clearSearch) {
-                    window.clearSearch();
-                } else {
-                    console.error('clearSearch function not available');
-                }
+            if (typeof window.clearSearch !== 'function') {
+                console.error('CRITICAL ERROR: clearSearch function not properly defined in global scope');
+                
+                // Define a backup implementation
+                window.clearSearch = function() {
+                    console.log('BACKUP clearSearch called');
+                    alert('Clearing search');
+                    
+                    // Refresh the page as a fallback
+                    window.location.reload();
+                };
+            } else {
+                console.log('clearSearch function properly defined');
             }
             
-            // Verify DOM loaded and JS execution
+            // Document load event
             document.addEventListener('DOMContentLoaded', function() {
                 console.log('Course page DOM loaded - HTML script block');
                 courseDebug('HTML inline script executed');
+                
+                // Add click handlers to all filter-remove buttons that might already exist
+                setTimeout(function() {
+                    console.log('Adding filter remove handlers to existing buttons');
+                    document.querySelectorAll('.filtered-label button').forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            console.log('Filter button clicked from post-load handler');
+                        });
+                    });
+                }, 1000);
                 
                 // Additional check for image loading issues
                 setTimeout(function() {
