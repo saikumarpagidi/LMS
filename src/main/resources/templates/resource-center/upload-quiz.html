@@ -1,35 +1,56 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: parent(~{this::content}, 'Upload Quiz', ~{this::script})}">
 <head>
     <title>Upload Quiz</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50">
+<body>
+
+<!-- Content Fragment -->
+<div th:fragment="content" class="pt-16">
     <div class="max-w-screen-xl mx-auto py-8 px-2 sm:px-4 lg:px-6">
         <h1 class="text-2xl font-bold mb-4">Upload Quiz</h1>
+
+        <!-- Success/Error Messages -->
         <div th:if="${message}" class="p-4 bg-green-100 text-green-700 mb-4" th:text="${message}"></div>
         <div th:if="${error}" class="p-4 bg-red-100 text-red-700 mb-4" th:text="${error}"></div>
+
+        <!-- Upload Form -->
         <form th:action="@{/center/quiz/upload}" method="post" enctype="multipart/form-data">
             <div class="mb-4">
                 <label class="block text-gray-700">Quiz Title:</label>
                 <input type="text" name="title" class="w-full border p-2" required/>
             </div>
+
             <div class="mb-4">
                 <label class="block text-gray-700">Description:</label>
                 <textarea name="description" class="w-full border p-2"></textarea>
             </div>
+
             <div class="mb-4">
                 <label class="block text-gray-700">Upload CSV File:</label>
                 <input type="file" name="file" accept=".csv" class="w-full" required/>
             </div>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Upload Quiz</button>
-			
+
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+                Upload Quiz
+            </button>
         </form>
-		<!-- Back Buttons -->
-		        <div class="mt-6">
-		            <a th:href="@{/center/quiz/view}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded">View Quizs</a>
-		            <a th:href="@{/center/dashboard}" class="inline-block bg-gray-600 text-white px-4 py-2 rounded ml-2">Back to Dashboard</a>
-		        </div>
+
+        <!-- Back Buttons -->
+        <div class="mt-6">
+            <a th:href="@{/center/quiz/view}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded">View Quizzes</a>
+            <a th:href="@{/center/dashboard}" class="inline-block bg-gray-600 text-white px-4 py-2 rounded ml-2">Back to Dashboard</a>
+        </div>
     </div>
+</div>
+<!-- /#content -->
+
+<!-- Script Fragment -->
+<script th:fragment="script">
+    // Aap chahein toh yahan JavaScript add kar sakte hain
+</script>
+<!-- /#script -->
+
 </body>
 </html>

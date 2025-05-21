@@ -4,7 +4,7 @@
 <head>
     <title>Login Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
-     <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
+    <link rel="stylesheet" th:href="@{'/css/style.css'}"/>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-12">
 
@@ -13,19 +13,23 @@
             <h2 class="text-3xl font-bold text-center text-gray-900">Login to Your Account</h2>
             <p class="text-center text-gray-500 mb-6">Welcome back! Please enter your credentials.</p>
             
-            <div data-th-replace="message::messagebox"></div>
-            
-            <!-- Error Messages -->
-            <div class="text-red-600 text-center my-3" th:if="${param.error}">
-                Invalid username and password.
+            <!-- SESSION MESSAGE का सेक्शन -->
+            <div th:if="${session.message != null}" class="mb-4 text-center">
+                <div 
+                    th:text="${session.message.content}"
+                    th:classappend="${session.message.type == 'red'} ? 'text-red-600' : 'text-green-600'"
+                    class="font-medium"
+                ></div>
             </div>
+
+            <!-- Logout success के बाद दिखने वाला मैसेज -->
             <div class="text-green-600 text-center my-3" th:if="${param.logout}">
                 You have been logged out.
             </div>
 
             <!-- Login Form -->
-            <form method="post" data-th-action="@{'/home/authenticate'}">
-                <!-- Email -->
+            <form th:action="@{/home/authenticate}" method="post">
+                <!-- Email Field -->
                 <div class="mb-4">
                     <label for="email" class="block text-md font-medium text-gray-700">Email</label>
                     <input name="email" type="email" id="email" 
@@ -33,7 +37,7 @@
                            placeholder="Enter your email" required />
                 </div>
 
-                <!-- Password -->
+                <!-- Password Field -->
                 <div class="mb-4">
                     <label for="password" class="block text-md font-medium text-gray-700">Password</label>
                     <input name="password" type="password" id="password" 
@@ -61,7 +65,7 @@
             <div class="mt-6 text-center">
                 <a class="flex items-center justify-center w-full py-3 bg-white border border-gray-300 rounded-lg shadow-md 
                           transition duration-300 ease-in-out hover:bg-gray-100 hover:shadow-lg"
-                   data-th-href="@{'/oauth2/authorization/google'}">
+                   th:href="@{'/oauth2/authorization/google'}">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" 
                          alt="Google Logo" class="w-6 h-6 mr-2 transition duration-300 ease-in-out transform hover:scale-110">
                     <span class="text-gray-700 font-medium">Sign in with Google</span>
@@ -70,7 +74,8 @@
             
             <!-- Redirect to Register -->
             <p class="text-center text-sm text-gray-600 mt-4">
-                Don't have an account? <a th:href="@{/home/register}" class="text-blue-600 font-semibold hover:underline">Sign Up here</a>
+                Don't have an account? 
+                <a th:href="@{/home/register}" class="text-blue-600 font-semibold hover:underline">Sign Up here</a>
             </p>
         </div>
     </div>

@@ -39,20 +39,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(authorize -> authorize
+        httpSecurity
+            .authorizeHttpRequests(authorize -> authorize
+                // आपके existing public URLs और पैथ्स
                 .requestMatchers(
                         "/",
-                        "/home/test", "home/courses", "/home/about", "/home/oneDayProgram", "/home/course/ai-healthcare-intro", "/home/register", "/home/services", "/home/do-register",
+                        "/home/test", "/home/courses", "/home/about",
+                        "/home/oneDayProgram", "/home/course/ai-healthcare-intro",
+                        "/home/register", "/home/services", "/home/do-register",
                         "/home/login", "/home/authenticate",
                         "/static/**", "/templates/**", "/css/**", "/js/**", "/images/**",
-                        "/home/access-denied",  // fixed path for access-denied
+                        "/home/access-denied",
                         "/login/oauth2/code/google",
                         "/auth/forgot-password", "/auth/reset-password",
                         "/course-resources/upload/**",
-                        "/api/college/**","/auth/...  "
-                )
-                .permitAll()
+                        "/api/college/**","/auth/..."
+                ).permitAll()
 
+                // आपके existing Role-based URLs
                 .requestMatchers("/center/dashboard/**").hasAnyRole("RESOURCE_CENTER","STUDENT")
                 .requestMatchers("/student/dashboard", "/student/dashboard/**").hasRole("STUDENT")
                 .requestMatchers("/user/dashboard/**").hasRole("ADMIN")
@@ -73,30 +77,32 @@ public class SecurityConfig {
                         "RESOURCE_CENTER", "PMU_MOHALI", "ADMIN", "PMU_NOIDA"
                 )
                 .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
+            )
+            .formLogin(form -> form
                 .loginPage("/home/login")
                 .loginProcessingUrl("/home/authenticate")
-                .successHandler(new com.lms.cdac.config.CustomAuthenticationSuccessHandler())
-                .failureUrl("/home/login?error=true")
                 .usernameParameter("email")
                 .passwordParameter("password")
+                // कस्टम Success Handler (आपका पहले से बना हुआ)
+                .successHandler(new com.lms.cdac.config.CustomAuthenticationSuccessHandler())
+                // कस्टम Failure Handler (AuthFailureHandler) जो session में मैसेज सेट करेगा
                 .failureHandler(authFailureHandler)
-        )
-        .logout(logout -> logout
+            )
+            .logout(logout -> logout
                 .logoutUrl("/do-logout")
                 .logoutSuccessUrl("/home/login?logout=true")
-                .invalidateHttpSession(true)                 // ✨ destroys session
-                .clearAuthentication(true)                   // ✨ clears authentication object
-                .deleteCookies("JSESSIONID")  
-        )
-        .oauth2Login(oauth -> oauth
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+            )
+            .oauth2Login(oauth -> oauth
                 .loginPage("/home/login")
                 .successHandler(oauthAuthHandler)
+                // OAuth2 की विफलता पर केवल generic error दिखाना
                 .failureUrl("/home/login?error=true")
-        )
-        .csrf(csrf -> csrf.disable())
-        .exceptionHandling(exception -> exception.accessDeniedPage("/home/access-denied"));
+            )
+            .csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception.accessDeniedPage("/home/access-denied"));
 
         return httpSecurity.build();
     }
