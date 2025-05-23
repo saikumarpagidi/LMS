@@ -34,6 +34,7 @@ public class CourseResourceServiceImpl implements CourseResourceService {
     private static final List<String> ALLOWED_TYPES = List.of(
             "application/pdf",
             "application/vnd.ms-powerpoint",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             "image/png",
             "image/jpeg",
             "video/mp4"
@@ -69,13 +70,22 @@ public class CourseResourceServiceImpl implements CourseResourceService {
         Course course = courseTopic.getCourse();
 
         try {
+            // Create a safe filename (replace spaces with underscores)
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename().replace(" ", "_");
+            
+            // Ensure upload directory exists
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-            Files.createDirectories(uploadPath);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+                System.out.println("Created upload directory: " + uploadPath);
+            }
 
+            // Save the file to the upload directory
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Saved file to: " + filePath);
 
+            // Create and save the CourseResource entity
             CourseResource resource = new CourseResource();
             resource.setCourseTopic(courseTopic);
             resource.setCourse(course);
