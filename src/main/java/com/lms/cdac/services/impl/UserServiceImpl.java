@@ -3,6 +3,7 @@ package com.lms.cdac.services.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lms.cdac.entities.RoleUser;
 import com.lms.cdac.entities.User;
+import com.lms.cdac.dto.AnalyticsDTO;
 import com.lms.cdac.entities.AssignRole;
 import com.lms.cdac.helper.ResourceNotFoundException;
 import com.lms.cdac.repsitories.RoleRepo;
@@ -290,4 +292,42 @@ public class UserServiceImpl implements UserService {
     public List<String> getAllResourceCenters() {
         return userRepo.findDistinctResourceCenters();
     }
+    
+    @Override
+    public List<AnalyticsDTO> getUsersByResourceCenter() {
+        List<Object[]> results = userRepo.countStudentsByResourceCenter();
+        List<AnalyticsDTO> analytics = new ArrayList<>();
+
+        for (Object[] row : results) {
+            String category = (String) row[0];
+            Long value = (Long) row[1];
+            analytics.add(new AnalyticsDTO(category, value));
+        }
+
+        return analytics;
+    }
+    
+    @Override
+    public List<AnalyticsDTO> getCollegeRegistrationsByResourceCenter(String resourceCenter) {
+        // Repository कॉल से List<Object[]> मिलेगा: [ [collegeName, studentCount], … ]
+        List<Object[]> results = userRepo.countStudentsByCollegeInResourceCenter(resourceCenter);
+
+        List<AnalyticsDTO> analytics = new ArrayList<>();
+        for (Object[] row : results) {
+            String collegeName = (String) row[0];
+            Long count = (Long) row[1];
+            analytics.add(new AnalyticsDTO(collegeName, count));
+        }
+        return analytics;
+    }
+    
+    @Override
+    public List<Object[]> countStudentsByNameAndResourceCenter() {
+        return userRepo.countStudentsByNameAndResourceCenter();
+    }
+    
+    public List<Object[]> countStudentsByNameAndSpecificResourceCenter(String rc) {
+        return userRepo.countStudentsByNameAndSpecificResourceCenter(rc);
+    }
+
 }

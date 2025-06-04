@@ -1,5 +1,7 @@
 <!-- User Navbar - Styling matched with main navbar -->
-<nav data-th-fragment="user-navbar" class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0" x-data="{ profileOpen: false }">
+<nav data-th-fragment="user-navbar"
+     class="fixed top-0 left-0 right-0 w-full z-50 bg-white shadow m-0 p-0"
+     x-data="{ profileOpen: false }">
   <!-- Header Top Bar -->
   <div class="w-full border-b border-gray-200 bg-white m-0 p-0">
     <div class="max-w-7xl mx-auto flex items-center justify-between px-2 py-2 m-0 p-0">
@@ -15,7 +17,7 @@
           <img th:src="@{/images/e-adhyan.gif}" alt="e-Adhyan" class="h-20 w-auto"/>
         </a>
       </div>
-      
+
       <!-- Right: User Info and Support -->
       <div class="flex items-center space-x-3">
         <a th:href="@{mailto:eadhyan-support@cdac.in}" class="flex items-center text-blue-900 hover:text-blue-600 text-sm">
@@ -23,8 +25,9 @@
           <span>eadhyan-support@cdac.in</span>
         </a>
         <div id="liveTime" class="text-blue-900 font-semibold text-sm hidden sm:inline-block"></div>
-        
-        <button @click="profileOpen = !profileOpen" class="flex items-center space-x-2 text-green-700 font-semibold hover:text-green-600">
+
+        <button @click="profileOpen = !profileOpen"
+                class="flex items-center space-x-2 text-green-700 font-semibold hover:text-green-600">
           <span data-th-text="${loggedInUser.name}" class="font-medium"></span>
           <i class="fas fa-user-circle text-xl"></i>
         </button>
@@ -42,12 +45,13 @@
     <!-- Right bevel -->
     <div class="absolute right-0 top-0 h-full w-6 bevel-right
                 bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800"></div>
-                
+
     <div class="relative flex items-center justify-between max-w-7xl mx-auto w-full px-2">
       <!-- Menu Items -->
       <ul class="flex items-center space-x-2 text-white font-bold h-12">
         <!-- PMU Dropdown -->
-        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI', 'ROLE_PMU_NOIDA')" class="relative h-full flex items-center group">
+        <li sec:authorize="hasAnyRole('PMU_MOHALI','PMU_NOIDA','ADMIN')"
+            class="relative h-full flex items-center group">
           <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
             <i class="fa-solid fa-diagram-project mr-1"></i>
             <span>PMU</span>
@@ -56,13 +60,15 @@
           <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
             <div class="pt-1">
               <ul class="bg-[#E7ECED] text-black rounded shadow-lg border border-[#642886] overflow-hidden">
-                <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PMU_MOHALI')">
-                  <a th:href="@{/pmu/pmu-delhi}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasAnyRole('PMU_MOHALI','ADMIN')">
+                  <a th:href="@{/pmu/pmu-delhi}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-city mr-2 text-sm"></i>PMU Mohali
                   </a>
                 </li>
-                <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'PMU_NOIDA')">
-                  <a th:href="@{/pmu/pmu-noida}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
+                <li sec:authorize="hasAnyRole('PMU_NOIDA','ADMIN')">
+                  <a th:href="@{/pmu/pmu-noida}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
                     <i class="fa-solid fa-building mr-2 text-sm"></i>Co-PMU Noida
                   </a>
                 </li>
@@ -72,7 +78,8 @@
         </li>
 
         <!-- Users Dropdown -->
-        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative h-full flex items-center group">
+        <li sec:authorize="hasAnyRole('ADMIN','RESOURCE_CENTER')"
+            class="relative h-full flex items-center group">
           <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
             <i class="fa-solid fa-users-gear mr-1"></i>
             <span>Users</span>
@@ -81,33 +88,39 @@
           <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
             <div class="pt-1">
               <ul class="bg-[#E7ECED] text-black rounded shadow-lg border border-[#642886] overflow-hidden">
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/assign/assignrole}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/assign/assignrole}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-user-shield mr-2 text-sm"></i>Assign Role
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/user/users}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/user/users}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-users-viewfinder mr-2 text-sm"></i>View Users
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/user/coordinator/add}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/user/coordinator/add}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Create Role
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/user/coordinator/role}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/user/coordinator/role}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-eye mr-2 text-sm"></i>View Role
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/students}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/students}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
                     <i class="fa-solid fa-user-graduate mr-2 text-sm"></i>Registered Students
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/faculty}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/faculty}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
                     <i class="fa-solid fa-chalkboard-user mr-2 text-sm"></i>Registered Faculty
                   </a>
                 </li>
@@ -117,8 +130,9 @@
         </li>
 
         <!-- Courses Dropdown -->
-        <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_RESOURCE_CENTER')" class="relative h-full flex items-center group">
-          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+        <li sec:authorize="hasAnyRole('ADMIN','RESOURCE_CENTER','PMU_MOHALI','PMU_NOIDA')"
+            class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex	items-center">
             <i class="fa-solid fa-chalkboard-user mr-1"></i>
             <span>Courses</span>
             <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
@@ -126,49 +140,67 @@
           <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
             <div class="pt-1">
               <ul class="bg-[#E7ECED] text-black rounded shadow-lg border border-[#642886] overflow-hidden">
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/course/create}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
-                    <i class="fa-solid fa-plus-circle mr-2 text-sm"></i>New Course
+                <!-- Create Course: ADMIN, PMU_MOHALI, PMU_NOIDA -->
+                <li sec:authorize="hasAnyRole('ADMIN','PMU_MOHALI','PMU_NOIDA')">
+                  <a th:href="@{/course/create}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                    <i class="fa-solid fa-plus-circle mr-2 text-sm"></i>Create Course
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/course-design}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <!-- Course Design: ADMIN, PMU_MOHALI, PMU_NOIDA -->
+                <li sec:authorize="hasAnyRole('ADMIN','PMU_MOHALI','PMU_NOIDA')">
+                  <a th:href="@{/course-design}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
                     <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Course Design
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/course-schedules/create}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
-                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Schedule Course
+                <!-- Schedule Course: ADMIN, PMU_MOHALI, PMU_NOIDA -->
+                <li sec:authorize="hasAnyRole('ADMIN','PMU_MOHALI','PMU_NOIDA')">
+                  <a th:href="@{/course-schedules/create}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
+                    <i class="fa-solid fa-calendar-days mr-2 text-sm"></i>Schedule Course
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/course-schedules/list}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
-                    <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Schedule view Course
-                  </a>
+                <!-- Schedule View Course: ADMIN only -->
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/course-schedules/list}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
+                    <i class="fa-solid fa-calendar-check mr-2 text-sm"></i>Schedule View Course
+                  </a>  
                 </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/courses}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <!-- Course Details: RESOURCE_CENTER only -->
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/courses}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
                     <i class="fa-solid fa-book mr-2 text-sm"></i>Course Details
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-				          <a th:href="@{/live-classes/create}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
-				            <i class="fa-solid fa-calendar-plus mr-2 text-sm"></i>Live Class Shedule
-				          </a>
-				        </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/assign-course}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                <!-- Live Class Schedule: ADMIN only -->
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/live-classes/create}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
+                    <i class="fa-solid fa-video-plus mr-2 text-sm"></i>Live Class Schedule
+                  </a>
+                </li>
+                <!-- Assign Course: RESOURCE_CENTER only -->
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/assign-course}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5]transition-all duration-200border-b	border-white">
                     <i class="fa-solid fa-user-plus mr-2 text-sm"></i>Assign Course
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/quiz/upload}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
-                    <i class="fa-solid fa-book mr-2 text-sm"></i>Upload Quiz
+                <!-- Upload Quiz: RESOURCE_CENTER only -->
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/quiz/upload}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200border-b	border-white">
+                    <i class="fa-solid fa-file-upload mr-2 text-sm"></i>Upload Quiz
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_RESOURCE_CENTER')">
-                  <a th:href="@{/center/quiz/assign}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
-                    <i class="fa-solid fa-book mr-2 text-sm"></i>Assign Quiz
+                <!-- Assign Quiz: RESOURCE_CENTER only -->
+                <li sec:authorize="hasRole('RESOURCE_CENTER')">
+                  <a th:href="@{/center/quiz/assign}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
+                    <i class="fa-solid fa-file-minus mr-2 text-sm"></i>Assign Quiz
                   </a>
                 </li>
               </ul>
@@ -177,22 +209,25 @@
         </li>
 
         <!-- Resources Dropdown -->
-        <li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI','PMU_NOIDA')" class="relative h-full flex items-center group">
-          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+        <li sec:authorize="hasAnyRole('ADMIN','PMU_MOHALI','PMU_NOIDA')"
+            class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex	items-center">
             <i class="fa-solid fa-folder-open mr-1"></i>
             <span>Resources</span>
-            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform	duration-200"></i>
           </button>
           <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
             <div class="pt-1">
-              <ul class="bg-[#E7ECED] text-black rounded shadow-lg border border-[#642886] overflow-hidden">
-                <li sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_PMU_MOHALI', 'PMU_NOIDA' )">
-                  <a th:href="@{/resource-center-dashboard}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+              <ul class="bg-[#E7ECED]text-black rounded shadow-lg border border-[#642886] overflow-hidden">
+                <li sec:authorize="hasAnyRole('ADMIN','PMU_MOHALI','PMU_NOIDA')">
+                  <a th:href="@{/resource-center-dashboard}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
                     <i class="fa-solid fa-gauge-high mr-2 text-sm"></i>Resource Dashboard
                   </a>
                 </li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')">
-                  <a th:href="@{/college/add}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
+                <li sec:authorize="hasRole('ADMIN')">
+                  <a th:href="@{/college/add}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200">
                     <i class="fa-solid fa-building-columns mr-2 text-sm"></i>Manage Colleges
                   </a>
                 </li>
@@ -202,32 +237,36 @@
         </li>
 
         <!-- Attendance Dropdown for Faculty -->
-        <li sec:authorize="hasRole('ROLE_FACULTY')" class="relative h-full flex items-center group">
-          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex items-center">
+        <li sec:authorize="hasRole('FACULTY')" class="relative h-full flex items-center group">
+          <button class="px-4 py-2 h-full hover:bg-blue-700 rounded-t text-white text-base focus:outline-none flex	items-center">
             <i class="fa-solid fa-clipboard-check mr-1"></i>
             <span>Attendance</span>
-            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform duration-200"></i>
+            <i class="fas fa-chevron-down ml-1 text-xs group-hover:rotate-180 transition-transform	duration-200"></i>
           </button>
           <div class="absolute left-0 top-[95%] z-50 w-56 group-hover:block hidden">
             <div class="pt-1">
               <ul class="bg-[#E7ECED] text-black rounded shadow-lg border border-[#642886] overflow-hidden">
                 <li>
-                  <a th:href="@{/attendance/upload}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                  <a th:href="@{/attendance/upload}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200 border-b	border-white">
                     <i class="fa-solid fa-upload mr-2 text-sm"></i>Upload Lab Attendance
                   </a>
                 </li>
                 <li>
-                  <a th:href="@{/attendance/faculty/view}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                  <a th:href="@{/attendance/faculty/view}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200 border-b	border-white">
                     <i class="fa-solid fa-eye mr-2 text-sm"></i>View Lab Attendance
                   </a>
                 </li>
                 <li>
-                  <a th:href="@{/class-attendance/upload}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+                  <a th:href="@{/class-attendance/upload}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200 border-b	border-white">
                     <i class="fa-solid fa-upload mr-2 text-sm"></i>Upload Class Attendance
                   </a>
                 </li>
                 <li>
-                  <a th:href="@{/class-attendance/faculty/view}" class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200">
+                  <a th:href="@{/class-attendance/faculty/view}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200">
                     <i class="fa-solid fa-eye mr-2 text-sm"></i>View Class Attendance
                   </a>
                 </li>
@@ -239,28 +278,33 @@
 
       <!-- Search Bar -->
       <form th:action="@{/search}" method="get" class="flex items-center space-x-0 bg-blue-400 rounded h-8 ml-4">
-        <input type="text" name="query" placeholder="Search for anything" class="px-2 py-1 h-8 rounded-l border-0 text-sm focus:outline-none w-44"/>
-        <button type="submit" class="bg-white text-blue-700 px-3 h-8 rounded-r font-semibold hover:bg-gray-100 text-sm flex items-center justify-center"><i class="fas fa-search"></i></button>
+        <input type="text" name="query" placeholder="Search for anything"
+               class="px-2 py-1 h-8 rounded-l border-0 text-sm focus:outline-none w-44"/>
+        <button type="submit"
+                class="bg-white text-blue-700 px-3 h-8 rounded-r font-semibold hover:bg-gray-100 text-sm flex items-center justify-center">
+          <i class="fas fa-search"></i>
+        </button>
       </form>
     </div>
   </div>
 
   <!-- User Profile Dropdown -->
-  <div x-show="profileOpen" @click.away="profileOpen = false" class="absolute right-6 top-24 w-48 bg-[#E7ECED] rounded-lg shadow-xl border border-[#642886] z-50">
-    <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+  <div x-show="profileOpen" @click.away="profileOpen = false"
+       class="absolute right-6 top-24 w-48 bg-[#E7ECED] rounded-lg shadow-xl border border-[#642886] z-50">
+    <a th:href="@{/user/profile}" class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all	duration-200 border-b	border-white">
       <i class="fa-solid fa-id-card mr-2"></i>Profile
     </a>
-    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/user/users}" class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all duration-200 border-b border-white">
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/user/users}"
+       class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all	duration-200 border-b	border-white">
       <i class="fa-solid fa-users-line mr-2"></i>Users
     </a>
     <div class="border-t border-gray-200 my-1"></div>
-    <a th:href="@{/do-logout}" class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all duration-200">
+    <a th:href="@{/do-logout}" class="block px-4 py-2 text-gray-700 hover:bg-[#a8b5b5] transition-all	duration-200">
       <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Logout
     </a>
   </div>
-  
-  
-    <!-- 🕒 Live Time Script -->
+
+  <!-- Live Time Script -->
   <script>
     function updateLiveTime() {
       const now = new Date();
@@ -275,7 +319,6 @@
     updateLiveTime();
     setInterval(updateLiveTime, 1000);
   </script>
-  
 </nav>
 
 <style>
@@ -283,7 +326,6 @@
   .group:hover .group-hover\:block {
     display: block !important;
   }
-  
   /* Clip-path helper classes */
   .bevel-left  { clip-path: polygon(0 0, 100% 50%, 0 100%); }
   .bevel-right { clip-path: polygon(100% 0, 0 50%, 100% 100%); }

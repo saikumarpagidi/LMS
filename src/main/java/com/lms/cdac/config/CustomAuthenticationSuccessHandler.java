@@ -12,28 +12,45 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
-		User user = (User) authentication.getPrincipal();
-		
-		// Check roles in order of priority
-		if (user.hasRole("ADMIN")) {
-			response.sendRedirect(request.getContextPath() + "/user/dashboard");// Consider as Admin Dashboard
-		}  else if (user.hasRole("RESOURCE_CENTER")) {
-			response.sendRedirect(request.getContextPath() + "/center/dashboard");
-		} else if (user.hasRole("FACULTY")) {
-			response.sendRedirect(request.getContextPath() + "/faculty/dashboard");
-		} else if (user.hasRole("PMU_NOIDA")) {
-			response.sendRedirect(request.getContextPath() + "/pmu/noida/dashboard");
-		} else if (user.hasRole("PMU_MOHALI")) {
-			response.sendRedirect(request.getContextPath() + "/pmu/mohali/dashboard");
-		} else if (user.hasRole("STUDENT")) {
-			response.sendRedirect(request.getContextPath() + "/student/dashboard");
-		}
-		else { 
-			// Default fallback
-			response.sendRedirect(request.getContextPath() + "/student/dashboard");
-		}
-	}
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, 
+                                        HttpServletResponse response,
+                                        Authentication authentication) 
+                                        throws IOException, ServletException {
+        User user = (User) authentication.getPrincipal();
+
+        // एक helper method से dashboard URL निकालें
+        String dashboardUrl = getDashboardUrl(user);
+
+        // session में एक बार ही डाल दें
+        request.getSession().setAttribute("dashboardUrl", dashboardUrl);
+
+        // फिर उसी URL पर redirect कर दें
+        response.sendRedirect(request.getContextPath() + dashboardUrl);
+    }
+
+    // Role-to-URL mapping logic
+    private String getDashboardUrl(User user) {
+        if (user.hasRole("ADMIN")) {
+            return "/user/dashboard";       // Admin के लिए
+        }
+        if (user.hasRole("RESOURCE_CENTER")) {
+            return "/center/dashboard";
+        }
+        if (user.hasRole("FACULTY")) {
+            return "/faculty/dashboard";
+        }
+        if (user.hasRole("PMU_NOIDA")) {
+            return "/pmu/noida/dashboard";
+        }
+        if (user.hasRole("PMU_MOHALI")) {
+            return "/pmu/mohali/dashboard";
+        }
+        if (user.hasRole("STUDENT")) {
+            return "/student/dashboard";
+        }
+        // Default fallback
+        return "/student/dashboard";
+    }
 }

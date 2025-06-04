@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{base :: parent(
           ~{user/course-create :: content},
           'Create Course',
@@ -14,11 +15,13 @@
     <!-- यह #content फ्रैगमेंट base.html के `<section th:replace="${content}">` में जाएगा -->
     <div th:fragment="content" class="pt-16">
         <div class="bg-gray-50 min-h-screen flex items-center justify-center p-6">
-            <div class="assign-container w-full max-w-md bg-white rounded-2xl p-8 shadow-lg">
+            <!-- केवल PMU_MOHALI, PMU_NOIDA या ADMIN को दिखना चाहिए -->
+            <div sec:authorize="hasAnyRole('PMU_MOHALI','PMU_NOIDA','ADMIN')"
+                 class="assign-container w-full max-w-md bg-white rounded-2xl p-8 shadow-lg">
                 
                 <!-- Back Button -->
                 <div class="mb-6">
-                    <a th:href="@{/user/dashboard}"
+                    <a th:href="@{${session.dashboardUrl}}"
                        class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
                         <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 20 20" fill="currentColor">
@@ -29,7 +32,7 @@
                         Back to Dashboard
                     </a>
                 </div>
-
+                
                 <!-- Header Section -->
                 <div class="text-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Create New Course</h2>

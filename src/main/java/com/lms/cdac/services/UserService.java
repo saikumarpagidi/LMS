@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.lms.cdac.dto.AnalyticsDTO;
 import com.lms.cdac.entities.User;
 
 public interface UserService {
@@ -58,6 +59,15 @@ public interface UserService {
 	User findByEmail(String email);
 	
 	List<String> getAllResourceCenters();
+	
+	List<AnalyticsDTO> getUsersByResourceCenter();
+	 List<AnalyticsDTO> getCollegeRegistrationsByResourceCenter(String resourceCenter);
+	 
+	 List<Object[]> countStudentsByNameAndResourceCenter();
+	 
+	 List<Object[]> countStudentsByNameAndSpecificResourceCenter(String resourceCenter);  
+
+
 
 	//
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{base :: parent(
           ~{user/course-shedule-create :: content},
           'Create Course Schedule',
@@ -15,12 +16,17 @@
     <!-- Main Content fragment -->
     <div th:fragment="content" class="pt-16">
         <div class="bg-gray-50 min-h-screen flex items-center justify-center p-6">
-            <div sec:authorize="hasRole('ROLE_ADMIN')" class="assign-container w-full max-w-2xl bg-white rounded-2xl p-8">
+            
+            <!-- केवल PMU_MOHALI, PMU_NOIDA या ADMIN के लिए दिखना चाहिए -->
+            <div sec:authorize="hasAnyRole('PMU_MOHALI','PMU_NOIDA','ADMIN')"
+                 class="assign-container w-full max-w-2xl bg-white rounded-2xl p-8">
+                
                 <!-- Back Button -->
                 <div class="mb-6">
-                    <a th:href="@{/user/dashboard}"
+                    <a th:href="@{${session.dashboardUrl}}"
                        class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200">
-                        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd"
                                   d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
                                   clip-rule="evenodd" />
@@ -28,7 +34,7 @@
                         Back to Dashboard
                     </a>
                 </div>
-
+                
                 <!-- Header Section -->
                 <div class="text-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Course Schedule</h2>

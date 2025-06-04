@@ -11,4 +11,10 @@ import java.util.List;
 public interface CollegeRepository extends JpaRepository<College, String> {
     List<College> findByResourceCenter(Institution resourceCenter);
     boolean existsByCollegeNameAndResourceCenter(String collegeName, Institution resourceCenter);
+    
+    List<College> findByResourceCenter_IdIn(List<String> rcIds);
+    
+    List<College> findByResourceCenterIn(List<Institution> rcs);
+
+
 } 
