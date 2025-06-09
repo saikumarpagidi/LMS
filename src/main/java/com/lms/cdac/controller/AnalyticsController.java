@@ -23,7 +23,7 @@ public class AnalyticsController {
 
     @Autowired
     private AnalyticsService svc;
-    
+
     @Autowired
     private UserService userService;
 
@@ -37,10 +37,28 @@ public class AnalyticsController {
 
     // ─────────────────────────────────── BASIC ENDPOINTS ───────────────────────────────────
 
+    /**
+     * Resource-Center-वाइज Course Enrollment (filtered/unfiltered)
+     *
+     * अगर कोई "rcs" पैरामीटर नहीं भेजा गया, तो पुराना unfiltered डेटा लौटा देगा।
+     * यदि "rcs" List में एक या अधिक Resource Center नाम होंगे, तो केवल उन्हीं RCs का डेटा लौटाएगा।
+     *
+     * Examples:
+     *   GET /analytics/course-enrollment
+     *     → सभी RCs के लिए unfiltered डेटा
+     *
+     *   GET /analytics/course-enrollment?rcs=AIIMS%20Delhi
+     *     → केवल “AIIMS Delhi” के लिए Course-wise Enrollment
+     *
+     *   GET /analytics/course-enrollment?rcs=AIIMS%20Delhi,AIIMS%20Patna
+     *     → “AIIMS Delhi” और “AIIMS Patna” दोनों RCs के लिए डेटा
+     */
     @GetMapping("/course-enrollment")
     @ResponseBody
-    public List<AnalyticsDTO> courseEnrollment() {
-        return svc.getCourseEnrollmentStats();
+    public List<AnalyticsDTO> courseEnrollment(
+            @RequestParam(name = "rcs", required = false) List<String> resourceCenters) {
+
+        return svc.getCourseEnrollmentStats(resourceCenters);
     }
 
     @GetMapping("/course-completion")
@@ -64,7 +82,7 @@ public class AnalyticsController {
     @GetMapping("/totals")
     @ResponseBody
     public Map<String, Long> totals() {
-        // Filter की खाली लिस्ट भेजने पर unfiltered टोटल लौटेगा
+        // खाली लिस्ट भेजने पर unfiltered टोटल लौटेगा
         return svc.getTotals(List.of(), List.of());
     }
 
@@ -78,13 +96,15 @@ public class AnalyticsController {
 
     @GetMapping("/resource-centers")
     @ResponseBody
-    public List<com.lms.cdac.entities.Institution> rcs(@RequestParam List<String> pmus) {
+    public List<com.lms.cdac.entities.Institution> rcs(
+            @RequestParam(name = "pmus", required = true) List<String> pmus) {
         return svc.getResourceCentersByPmus(pmus);
     }
 
     @GetMapping("/colleges")
     @ResponseBody
-    public List<com.lms.cdac.entities.College> colleges(@RequestParam List<String> rcs) {
+    public List<com.lms.cdac.entities.College> colleges(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
         return svc.getCollegesByResourceCenters(rcs);
     }
 
@@ -92,15 +112,16 @@ public class AnalyticsController {
 
     @GetMapping("/resource-centers/metrics")
     @ResponseBody
-    public List<MetricsDTO> rcMetrics(@RequestParam List<String> rcs) {
+    public List<MetricsDTO> rcMetrics(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
         return svc.getResourceCenterMetrics(rcs);
     }
 
     @GetMapping("/colleges/metrics")
     @ResponseBody
     public List<MetricsDTO> cMetrics(
-            @RequestParam(name = "cols", required = false) List<String> cols
-    ) {
+            @RequestParam(name = "cols", required = false) List<String> cols) {
+
         if (cols == null || cols.isEmpty()) {
             // कोई specific colleges न हों → सभी लौटाएँ
             return svc.getCollegeMetrics(List.of());
@@ -113,14 +134,17 @@ public class AnalyticsController {
     @GetMapping("/rc-report")
     @ResponseBody
     public RCReportAggregateDTO rcReport(
-            @RequestParam String pmu,
-            @RequestParam String resourceCenter) {
+            @RequestParam(name = "pmu", required = true) String pmu,
+            @RequestParam(name = "resourceCenter", required = true) String resourceCenter) {
+
         return svc.getRCReport(pmu, resourceCenter);
     }
 
     @GetMapping("/rc-progress")
     @ResponseBody
-    public List<StudentProgressDTO> rcProgress(@RequestParam String resourceCenter) {
+    public List<StudentProgressDTO> rcProgress(
+            @RequestParam(name = "resourceCenter", required = true) String resourceCenter) {
+
         return svc.getProgressByResourceCenter(resourceCenter);
     }
 
@@ -128,25 +152,33 @@ public class AnalyticsController {
 
     @GetMapping("/rc/students")
     @ResponseBody
-    public List<AnalyticsDTO> rcStudents(@RequestParam List<String> rcs) {
+    public List<AnalyticsDTO> rcStudents(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
+
         return svc.getStudentsCountByRC(rcs);
     }
 
     @GetMapping("/rc/assignments")
     @ResponseBody
-    public List<AnalyticsDTO> rcAssignments(@RequestParam List<String> rcs) {
+    public List<AnalyticsDTO> rcAssignments(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
+
         return svc.getAssignmentsCountByRC(rcs);
     }
 
     @GetMapping("/rc/completions")
     @ResponseBody
-    public List<AnalyticsDTO> rcCompletions(@RequestParam List<String> rcs) {
+    public List<AnalyticsDTO> rcCompletions(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
+
         return svc.getCompletionsCountByRC(rcs);
     }
 
     @GetMapping("/rc/ongoing")
     @ResponseBody
-    public List<AnalyticsDTO> rcOngoing(@RequestParam List<String> rcs) {
+    public List<AnalyticsDTO> rcOngoing(
+            @RequestParam(name = "rcs", required = true) List<String> rcs) {
+
         return svc.getOngoingCountByRC(rcs);
     }
 
@@ -162,7 +194,9 @@ public class AnalyticsController {
 
     @GetMapping("/pmu/{pmu}/rc-summary")
     @ResponseBody
-    public List<ResourceCenterSummaryDTO> pmuRcSummary(@PathVariable String pmu) {
+    public List<ResourceCenterSummaryDTO> pmuRcSummary(
+            @PathVariable(name = "pmu") String pmu) {
+
         return svc.getPmuRCsSummary(pmu);
     }
 
@@ -173,17 +207,20 @@ public class AnalyticsController {
         List<AnalyticsDTO> data = userService.getUsersByResourceCenter();
         return ResponseEntity.ok(data);
     }
-    
+
     @GetMapping("/rc-college-registrations")
     @ResponseBody
     public ResponseEntity<List<AnalyticsDTO>> getCollegeRegistrationsByRC(
-            @RequestParam("resourceCenter") String resourceCenter) {
-        List<AnalyticsDTO> data = userService.getCollegeRegistrationsByResourceCenter(resourceCenter);
+            @RequestParam(name = "resourceCenter", required = true) String resourceCenter) {
+
+        List<AnalyticsDTO> data =
+                userService.getCollegeRegistrationsByResourceCenter(resourceCenter);
         return ResponseEntity.ok(data);
     }
-    
+
     /**
      * Student Count by Name & Center (filtered by selected Resource Center)
+     * ---------------------------------------------------------------
      * अगर `resourceCenter` पैरामीटर भेजा गया है, तो उसी RC का डेटा लौटाएगा।
      * अगर पैरामीटर नहीं दिया गया, तो बिना फ़िल्टर सभी RCs का डेटा लौटाएगा।
      */
@@ -201,13 +238,15 @@ public class AnalyticsController {
             results = userService.countStudentsByNameAndSpecificResourceCenter(resourceCenter);
         }
 
-        List<Map<String, Object>> response = results.stream().map(row -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", row[0]);                // u.user_name
-            map.put("resourceCenter", row[1]);      // u.resource_center
-            map.put("count", ((Number) row[2]).longValue());
-            return map;
-        }).collect(Collectors.toList());
+        List<Map<String, Object>> response = results.stream()
+                .map(row -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("name", row[0]);            // u.user_name
+                    map.put("resourceCenter", row[1]);  // u.resource_center
+                    map.put("count", ((Number) row[2]).longValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }

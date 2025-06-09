@@ -286,4 +286,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             return new ResourceCenterSummaryDTO(rc, students, assignments, completions, pending);
         }).collect(Collectors.toList());
     }
+    
+    @Override
+    public List<AnalyticsDTO> getCourseEnrollmentStats(List<String> resourceCenters) {
+        if (resourceCenters == null || resourceCenters.isEmpty()) {
+            // अगर कोई RC नहीं दी गई, तो पुराने मेथड को कॉल करो
+            return getCourseEnrollmentStats();
+        }
+        // रिपॉजिटरी का नया मेथड कॉल करें, जो केवल उन RCs के लिए GROUP BY करता है
+        return caRepo.findEnrollmentPerCourseByRCs(resourceCenters);
+        
+        
+        
+        
+        
+    }
+
+
 }

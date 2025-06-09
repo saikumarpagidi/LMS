@@ -15,14 +15,14 @@
       width: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: var(--scrollbar-track);
-    }
+      background: #e5e7eb;
+    } 
     ::-webkit-scrollbar-thumb {
-      background-color: var(--scrollbar-thumb);
+      background-color: #9ca3af;
       border-radius: 4px;
     }
 
-    /*── Light / Dark Theme Variables ─────────────────────*/
+    /*── Light Theme Variables ─────────────────────────────*/
     html.light {
       --bg: #f9fafb;
       --card-bg: #ffffff;
@@ -33,21 +33,6 @@
       --accent-green: #059669;
       --accent-yellow: #d97706;
       --accent-red: #dc2626;
-      --scrollbar-track: #e5e7eb;
-      --scrollbar-thumb: #9ca3af;
-    }
-    html.dark {
-      --bg: #1f2937;
-      --card-bg: #374151;
-      --card-border: #4b5563;
-      --text-main: #f9fafb;
-      --text-sub: #d1d5db;
-      --accent-indigo: #6366f1;
-      --accent-green: #10b981;
-      --accent-yellow: #fbbf24;
-      --accent-red: #f87171;
-      --scrollbar-track: #4b5563;
-      --scrollbar-thumb: #6b7280;
     }
 
     body {
@@ -61,6 +46,8 @@
       border: 1px solid var(--card-border);
       border-radius: 1rem;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      position: relative;
     }
     .card-header {
       padding: 0.75rem 1rem;
@@ -70,6 +57,21 @@
     }
     .card-body {
       padding: 1rem;
+    }
+
+    /* Loading & No-Data Overlays */
+    .loading,
+    .no-data {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1rem;
+      color: var(--text-sub);
+    }
+    .loading.hidden,
+    .no-data.hidden {
+      display: none;
     }
 
     /* Accent Colors */
@@ -95,19 +97,6 @@
       color: var(--text-sub);
       font-size: 0.875rem;
       margin-bottom: 0.25rem;
-    }
-
-    /* Choices.js Dark Mode */
-    html.dark .choices__inner,
-    html.dark .choices__list--dropdown,
-    html.dark .choices__input {
-      background-color: var(--card-bg);
-      color: var(--text-main);
-      border-color: var(--card-border);
-    }
-    html.dark .choices__list--dropdown .choices__item.is-highlighted {
-      background-color: var(--card-border);
-      color: var(--text-main);
     }
 
     /*── Full-Screen Reports Menu ──────────────────────────*/
@@ -143,12 +132,6 @@
     .full-screen-menu input[type="checkbox"] {
       margin-right: 0.75rem;
     }
-
-    /*── Theme Toggle Button ──────────────────────────────*/
-    #themeToggle {
-      padding: 0.5rem;
-      font-size: 0.875rem;
-    }
   </style>
 </head>
 <body class="min-h-screen font-sans">
@@ -163,9 +146,7 @@
           Use filters and multi-select dropdowns to view reports
         </p>
       </div>
-      <button id="themeToggle" class="rounded-md border" style="border-color: var(--card-border);">
-        <span id="themeLabel" style="color: var(--text-main);">Dark Mode</span>
-      </button>
+      <div><!-- Placeholder for spacing --></div>
     </header>
 
     <!-- Filters Section -->
@@ -220,6 +201,7 @@
             <label><input type="checkbox" value="collegeRegistration" class="report-checkbox" /> <span style="color: var(--text-main);">College-wise Student Registrations</span></label>
             <label><input type="checkbox" value="studentProgress" class="report-checkbox" /> <span style="color: var(--text-main);">Student Progress by Resource Center</span></label>
             <label><input type="checkbox" value="studentCount" class="report-checkbox" /> <span style="color: var(--text-main);">Student Count by Name & Center</span></label>
+            <label><input type="checkbox" value="rcEnrollment" class="report-checkbox" /> <span style="color: var(--text-main);">RC-wise Course Enrollment</span></label>
           </div>
         </div>
       </div>
@@ -229,99 +211,133 @@
     </div>
 
     <!--── Content Cards (Initially Hidden) ────────────────────-->
-    <!-- Platform Totals Summary -->
+    <!-- 1. Platform Totals Summary -->
     <div id="platformTotalsCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-indigo">📊 Platform Totals Summary</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="totalsChart" class="w-full h-48"></canvas>
       </div>
     </div>
 
-    <!-- Overall Users -->
+    <!-- 2. Overall Users -->
     <div id="overallUsersCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-indigo">Overall Users</div>
       <div class="card-body text-center p-4">
-        <span id="overallUsersCount" class="text-4xl font-bold" style="color: var(--text-main);">0</span>
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
+        <span id="overallUsersCount" class="text-4xl font-bold" style="color: var(--text-main); display: none;">0</span>
       </div>
     </div>
 
-    <!-- Course Completion (%) -->
+    <!-- 3. Course Completion (%) -->
     <div id="courseCompletionCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-green">Course Completion (%)</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="completionChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Course-wise Enrollment -->
+    <!-- 4. Course-wise Enrollment (Unfiltered or Filtered by RCs) -->
     <div id="enrollmentCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-green">Course-wise Enrollment</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="enrollmentChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Active Users -->
+    <!-- 5. Active Users -->
     <div id="activeUsersCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-green">Active Users</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="activeUserChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Withdrawals -->
+    <!-- 6. Withdrawals -->
     <div id="withdrawalsCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-red">Withdrawals</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="withdrawalChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Users by Resource Center -->
+    <!-- 7. Users by Resource Center -->
     <div id="usersByRCCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-yellow">Users by Resource Center</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="resourceCenterChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- RC Metrics: Assigned vs Completed -->
+    <!-- 8. RC Metrics: Assigned vs Completed -->
     <div id="rcMetricsCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-yellow">RC Metrics: Assigned vs Completed</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="rcMetricsChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- College Metrics: Assigned vs Completed -->
+    <!-- 9. College Metrics: Assigned vs Completed -->
     <div id="collegeMetricsCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-yellow">College Metrics: Assigned vs Completed</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="collegeMetricsChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- College-wise Student Registrations -->
+    <!-- 10. College-wise Student Registrations -->
     <div id="collegeRegistrationCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-indigo">College-wise Student Registrations</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="collegeRegistrationChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Student Progress by Resource Center -->
+    <!-- 11. Student Progress by Resource Center (Line Chart) -->
     <div id="studentProgressCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-indigo">🎯 Student Progress by Resource Center</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="studentProgressChart" class="w-full h-64"></canvas>
       </div>
     </div>
 
-    <!-- Student Count by Name & Center -->
+    <!-- 12. Student Count by Name & Center -->
     <div id="studentCountCard" class="card hidden mb-6 overflow-hidden">
       <div class="card-header accent-indigo">👩‍🎓 Student Count by Name & Center</div>
       <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
         <canvas id="studentCountChart" class="w-full h-64"></canvas>
+      </div>
+    </div>
+
+    <!-- 13. RC-wise Course Enrollment -->
+    <div id="rcEnrollmentCard" class="card hidden mb-6 overflow-hidden">
+      <div class="card-header accent-green">RC-wise Course Enrollment</div>
+      <div class="card-body p-4">
+        <div class="loading hidden">Loading...</div>
+        <div class="no-data hidden">No data available</div>
+        <canvas id="rcEnrollmentChart" class="w-full h-64"></canvas>
       </div>
     </div>
   </div>
@@ -332,6 +348,7 @@
 
   <script th:inline="javascript">
   /*<![CDATA[*/
+    // Base path for all analytics endpoints
     const base = /*[[@{/analytics}]]*/ '';
 
     // Chart.js instances
@@ -345,7 +362,8 @@
         collegeMetricsChartInstance,
         collegeRegistrationChartInstance,
         studentProgressChartInstance,
-        studentCountChartInstance;
+        studentCountChartInstance,
+        rcEnrollmentChartInstance;
 
     // Choices.js instances
     let pmuChoices, rcChoices, collegeChoices;
@@ -357,17 +375,57 @@
     const reportsMenu = document.getElementById('reportsMenu'),
           closeMenuBtn = document.getElementById('closeMenu');
 
-    // Hide all content cards
+    // ── Helper functions for loading & no-data states ──────────────────────────
+    function showLoading(cardId) {
+      const card = document.getElementById(cardId);
+      card.querySelector('.loading').classList.remove('hidden');
+      card.querySelector('.no-data').classList.add('hidden');
+      card.querySelector('canvas, #overallUsersCount').forEach ? 
+        Array.from(card.querySelectorAll('canvas, #overallUsersCount')).forEach(el => el.classList.add('hidden')) :
+        (card.querySelector('canvas').classList.add('hidden'), card.querySelector('#overallUsersCount') && card.querySelector('#overallUsersCount').classList.add('hidden'));
+    }
+
+    function hideLoading(cardId) {
+      document.getElementById(cardId).querySelector('.loading').classList.add('hidden');
+    }
+
+    function showNoData(cardId) {
+      const card = document.getElementById(cardId);
+      card.querySelector('.no-data').classList.remove('hidden');
+      card.querySelector('canvas, #overallUsersCount').forEach ? 
+        Array.from(card.querySelectorAll('canvas, #overallUsersCount')).forEach(el => el.classList.add('hidden')) :
+        (card.querySelector('canvas').classList.add('hidden'), card.querySelector('#overallUsersCount') && card.querySelector('#overallUsersCount').classList.add('hidden'));
+    }
+
+    function hideNoData(cardId) {
+      const card = document.getElementById(cardId);
+      card.querySelector('.no-data').classList.add('hidden');
+      card.querySelector('canvas, #overallUsersCount').forEach ? 
+        Array.from(card.querySelectorAll('canvas, #overallUsersCount')).forEach(el => el.classList.remove('hidden')) :
+        (card.querySelector('canvas').classList.remove('hidden'), card.querySelector('#overallUsersCount') && card.querySelector('#overallUsersCount').classList.remove('hidden'));
+    }
+
+    // Utility to safely toggle canvas or span visibility
+    function setCanvasVisible(cardId, visible) {
+      const card = document.getElementById(cardId);
+      const canvas = card.querySelector('canvas');
+      const span = card.querySelector('#overallUsersCount');
+      if (canvas) canvas.classList.toggle('hidden', !visible);
+      if (span) span.classList.toggle('hidden', !visible);
+    }
+
+    // ── Hide all content cards ─────────────────────────────────────────────────
     function hideAllCharts() {
       const ids = [
         'platformTotalsCard', 'overallUsersCard', 'courseCompletionCard', 'enrollmentCard',
         'activeUsersCard', 'withdrawalsCard', 'usersByRCCard', 'rcMetricsCard',
-        'collegeMetricsCard', 'collegeRegistrationCard', 'studentProgressCard', 'studentCountCard'
+        'collegeMetricsCard', 'collegeRegistrationCard', 'studentProgressCard',
+        'studentCountCard', 'rcEnrollmentCard'
       ];
       ids.forEach(id => document.getElementById(id).classList.add('hidden'));
     }
 
-    // Initialize filter dropdowns (PMU → RC → College)
+    // ── Initialize filter dropdowns (PMU → RC → College) ────────────────────────
     function initFilters() {
       pmuChoices     = new Choices('#pmuSelect',     { removeItemButton: true, itemSelectText: '' });
       rcChoices      = new Choices('#rcSelect',      { removeItemButton: true, itemSelectText: '' });
@@ -375,10 +433,11 @@
 
       // Load PMUs
       fetch(`${base}/pmus`)
-        .then(res => res.json())
+        .then(res => res.ok ? res.json() : Promise.reject(`Status ${res.status}`))
         .then(list => pmuChoices.setChoices(
           list.map(v => ({ value: v, label: v })), 'value', 'label', true
-        ));
+        ))
+        .catch(err => console.error('Error loading PMUs:', err));
 
       // On PMU change → load Resource Centers
       pmuChoices.passedElement.element.addEventListener('change', () => {
@@ -388,11 +447,12 @@
         if (!selectedPMUs.length) return;
         const params = new URLSearchParams(selectedPMUs.map(v => ['pmus', v]));
         fetch(`${base}/resource-centers?${params}`)
-          .then(res => res.json())
+          .then(res => res.ok ? res.json() : Promise.reject(`Status ${res.status}`))
           .then(list => rcChoices.setChoices(
             list.map(i => ({ value: i.resourceCenter, label: i.resourceCenter })),
             'value', 'label', true
-          ));
+          ))
+          .catch(err => console.error('Error loading RCs:', err));
       });
 
       // On RC change → load Colleges
@@ -402,296 +462,611 @@
         if (!selectedRCs.length) return;
         const params = new URLSearchParams(selectedRCs.map(v => ['rcs', v]));
         fetch(`${base}/colleges?${params}`)
-          .then(res => res.json())
+          .then(res => res.ok ? res.json() : Promise.reject(`Status ${res.status}`))
           .then(list => collegeChoices.setChoices(
             list.map(c => ({ value: c.collegeName, label: c.collegeName })),
             'value', 'label', true
-          ));
+          ))
+          .catch(err => console.error('Error loading Colleges:', err));
+
+        // If RC-wise Course Enrollment is selected, redraw its chart
+        if (!reportAllCheckbox.checked && reportCheckboxesByValue('rcEnrollment').checked) {
+          drawRCEnrollment();
+        }
       });
     }
 
-    /*── Chart Drawing Functions ───────────────────────────*/
+    /*── Chart Drawing Functions (with loading & error handling) ────────────────*/
     async function drawPlatformTotals() {
-      const res = await fetch(`${base}/totals`);
-      const d   = await res.json();
-      const ctx = document.getElementById('totalsChart').getContext('2d');
-      if (totalsChartInstance) totalsChartInstance.destroy();
-      totalsChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Users','Enrollments','Completions','Withdrawals'],
-          datasets: [{ data: [d.totalUsers, d.enrollments, d.completions, d.withdrawals], borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '60%',
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'platformTotalsCard';
+      showLoading(cardId);
+
+      try {
+        const res = await fetch(`${base}/totals`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const d   = await res.json();
+
+        // Check if all values are zero or missing
+        if (!d.totalUsers && !d.enrollments && !d.completions && !d.withdrawals) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const ctx = document.getElementById('totalsChart').getContext('2d');
+        if (totalsChartInstance) totalsChartInstance.destroy();
+        totalsChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Users','Enrollments','Completions','Withdrawals'],
+            datasets: [{ data: [d.totalUsers, d.enrollments, d.completions, d.withdrawals], borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawPlatformTotals:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function showOverallUsers() {
-      const res = await fetch(`${base}/totals`);
-      const d   = await res.json();
-      document.getElementById('overallUsersCount').innerText = d.totalUsers;
+      const cardId = 'overallUsersCard';
+      showLoading(cardId);
+
+      try {
+        const res = await fetch(`${base}/totals`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const d   = await res.json();
+
+        if (!d.totalUsers && d.totalUsers !== 0) {
+          showNoData(cardId);
+          return;
+        }
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+        document.getElementById('overallUsersCount').innerText = d.totalUsers;
+      } catch (error) {
+        console.error('Error in showOverallUsers:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawCourseCompletion() {
-      const res  = await fetch(`${base}/course-completion`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('completionChart').getContext('2d');
-      if (completionChartInstance) completionChartInstance.destroy();
-      completionChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Completion %', data: values, backgroundColor: '#4ADE80', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, max: 100, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'courseCompletionCard';
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/course-completion`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('completionChart').getContext('2d');
+        if (completionChartInstance) completionChartInstance.destroy();
+        completionChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Completion %', data: values, backgroundColor: '#4ADE80', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, max: 100, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawCourseCompletion:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawEnrollment() {
-      const res  = await fetch(`${base}/course-enrollment`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('enrollmentChart').getContext('2d');
-      if (enrollmentChartInstance) enrollmentChartInstance.destroy();
-      enrollmentChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Enrollment', data: values, backgroundColor: '#38BDF8', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'enrollmentCard';
+      showLoading(cardId);
+
+      try {
+        const selectedRCs = rcChoices.getValue(true);
+        const queryParam  = selectedRCs.length
+                          ? `?rcs=${selectedRCs.map(v => encodeURIComponent(v)).join(',')}`
+                          : '';
+        const res  = await fetch(`${base}/course-enrollment${queryParam}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('enrollmentChart').getContext('2d');
+        if (enrollmentChartInstance) enrollmentChartInstance.destroy();
+        enrollmentChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Enrollment', data: values, backgroundColor: '#38BDF8', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawEnrollment:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawActiveUsers() {
-      const res  = await fetch(`${base}/active-users`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('activeUserChart').getContext('2d');
-      if (activeUsersChartInstance) activeUsersChartInstance.destroy();
-      activeUsersChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Active Users', data: values, backgroundColor: '#A78BFA', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'activeUsersCard';
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/active-users`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('activeUserChart').getContext('2d');
+        if (activeUsersChartInstance) activeUsersChartInstance.destroy();
+        activeUsersChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Active Users', data: values, backgroundColor: '#A78BFA', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawActiveUsers:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawWithdrawals() {
-      const res  = await fetch(`${base}/withdrawals`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('withdrawalChart').getContext('2d');
-      if (withdrawalChartInstance) withdrawalChartInstance.destroy();
-      withdrawalChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Withdrawals', data: values, backgroundColor: '#F87171', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'withdrawalsCard';
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/withdrawals`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('withdrawalChart').getContext('2d');
+        if (withdrawalChartInstance) withdrawalChartInstance.destroy();
+        withdrawalChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Withdrawals', data: values, backgroundColor: '#F87171', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawWithdrawals:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawUsersByRC() {
-      const res  = await fetch(`${base}/by-resource-center`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('resourceCenterChart').getContext('2d');
-      if (resourceCenterChartInstance) resourceCenterChartInstance.destroy();
-      resourceCenterChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Users by RC', data: values, backgroundColor: '#FACC15', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'usersByRCCard';
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/by-resource-center`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('resourceCenterChart').getContext('2d');
+        if (resourceCenterChartInstance) resourceCenterChartInstance.destroy();
+        resourceCenterChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Users by RC', data: values, backgroundColor: '#FACC15', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawUsersByRC:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawRCMetrics(rcList) {
-      if (!rcList.length) return;
-      const params = new URLSearchParams(rcList.map(v => ['rcs', v]));
-      const res    = await fetch(`${base}/resource-centers/metrics?${params}`);
-      const data   = await res.json();
-      const labels   = data.map(x => x.name);
-      const assigned = data.map(x => x.total);
-      const completed= data.map(x => x.completed);
-      const ctx = document.getElementById('rcMetricsChart').getContext('2d');
-      if (rcMetricsChartInstance) rcMetricsChartInstance.destroy();
-      rcMetricsChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            { label: 'Assigned',  data: assigned,  backgroundColor: '#06B6D4', borderRadius: 4 },
-            { label: 'Completed', data: completed, backgroundColor: '#14B8A6', borderRadius: 4 }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'rcMetricsCard';
+      if (!rcList.length) {
+        showNoData(cardId);
+        return;
+      }
+      showLoading(cardId);
+
+      try {
+        const params = new URLSearchParams(rcList.map(v => ['rcs', v]));
+        const res    = await fetch(`${base}/resource-centers/metrics?${params}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data   = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels    = data.map(x => x.name);
+        const assigned  = data.map(x => x.total);
+        const completed = data.map(x => x.completed);
+        const ctx = document.getElementById('rcMetricsChart').getContext('2d');
+        if (rcMetricsChartInstance) rcMetricsChartInstance.destroy();
+        rcMetricsChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Assigned',  data: assigned,  backgroundColor: '#06B6D4', borderRadius: 4 },
+              { label: 'Completed', data: completed, backgroundColor: '#14B8A6', borderRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawRCMetrics:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawCollegeMetrics(colList) {
-      if (!colList.length) return;
-      const params = new URLSearchParams(colList.map(v => ['cols', v]));
-      const res    = await fetch(`${base}/colleges/metrics?${params}`);
-      const data   = await res.json();
-      const labels   = data.map(x => x.name);
-      const assigned = data.map(x => x.total);
-      const completed= data.map(x => x.completed);
-      const ctx = document.getElementById('collegeMetricsChart').getContext('2d');
-      if (collegeMetricsChartInstance) collegeMetricsChartInstance.destroy();
-      collegeMetricsChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            { label: 'Assigned',  data: assigned,  backgroundColor: '#F472B6', borderRadius: 4 },
-            { label: 'Completed', data: completed, backgroundColor: '#EC4899', borderRadius: 4 }
-          ]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'collegeMetricsCard';
+      if (!colList.length) {
+        showNoData(cardId);
+        return;
+      }
+      showLoading(cardId);
+
+      try {
+        const params = new URLSearchParams(colList.map(v => ['cols', v]));
+        const res    = await fetch(`${base}/colleges/metrics?${params}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data   = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels    = data.map(x => x.name);
+        const assigned  = data.map(x => x.total);
+        const completed = data.map(x => x.completed);
+        const ctx = document.getElementById('collegeMetricsChart').getContext('2d');
+        if (collegeMetricsChartInstance) collegeMetricsChartInstance.destroy();
+        collegeMetricsChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Assigned',  data: assigned,  backgroundColor: '#F472B6', borderRadius: 4 },
+              { label: 'Completed', data: completed, backgroundColor: '#EC4899', borderRadius: 4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawCollegeMetrics:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawCollegeRegistration(rcName) {
-      if (!rcName) return;
-      const res  = await fetch(`${base}/rc-college-registrations?resourceCenter=${encodeURIComponent(rcName)}`);
-      const data = await res.json();
-      const labels = data.map(x => x.category);
-      const values = data.map(x => x.value);
-      const ctx = document.getElementById('collegeRegistrationChart').getContext('2d');
-      if (collegeRegistrationChartInstance) collegeRegistrationChartInstance.destroy();
-      collegeRegistrationChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Registered Students', data: values, backgroundColor: '#6366F1', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'collegeRegistrationCard';
+      if (!rcName) {
+        showNoData(cardId);
+        return;
+      }
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/rc-college-registrations?resourceCenter=${encodeURIComponent(rcName)}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('collegeRegistrationChart').getContext('2d');
+        if (collegeRegistrationChartInstance) collegeRegistrationChartInstance.destroy();
+        collegeRegistrationChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Registered Students', data: values, backgroundColor: '#6366F1', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawCollegeRegistration:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
+    // Converted Student Progress to Line Chart with loading & error handling
     async function drawStudentProgress(rcName) {
-      if (!rcName) return;
-      const res  = await fetch(`${base}/rc-progress?resourceCenter=${encodeURIComponent(rcName)}`);
-      const data = await res.json();
-      const labels = data.map(x => x.studentName);
-      const values = data.map(x => x.completionPercent);
-      const ctx = document.getElementById('studentProgressChart').getContext('2d');
-      if (studentProgressChartInstance) studentProgressChartInstance.destroy();
-      studentProgressChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Completion %', data: values, backgroundColor: '#22D3EE', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, max: 100, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'studentProgressCard';
+      if (!rcName) {
+        showNoData(cardId);
+        return;
+      }
+      showLoading(cardId);
+
+      try {
+        const res  = await fetch(`${base}/rc-progress?resourceCenter=${encodeURIComponent(rcName)}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.studentName);
+        const values = data.map(x => x.completionPercent);
+
+        const ctx = document.getElementById('studentProgressChart').getContext('2d');
+        if (studentProgressChartInstance) studentProgressChartInstance.destroy();
+        studentProgressChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{ label: 'Completion %', data: values, tension: 0.3 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawStudentProgress:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     async function drawStudentCount() {
-      // Use the first selected RC if any, otherwise no filter
-      const selectedRCs = rcChoices.getValue(true);
-      const queryParam = selectedRCs.length ? `?resourceCenter=${encodeURIComponent(selectedRCs[0])}` : '';
-      const res  = await fetch(`${base}/student-count-by-name-and-center${queryParam}`);
-      const data = await res.json(); // [{name, resourceCenter, count}, ...]
-      const labels = data.map(x => `${x.name} (${x.resourceCenter})`);
-      const values = data.map(x => x.count);
-      const ctx = document.getElementById('studentCountChart').getContext('2d');
-      if (studentCountChartInstance) studentCountChartInstance.destroy();
-      studentCountChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: 'Student Count', data: values, backgroundColor: '#34D399', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
-            y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
-          },
-          plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+      const cardId = 'studentCountCard';
+      showLoading(cardId);
+
+      try {
+        const selectedRCs = rcChoices.getValue(true);
+        const queryParam = selectedRCs.length
+                         ? `?resourceCenter=${encodeURIComponent(selectedRCs[0])}`
+                         : '';
+        const res  = await fetch(`${base}/student-count-by-name-and-center${queryParam}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json(); // [{name, resourceCenter, count}, ...]
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
         }
-      });
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => `${x.name} (${x.resourceCenter})`);
+        const values = data.map(x => x.count);
+        const ctx = document.getElementById('studentCountChart').getContext('2d');
+        if (studentCountChartInstance) studentCountChartInstance.destroy();
+        studentCountChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Student Count', data: values, backgroundColor: '#34D399', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawStudentCount:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
+    }
+
+    async function drawRCEnrollment() {
+      const cardId = 'rcEnrollmentCard';
+      showLoading(cardId);
+
+      try {
+        const selectedRCs = rcChoices.getValue(true);
+        if (!selectedRCs.length) {
+          showNoData(cardId);
+          return;
+        }
+        const rcName = selectedRCs[0];
+        const res    = await fetch(`${base}/course-enrollment?rcs=${encodeURIComponent(rcName)}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data   = await res.json(); // [{category: courseName, value: count}, ...]
+
+        if (!Array.isArray(data) || !data.length) {
+          showNoData(cardId);
+          return;
+        }
+
+        hideNoData(cardId);
+        setCanvasVisible(cardId, true);
+
+        const labels = data.map(x => x.category);
+        const values = data.map(x => x.value);
+        const ctx = document.getElementById('rcEnrollmentChart').getContext('2d');
+        if (rcEnrollmentChartInstance) rcEnrollmentChartInstance.destroy();
+        rcEnrollmentChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: `${rcName} Enrollment`, data: values, backgroundColor: '#22C55E', borderRadius: 4 }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { grid: { display: false }, ticks: { color: 'var(--text-main)' } },
+              y: { beginAtZero: true, ticks: { color: 'var(--text-main)' } }
+            },
+            plugins: { legend: { labels: { color: 'var(--text-main)' } } }
+          }
+        });
+      } catch (error) {
+        console.error('Error in drawRCEnrollment:', error);
+        showNoData(cardId);
+      } finally {
+        hideLoading(cardId);
+      }
     }
 
     /*── Dropdown & Checkbox Logic ────────────────────────*/
@@ -717,6 +1092,7 @@
             case 'collegeRegistration': return 'College Registrations';
             case 'studentProgress': return 'Student Progress';
             case 'studentCount':   return 'Student Count';
+            case 'rcEnrollment':   return 'RC-wise Course Enrollment';
             default: return v;
           }
         }).join(', ');
@@ -729,7 +1105,6 @@
 
     function onAllChange() {
       if (reportAllCheckbox.checked) {
-        // Disable all other checkboxes
         reportCheckboxes.forEach(cb => {
           cb.checked = false;
           cb.disabled = true;
@@ -766,7 +1141,7 @@
       const othersSelected = Array.from(reportCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
       if (allSelected) {
-        // Show and draw all charts
+        // Show all, in a defined order
         await drawPlatformTotals();
         document.getElementById('platformTotalsCard').classList.remove('hidden');
 
@@ -802,8 +1177,10 @@
 
         await drawStudentCount();
         document.getElementById('studentCountCard').classList.remove('hidden');
+
+        await drawRCEnrollment();
+        document.getElementById('rcEnrollmentCard').classList.remove('hidden');
       } else if (othersSelected.length) {
-        // Show and draw only selected charts
         for (const report of othersSelected) {
           switch (report) {
             case 'platformTotals':
@@ -869,6 +1246,11 @@
               document.getElementById('studentCountCard').classList.remove('hidden');
               await drawStudentCount();
               break;
+
+            case 'rcEnrollment':
+              document.getElementById('rcEnrollmentCard').classList.remove('hidden');
+              await drawRCEnrollment();
+              break;
           }
         }
       }
@@ -886,8 +1268,8 @@
       if (!reportAllCheckbox.checked && reportCheckboxesByValue('studentProgress').checked) {
         if (selectedRCs.length) await drawStudentProgress(selectedRCs[0]);
       }
-      if (!reportAllCheckbox.checked && reportCheckboxesByValue('collegeMetrics').checked) {
-        await loadColleges(selectedRCs);
+      if (!reportAllCheckbox.checked && reportCheckboxesByValue('rcEnrollment').checked) {
+        if (selectedRCs.length) await drawRCEnrollment();
       }
       updateDropdownButtonLabel();
       await renderChartsBasedOnSelection();
@@ -896,7 +1278,11 @@
     // When College changes, update metrics chart if selected
     async function handleCollegeChange() {
       const selectedCols = collegeChoices.getValue(true);
-      if (!reportAllCheckbox.checked && reportCheckboxesByValue('collegeMetrics').checked && selectedCols.length) {
+      if (
+        !reportAllCheckbox.checked &&
+        reportCheckboxesByValue('collegeMetrics').checked &&
+        selectedCols.length
+      ) {
         await drawCollegeMetrics(selectedCols);
       }
       updateDropdownButtonLabel();
@@ -910,32 +1296,24 @@
       }
       const params = new URLSearchParams(rcList.map(v => ['rcs', v]));
       const res    = await fetch(`${base}/colleges?${params}`);
-      const data   = await res.json();
-      const colNames = data.map(x => x.collegeName);
-      collegeChoices.clearStore();
-      collegeChoices.setChoices(colNames.map(n => ({ value: n, label: n })), 'value', 'label', true);
+      if (res.ok) {
+        const data   = await res.json();
+        const colNames = data.map(x => x.collegeName);
+        collegeChoices.clearStore();
+        collegeChoices.setChoices(colNames.map(n => ({ value: n, label: n })), 'value', 'label', true);
 
-      if (!reportAllCheckbox.checked && reportCheckboxesByValue('collegeMetrics').checked) {
-        const selectedCols = collegeChoices.getValue(true);
-        if (selectedCols.length) await drawCollegeMetrics(selectedCols);
+        if (!reportAllCheckbox.checked && reportCheckboxesByValue('collegeMetrics').checked) {
+          const selectedCols = collegeChoices.getValue(true);
+          if (selectedCols.length) await drawCollegeMetrics(selectedCols);
+        }
+      } else {
+        console.error('Error loading colleges for metrics:', res.status);
       }
     }
 
     // Helper: find checkbox by its value
     function reportCheckboxesByValue(value) {
       return Array.from(reportCheckboxes).find(cb => cb.value === value);
-    }
-
-    // Toggle between Light / Dark mode
-    function toggleTheme() {
-      const htmlEl = document.documentElement;
-      if (htmlEl.classList.contains('light')) {
-        htmlEl.classList.replace('light', 'dark');
-        document.getElementById('themeLabel').innerText = 'Light Mode';
-      } else {
-        htmlEl.classList.replace('dark', 'light');
-        document.getElementById('themeLabel').innerText = 'Dark Mode';
-      }
     }
 
     // Initialize everything on DOM load
@@ -953,9 +1331,11 @@
         reportsMenu.style.display = 'none';
       });
       document.addEventListener('click', (event) => {
-        if (reportsMenu.style.display === 'block' &&
-            !reportsMenu.contains(event.target) &&
-            event.target.id !== 'reportsButton') {
+        if (
+          reportsMenu.style.display === 'block' &&
+          !reportsMenu.contains(event.target) &&
+          event.target.id !== 'reportsButton'
+        ) {
           reportsMenu.style.display = 'none';
         }
       });
@@ -968,13 +1348,10 @@
       document.getElementById('rcSelect').addEventListener('change', handleRCChange);
       document.getElementById('collegeSelect').addEventListener('change', handleCollegeChange);
 
-      // Theme toggle
-      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-
       hideAllCharts();
       updateDropdownButtonLabel();
     });
   /*]]>*/
   </script>
-</body>
+</body>   
 </html>

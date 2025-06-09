@@ -225,6 +225,14 @@
                     <i class="fa-solid fa-gauge-high mr-2 text-sm"></i>Resource Dashboard
                   </a>
                 </li>
+                
+                <li sec:authorize="hasAnyRole('ADMIN')">
+                  <a th:href="@{/analytics/dashboard}"
+                     class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all duration-200 border-b	border-white">
+                    <i class="fa-solid fa-gauge-high mr-2 text-sm"></i>Analytics Dashboard
+                  </a>
+                </li>
+                
                 <li sec:authorize="hasRole('ADMIN')">
                   <a th:href="@{/college/add}"
                      class="block px-4 py-2 text-left text-black font-normal hover:bg-[#a8b5b5] transition-all	duration-200">

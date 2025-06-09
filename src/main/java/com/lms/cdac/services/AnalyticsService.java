@@ -50,4 +50,9 @@ public interface AnalyticsService {
     List<AnalyticsDTO> getOngoingCountByRC     (List<String> resourceCenters);
     
     List<ResourceCenterSummaryDTO> getPmuRCsSummary(String pmu);
+    
+    List<AnalyticsDTO> getCourseEnrollmentStats(List<String> resourceCenters);
+    
+    
+
 }
