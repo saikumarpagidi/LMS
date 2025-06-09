@@ -45,9 +45,65 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepo.save(user);
-        emailService.sendEmail(user.getEmail(),
-                "Welcome to LMS",
-                "Your account has been created successfully.");
+         
+        // Send welcome email with professional HTML formatting
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <meta charset=\"UTF-8\">" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "    <title>Welcome to LMS</title>" +
+                "</head>" +
+                "<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;\">" +
+                "    <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+                "        <tr>" +
+                "            <td align=\"center\" style=\"padding: 20px 0;\">" +
+                "                <table role=\"presentation\" width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">" +
+                "                    <!-- Header Section -->" +
+                "                    <tr>" +
+                "                        <td align=\"center\" style=\"padding: 30px 30px 20px; background-color: #4a86e8; border-top-left-radius: 8px; border-top-right-radius: 8px;\">" +
+                "                            <h1 style=\"color: #ffffff; margin: 0; font-size: 24px;\">Welcome to LMS</h1>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                    <!-- Main Content -->" +
+                "                    <tr>" +
+                "                        <td style=\"padding: 30px;\">" +
+                "                            <p style=\"margin-top: 0; color: #333333;\">Hello <strong>" + savedUser.getName() + "</strong>,</p>" +
+                "                            <p style=\"color: #333333;\">Thank you for registering with our Learning Management System. Your account has been created successfully and is ready to use.</p>" +
+                "                            <div style=\"background-color: #f9f9f9; border-left: 4px solid #4a86e8; padding: 15px; margin: 20px 0;\">" +
+                "                                <p style=\"margin: 0 0 10px; color: #333333;\"><strong>Your Account Details:</strong></p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• Email: " + savedUser.getEmail() + "</p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• Resource Center: " + savedUser.getResourceCenter() + "</p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• College: " + savedUser.getCollege() + "</p>" +
+                "                            </div>" +
+                "                            <p style=\"color: #333333;\">You can now log in to access your dashboard and start exploring available courses and resources.</p>" +
+                "                            <div style=\"text-align: center; margin: 30px 0;\">" +
+                "                                <a href=\"http://localhost:8080/home/login\" style=\"background-color: #4a86e8; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 4px; font-weight: bold; display: inline-block;\">Login to Your Account</a>" +
+                "                            </div>" +
+                "                            <p style=\"color: #333333;\">If you have any questions or need assistance, please don't hesitate to contact our support team.</p>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                    <!-- Footer Section -->" +
+                "                    <tr>" +
+                "                        <td style=\"padding: 20px 30px; background-color: #f4f4f4; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; color: #666666; font-size: 14px;\">" +
+                "                            <p style=\"margin: 0; text-align: center;\">© 2023 Learning Management System. All rights reserved.</p>" +
+                "                            <p style=\"margin: 10px 0 0; text-align: center;\">This is an automated message, please do not reply.</p>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                </table>" +
+                "            </td>" +
+                "        </tr>" +
+                "    </table>" +
+                "</body>" +
+                "</html>";
+        
+        try {
+            emailService.sendEmailWithHtml(savedUser.getEmail(), "Welcome to LMS - Registration Successful", htmlContent);
+            log.info("Welcome email sent to {}", savedUser.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}: {}", savedUser.getEmail(), e.getMessage());
+        }
+        
         return savedUser;
     }
 
@@ -85,10 +141,64 @@ public class UserServiceImpl implements UserService {
         savedUser = userRepo.save(savedUser);
         log.info("Assigned role {} to user with ID: {} in the same transaction", roleName, savedUser.getUserId());
         
-        // Send welcome email asynchronously
-        emailService.sendEmail(user.getEmail(),
-                "Welcome to LMS",
-                "Your account has been created successfully.");
+        // Send welcome email with professional HTML formatting
+        String htmlContent = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <meta charset=\"UTF-8\">" +
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" +
+                "    <title>Welcome to LMS</title>" +
+                "</head>" +
+                "<body style=\"margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;\">" +
+                "    <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" +
+                "        <tr>" +
+                "            <td align=\"center\" style=\"padding: 20px 0;\">" +
+                "                <table role=\"presentation\" width=\"600\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\">" +
+                "                    <!-- Header Section -->" +
+                "                    <tr>" +
+                "                        <td align=\"center\" style=\"padding: 30px 30px 20px; background-color: #4a86e8; border-top-left-radius: 8px; border-top-right-radius: 8px;\">" +
+                "                            <h1 style=\"color: #ffffff; margin: 0; font-size: 24px;\">Welcome to LMS</h1>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                    <!-- Main Content -->" +
+                "                    <tr>" +
+                "                        <td style=\"padding: 30px;\">" +
+                "                            <p style=\"margin-top: 0; color: #333333;\">Hello <strong>" + savedUser.getName() + "</strong>,</p>" +
+                "                            <p style=\"color: #333333;\">Thank you for registering with our Learning Management System. Your account has been created successfully and is ready to use.</p>" +
+                "                            <div style=\"background-color: #f9f9f9; border-left: 4px solid #4a86e8; padding: 15px; margin: 20px 0;\">" +
+                "                                <p style=\"margin: 0 0 10px; color: #333333;\"><strong>Your Account Details:</strong></p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• Email: " + savedUser.getEmail() + "</p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• Resource Center: " + savedUser.getResourceCenter() + "</p>" +
+                "                                <p style=\"margin: 5px 0; color: #555555;\">• College: " + savedUser.getCollege() + "</p>" +
+                "                            </div>" +
+                "                            <p style=\"color: #333333;\">You can now log in to access your dashboard and start exploring available courses and resources.</p>" +
+                "                            <div style=\"text-align: center; margin: 30px 0;\">" +
+                "                                <a href=\"http://localhost:8080/mis/home/login\" style=\"background-color: #4a86e8; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 4px; font-weight: bold; display: inline-block;\">Login to Your Account</a>" +
+                "                            </div>" +
+                "                            <p style=\"color: #333333;\">If you have any questions or need assistance, please don't hesitate to contact our support team.</p>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                    <!-- Footer Section -->" +
+                "                    <tr>" +
+                "                        <td style=\"padding: 20px 30px; background-color: #f4f4f4; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; color: #666666; font-size: 14px;\">" +
+                "                            <p style=\"margin: 0; text-align: center;\">© 2025 Learning Management System. All rights reserved.</p>" +
+                "                            <p style=\"margin: 10px 0 0; text-align: center;\">This is an automated message, please do not reply.</p>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                </table>" +
+                "            </td>" +
+                "        </tr>" +
+                "    </table>" +
+                "</body>" +
+                "</html>";
+        
+        try {
+            emailService.sendEmailWithHtml(savedUser.getEmail(), "Welcome to LMS - Registration Successful", htmlContent);
+            log.info("Welcome email sent to {}", savedUser.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}: {}", savedUser.getEmail(), e.getMessage());
+            // Don't throw exception here to prevent transaction rollback
+        }
                 
         return savedUser;
     }
@@ -145,7 +255,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUserExistByEmail(String email) {
-        return userRepo.existsByEmail(email);
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return userRepo.findByEmail(email.trim().toLowerCase()).isPresent();
     }
 
     @Override

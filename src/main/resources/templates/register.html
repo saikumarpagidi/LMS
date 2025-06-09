@@ -18,10 +18,10 @@
         <form th:action="@{/home/do-register}" method="post" th:object="${userForm}" novalidate autocomplete="off">
 
             <!-- Global Error Message -->
-            <div th:if="${errorMessage}" class="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">
+            <div th:if="${errorMessage}" class="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
                 <i class="fas fa-exclamation-circle mr-1"></i> <span th:text="${errorMessage}"></span>
             </div>
-            <div th:if="${successMessage}" class="bg-green-100 text-green-700 p-2 rounded mb-4 text-sm">
+            <div th:if="${successMessage}" class="bg-green-100 text-green-700 p-3 rounded mb-4 text-sm">
                 <i class="fas fa-check-circle mr-1"></i> <span th:text="${successMessage}"></span>
             </div>
 

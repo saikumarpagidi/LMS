@@ -189,32 +189,54 @@ public class PageController {
             return "register"; // Return to the registration page if errors exist
         }
 
-        // Save the user to the database with college and resource center names
-        User user = User.builder()
-                .name(userForm.getName())
-                .email(userForm.getEmail())
-                .password(userForm.getPassword())
-                .phoneNumber(userForm.getPhoneNumber())
-                .college(userForm.getCollege())               // Store college name directly
-                .resourceCenter(userForm.getResourceCenter()) // Store resource center name directly
-                .enabled(true)                                // Enable the user by default
-                .build();
+        try {
+            // Check if email already exists
+            if (userService.isUserExistByEmail(userForm.getEmail())) {
+                model.addAttribute("errorMessage", "Email already registered. Please use a different email or login.");
+                model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
+                return "register";
+            }
 
-        // Save the user first
-        User savedUser = userService.saveUser(user);
+            // Create user entity from form data
+            User user = User.builder()
+                    .name(userForm.getName())
+                    .email(userForm.getEmail())
+                    .password(userForm.getPassword())
+                    .phoneNumber(userForm.getPhoneNumber())
+                    .college(userForm.getCollege())
+                    .resourceCenter(userForm.getResourceCenter())
+                    .enabled(true)
+                    .build();
 
-        // Assign STUDENT role to the new user
-        userService.assignRole(savedUser.getUserId(), "STUDENT");
+            // Save user and assign STUDENT role in a single transaction
+            User savedUser = userService.saveUserAndAssignRole(user, "STUDENT");
 
-        // Add a success message to the session
-        Message message = Message.builder()
-                .content("Registration Successful")
-                .type(MessageType.green) // GREEN for success
-                .build();
-        session.setAttribute("message", message);
+            // Add a success message to the session
+            Message message = Message.builder()
+                    .content("Registration Successful! Please login with your credentials.")
+                    .type(MessageType.green)
+                    .build();
+            session.setAttribute("message", message);
 
-        // Redirect to the login page after registration
-        return "redirect:/home/login";
+            // Redirect to the login page after registration
+            return "redirect:/home/login";
+        } catch (Exception e) {
+            // Handle any exceptions during registration
+            String errorMessage = "Registration failed: ";
+            
+            // Check for duplicate key violation
+            if (e.getMessage().contains("duplicate key") || 
+                (e.getCause() != null && e.getCause().getMessage() != null && 
+                e.getCause().getMessage().contains("duplicate key"))) {
+                errorMessage = "Email already registered. Please use a different email or login.";
+            } else {
+                errorMessage += "Please try again later.";
+            }
+            
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("resourceCenters", institutionService.getAllInstitutions());
+            return "register";
+        }
     }
 
     @GetMapping("/access-denied")
